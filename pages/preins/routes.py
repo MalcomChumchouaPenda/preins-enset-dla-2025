@@ -1,6 +1,5 @@
 
 import os
-import pandas as pd
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
 from flask import render_template, request, url_for, redirect

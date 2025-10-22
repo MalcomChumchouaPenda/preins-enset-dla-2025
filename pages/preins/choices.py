@@ -1,7 +1,5 @@
 
 
-import os
-import pandas as pd
 from services.preins_v0_0 import tasks
 
 
