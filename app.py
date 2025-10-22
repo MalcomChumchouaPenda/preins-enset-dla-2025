@@ -6,12 +6,11 @@ from flask import redirect, url_for, request, session
 from core.utils import read_markdown
 from core.config import create_app
 # from flask_mail import Mail
-from pages.request_cc.routes import mail
 
 
 app = create_app()
 
-mail.init_app(app)
+
 # CLASSIC ROUTES
 
 @app.route('/')
