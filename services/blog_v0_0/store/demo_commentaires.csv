@@ -1,6 +1,0 @@
-user_id,article_id,date,contenu
-teacher1,1,2025-05-24,"Excellent article qui résume bien les enjeux de l'intelligence artificielle dans l'enseignement supérieur. L'accent mis sur l'éthique est particulièrement pertinent, surtout dans un contexte où les algorithmes influencent de plus en plus notre quotidien"
-dev1,1,2025-05-25,"Très bon aperçu des thématiques IA abordées au département. Ce serait intéressant d'ajouter quelques exemples concrets de projets étudiants pour illustrer les applications réelles."
-admin1,2,2025-05-24,"Excellent article ! Il présente une méthode claire et progressive pour apprendre Python. J'apprécie particulièrement l'accent mis sur la pratique et les projets concrets."
-dev1,2,2025-05-24,"Merci pour ce contenu structuré. Je recommande aussi aux étudiants de consulter la documentation officielle de Python et de coder tous les jours, même 30 minutes."
-student1,2,2025-05-25,"Je débute avec Python et cet article m'a vraiment aidé à comprendre par où commencer. Est-ce que vous pourriez recommander quelques exercices pour débutants ?"
