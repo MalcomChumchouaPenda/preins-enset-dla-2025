@@ -18,6 +18,9 @@ SERVICES_DIR = os.path.join(ROOT_DIR, 'services')
 TESTS_DIR = os.path.join(ROOT_DIR, 'tests')
 CORE_MANIFEST_PATH = os.path.join(CORE_DIR, 'manifest.json')
 
+# creer les chemins statiques absents
+os.makedirs(STORE_DIR, exist_ok=True)
+
 # convention de nommage
 PAGE_NAME_PATTERN = '^([a-z][a-z0-9_]*)$'
 SERVICE_NAME_PATTERN = '^([a-z][a-z0-9_]*)_(v[0-9]_+[0-9]+)$'
