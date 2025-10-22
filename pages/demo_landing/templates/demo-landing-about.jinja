@@ -1,0 +1,45 @@
+{% extends "landing/layout.jinja" %}
+{% set page_id = 'about_pg' %}
+
+{% block page_sections %}
+
+  <!-- section about -->
+  <section class="about light-background mt-4">
+    {{ landing.section_title(_('Nous'), subtitle=_('A Propos de <b>Nous</b>')) }}
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-6 col-12 about-content">
+          {{ left_about }}
+        </div>
+        <div class="col-lg-6 col-12 about-content">
+          {{ right_about }}
+        </div>
+      </div>
+    </div>
+  </section><!-- /section about -->
+  
+  <!-- Stats Section -->
+  <section class="stats my-4">
+    {{ landing.section_title('Stats', subtitle=_('Quelques <b>Statistiques</b>')) }}
+    <div class="container">
+
+      <div class="row gy-4 my-2">
+        {% for item in stats %}
+          <div class="col-lg-4 col-md-6 my-0">
+            <div class="stats-item">
+              <i class="{{ item.icon }}"></i>
+              <span data-purecounter-start="0" 
+                    data-purecounter-end="{{ item.value }}" 
+                    data-purecounter-duration="1" 
+                    class="purecounter">
+              </span>
+              <p>{{ item.text | safe }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  <!-- End Stats Section -->
+
+{% endblock %}

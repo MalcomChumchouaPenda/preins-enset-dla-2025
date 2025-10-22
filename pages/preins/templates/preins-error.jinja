@@ -1,0 +1,71 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id = 'preins_error_pg' %}
+
+{% block page_header %}
+  <h1>{{ _('Requete Preinscription') }}</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('preins.info') }}">{{ _('Preinscription') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ _('Requete') }}</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container">
+    <section class="section row g-4 pt-0">
+        <div class="col-lg-10 col-12">
+            <div class="card my-2">
+                <div class="card-body">
+                    <form class="row g-3 p-2">
+                    
+                        {{ form.csrf_token }}
+
+                        <h5 class="card-title mx-1 mt-4 mb-0">Erreur sur l'identite:</h5>
+                        <div class="col-lg-6 col-12">
+                            {{ form.nom_admis.label(class_="form-label")}}
+                            {{ form.nom_admis(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            {{ form.nom_correct.label(class_="form-label")}}
+                            {{ form.nom_correct(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            {{ form.prenom_admis.label(class_="form-label")}}
+                            {{ form.prenom_admis(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            {{ form.prenom_correct.label(class_="form-label")}}
+                            {{ form.prenom_correct(class_="form-control") }}
+                        </div>
+                        
+                        <h5 class="card-title mx-1 mt-4 mb-0">Erreur sur la filiere:</h5>
+                        <div class="col-lg-6 col-12">
+                            {{ form.option_admis.label(class_="form-label")}}
+                            {{ form.option_admis(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            {{ form.option_correct.label(class_="form-label")}}
+                            {{ form.option_correct(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            {{ form.niveau_admis.label(class_="form-label")}}
+                            {{ form.niveau_admis(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-12">
+                            {{ form.niveau_correct.label(class_="form-label")}}
+                            {{ form.niveau_correct(class_="form-select") }}
+                        </div>
+
+                        <div class="text-center mt-5">
+                            <button type="reset" class="btn btn-secondary btn-lg">Annuler la requete</button>
+                            <button type="submit" class="btn btn-primary btn-lg">Valider la requete</button>
+                        </div>
+                    </form>
+                </div>
+            </div>  
+        </div>
+    </section>
+</div>
+{% endblock %}

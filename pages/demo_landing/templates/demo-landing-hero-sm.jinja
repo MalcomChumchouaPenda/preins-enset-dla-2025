@@ -1,0 +1,18 @@
+{% extends "landing/layout.jinja" %}
+{% set page_id = 'hero_sm_pg' %}
+{% set hero_size = 'sm'%}
+
+{% block page_hero %}
+    <div class="hero-info w-75 d-flex flex-column justify-content-center align-items-center">
+      <h3>{{ _('Demo avec un petit hero') }}</h3>
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{{ url_for('home.index') }}">{{ _('Home') }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ _('Hero') }}</li>
+        </ol>
+      </nav>
+    </div> 
+    <div class="hero-bg">
+        <img src="{{ url_for('demo_landing.static', filename='img/hero-bg.jpg') }}" alt="">
+    </div>
+{% endblock %}

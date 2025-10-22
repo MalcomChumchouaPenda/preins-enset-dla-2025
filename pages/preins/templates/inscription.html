@@ -1,0 +1,257 @@
+{% extends 'layout_light.html' %}
+{% set page_name = 'inscription' %}
+
+{% block page_title %}Inscription{% endblock %}
+
+{% block page_main_content %}
+
+<!--<div id="preloader"></div>-->
+
+<div id="main" class="d-flex justify-content-center">
+  <form id="login-form" class="container my-form" method="post" 
+        action="{{ url_for('inscription') }}"
+        enctype="multipart/form-data">
+
+      <div id="step-title" class="row">
+        <h1 class="col-lg-2 col-md-12 align-text-bottom">Inscription</h1>
+        <h2 class="col-lg-6 col-md-12 align-text-bottom" id="step-count"></h2>
+        <div class="col-lg-4 col-md-10"></div>
+      </div>
+      
+      <!-- Preliminaire tab -->
+      <div class="tab">
+        <div class="form-row row">
+          <div class="form-group col-10">
+            <label for="formationInscr">Formation choisi</label>
+            <select class="form-select is-required" 
+              id="formationInscr" name="formationInscr" 
+              oninput="this.className = 'form-select is-required'">
+              {% for record in formations %}
+              <option value="{{ record.numero }}"
+                {% if record.numero == numero %}selected{% endif %}>
+                   {{ record.nom }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row row">
+          <div class="form-group col-10">
+            <label for="recuInscr">Numero recu</label>
+            <input type="text" class="form-control is-required" 
+                  id="recuInscr" name="recuInscr"
+                  placeholder="Numero du recu de paiement des frais d'etude de dossier" 
+                  oninput="this.className = 'form-control is-required'">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+      </div>  <!-- End Preliminaire tab -->
+      
+      <!-- Identite tab -->
+      <div class="tab">
+        <div class="form-row row">
+          <div class="form-group col-12">
+            <label for="nomInscr">Noms et prenoms</label>
+            <input type="text" class="form-control is-required" 
+                  id="nomInscr" name="nomInscr"
+                  oninput="this.className = 'form-control is-required'" 
+                  placeholder="Nom complet en majuscule" >
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+
+        <div class="form-row row">
+          <div class="form-group col-md-3 h-75">
+            <label for="dateNaissInscr">Date Naissance</label>
+            <input type="text" class="form-control datepicker is-required" 
+                  id="dateNaissInscr" name="dateNaissInscr"
+                  onchange="this.className = 'form-control datepicker is-required'"
+                  placeholder="Exple: 01/01/2000" >
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+          <div class="form-group col-md-9 h-75">
+            <label for="lieuNaissInscr">Lieu Naissance</label>
+            <input type="text" class="form-control is-required" 
+                  id="lieuNaissInscr" name="lieuNaissInscr"
+                  oninput="this.className = 'form-control is-required'"
+                  placeholder="Lieu en minuscule" >
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+
+        <div class="form-row row">
+          <div class="form-group col-md-3">
+            <label for="sexeInscr">Sexe</label>
+            <select class="form-select is-required" 
+              id="sexeInscr" name="sexeInscr"
+              oninput="this.className = 'form-select is-required'">
+              <option selected>Masculin</option>
+              <option>Feminin</option>
+            </select>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="paysInscr">Nationalite</label>
+            <select class="form-select is-required" 
+              id="paysInscr" name="paysInscr"
+              oninput="this.className = 'form-select is-required'">
+              {% for record in pays %}
+              <option value="{{ record.code_pays }}"
+                {% if record.code_pays == 'CM' %}selected{% endif %}>
+                   {{ record.nom_pays }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>  <!-- End Identite tab -->
+      
+      <!-- Parcours tab -->
+      <div class="tab">
+
+        <div class="form-row row">
+          <div class="form-group col-md-9">
+            <label for="professionInscr">Profession</label>
+            <select class="form-select is-required" 
+                id="professionInscr" name="professionInscr"
+                oninput="this.className = 'form-select is-required'">
+                {% for record in professions %}
+                <option value="{{ record.code_profession }}">
+                  {{ record.nom_profession }}
+                </option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="niveauScolaireInscr">Niveau scolaire</label>
+            <select class="form-select is-required" 
+                id="niveauScolaireInscr" name="niveauScolaireInscr"
+                oninput="this.className = 'form-select is-required'">
+                {% for record in niveaux %}
+                <option value="{{ record.code_niveau }}">
+                    {{ record.nom_niveau }}
+                </option>
+                {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row row">
+          <div class="form-group col-md-9">
+            <label for="diplomeInscr">Diplome obtenu</label>
+            <input type="text" class="form-control is-required" 
+                  id="diplomeInscr" name="diplomeFileInscr"
+                  placeholder="Diplome le plus elevé obtenu" 
+                  oninput="this.className = 'form-control is-required'">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+          <div class="form-group col-md-3">
+            <label for="anneeDiplomeInscr">Année obtention</label>
+            <input type="text" class="form-control is-required"
+                  id="anneeDiplomeInscr" name="anneeDiplomeInscr"
+                  placeholder="Exemple: 2000" oninput="this.className = 'form-control is-required'">
+            <div class="invalid-feedback">Valeur invalide ou absente</div>
+          </div>
+        </div>
+      </div>  <!-- End Parcours tab -->
+      
+      <!-- Contact tab -->
+      <div class="tab">
+        <div class="form-row row">
+          <div class="form-group col-md-6">
+            <label for="telInscr1">Telephone principal</label>
+            <input type="text" class="form-control is-required" 
+                  id="telInscr1" name="telInscr1"
+                  placeholder="Exemple: +237 6 66 66 66 66" 
+                  oninput="this.className = 'form-control is-required'">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+          <div class="form-group col-md-6">
+            <label for="emailInscr1">Email principal</label>
+            <input type="email" class="form-control is-required" 
+                  id="emailInscr1" name="emailInscr1"
+                  placeholder="Exemple: john@doe.com" 
+                  oninput="this.className = 'form-control is-required'">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+
+        <div class="form-row row">
+          <div class="form-group col-md-6">
+            <label for="telInscr2">Telephone secondaire (facultatif)</label>
+            <input type="text" class="form-control" 
+                  id="telInscr2" name="telInscr2"
+                  placeholder="Exemple: +237 6 66 66 66 66" 
+                  oninput="this.className = 'form-control'">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="emailInscr2">Email secondaire (facultatif)</label>
+            <input type="email" class="form-control" 
+                  id="emailInscr2" name="emailInscr2"
+                  placeholder="Exemple: john@doe.com" 
+                  oninput="this.className = 'form-control'">
+          </div>
+        </div>
+      </div>  <!-- End Contact tab -->
+
+      <!-- Fichier tab -->
+      <div class="tab">
+        <div class="form-row row">
+          <div class="form-group col-md-10">
+            <label for="cvFileInscr">CV (document pdf, doc, docx)</label>
+            <input type="file" class="form-control is-required" 
+                   id="cvFileInscr" name="cvFileInscr"
+                   oninput="this.className = 'form-control is-required'" 
+                   accept=".pdf,.doc,.docx">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+        
+        <div class="form-row row my-1">
+          <div class="form-group col-md-10">
+            <label for="diplomeFileInscr">Diplome (document pdf ou image)</label>
+            <input type="file" class="form-control is-required" 
+                   id="diplomeFileInscr" name="diplomeFileInscr"
+                   oninput="this.className = 'form-control is-required'"
+                   accept=".pdf,.jpeg,.jpg,.png,.bmp">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+        
+        <div class="form-row row">
+          <div class="form-group col-md-10">
+            <label for="recuFileInscr">Recu (image jpg, png, bmp)</label>
+            <input type="file" class="form-control is-required" 
+                  id="recuFileInscr" name="recuFileInscr"
+                  oninput="this.className = 'form-control is-required'"
+                  accept=".jpeg,.jpg,.png,.bmp">
+            <div class="invalid-feedback">Champ obligatoire</div>
+          </div>
+        </div>
+      </div>  <!-- End Fichier tab -->
+
+      <div class="btn-group d-flex flex-row-reverse">
+        <div>
+          <button class="btn btn-secondary" id="prevBtn" type="button" onclick="nextPrev(-1)">Precedent</button>
+          <button class="btn btn-primary" id="nextBtn" type="button" onclick="nextPrev(1)">Suivant</button>
+        </div>
+      </div>
+      
+      <!-- Circles which indicates the steps of the form: -->
+      <div style="text-align:center;margin-top:40px;">
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+        <span class="step"></span>
+      </div>
+      
+  </form> 
+</div>
+
+{% endblock %}
+
+
+{% block domain_js %}
+  <script src="{{ url_for('static', filename='js/form.js') }}"></script>
+{% endblock %}

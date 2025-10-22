@@ -1,0 +1,139 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id = 'preins_info_pg' %}
+
+{% block page_header %}
+  <h1>{{ _('Fiche Preinscription') }}</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ _('Preinscription') }}</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container">
+    <section class="section row g-4 pt-0">
+        <div class="col-lg-10 col-12">
+            <div class="card my-2">
+                <div class="card-body">
+                    <form class="row g-3">
+                    
+                        {{ form.csrf_token }}
+                    
+                        <h6 class="card-title mx-1 mt-4 mb-0">1. Informations personnelles</h6>                        
+                        <div class="col-12">
+                            {{ form.nom.label(class_="form-label", required=true)}}
+                            {{ form.nom(class_="form-control") }}
+                        </div>
+                        <div class="col-12">
+                            {{ form.prenom.label(class_="form-label")}}
+                            {{ form.prenom(class_="form-control") }}
+                        </div>                
+                        <div class="col-lg-4 col-10">
+                            {{ form.date_naissance.label(class_="form-label", required=true)}}
+                            {{ form.date_naissance(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-8 col-10">
+                            {{ form.lieu_naissance.label(class_="form-label", required=true)}}
+                            {{ form.lieu_naissance(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-4 col-10">
+                            {{ form.sexe.label(class_="form-label", required=true)}}
+                            {{ form.sexe(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-4 col-10">
+                            {{ form.situation_matrimoniale.label(class_="form-label", required=true)}}
+                            {{ form.situation_matrimoniale(class_="form-select") }}
+                        </div>
+
+                        <h6 class="card-title mx-1 mt-4 mb-0">2. Origine géographique</h6>
+                        <div class="col-lg-6 col-10">
+                            {{ form.nationalite.label(class_="form-label", required=true)}}
+                            {{ form.nationalite(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.langue.label(class_="form-label", required=true)}}
+                            {{ form.langue(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.region_origine.label(class_="form-label", required=true)}}
+                            {{ form.region_origine(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.departement_origine.label(class_="form-label", required=true)}}
+                            {{ form.departement_origine(class_="form-select") }}
+                        </div>
+
+                        <h6 class="card-title mx-1 mt-4 mb-0">3. Coordonnées</h6>
+                        <div class="col-lg-6 col-10">
+                            {{ form.telephone.label(class_="form-label", required=true)}}
+                            {{ form.telephone(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.email.label(class_="form-label")}}
+                            {{ form.email(class_="form-control") }}
+                        </div>
+
+                        <h6 class="card-title mx-1 mt-4 mb-0">4. Informations académiques</h6>
+                        <div class="col-12">
+                            {{ form.departement.label(class_="form-label", required=true)}}
+                            {{ form.departement(class_="form-select") }}
+                        </div>
+                        <div class="col-12">
+                            {{ form.option.label(class_="form-label", required=true)}}
+                            {{ form.option(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-8 col-10">
+                            {{ form.niveau.label(class_="form-label", required=true)}}
+                            {{ form.niveau(class_="form-select") }}
+                        </div>
+
+                        <h6 class="card-title mx-1 mt-4 mb-0">5. Informations sur le père</h6>
+                        <div class="col-lg-6 col-10">
+                            {{ form.nom_pere.label(class_="form-label")}}
+                            {{ form.nom_pere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.profession_pere.label(class_="form-label")}}
+                            {{ form.profession_pere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.telephone_pere.label(class_="form-label")}}
+                            {{ form.telephone_pere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.ville_residence_pere.label(class_="form-label")}}
+                            {{ form.ville_residence_pere(class_="form-control") }}
+                        </div>  
+
+                        <h6 class="card-title mx-1 mt-4 mb-0">6. Informations sur la mère</h6>
+                        <div class="col-lg-6 col-10">
+                            {{ form.nom_mere.label(class_="form-label")}}
+                            {{ form.nom_mere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.profession_mere.label(class_="form-label")}}
+                            {{ form.profession_mere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.telephone_mere.label(class_="form-label")}}
+                            {{ form.telephone_mere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.ville_residence_mere.label(class_="form-label")}}
+                            {{ form.ville_residence_mere(class_="form-control") }}
+                        </div>    
+
+                        <div class="text-center mt-4">
+                            <button type="reset" class="btn btn-secondary btn-lg">Annuler l'inscription</button>
+                            <button type="submit" class="btn btn-primary btn-lg">Valider l'inscription</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>  
+        </div>
+    </section>
+</div>
+{% endblock %}

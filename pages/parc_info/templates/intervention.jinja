@@ -1,0 +1,418 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id='interventions' %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{{ url_for('parc_info.static', filename='css/equipement.css') }}">
+{% endblock %}
+
+{% block page_header %}
+  <h1>Interventions</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Interventions</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container">
+    <section class="section row g-4">
+        <!-- Default Table -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-lg-row flex-column justify-content-between my-4">
+                        <h5 class="card-title">Gestion des Interventions</h5>
+                        <div class="d-flex justify-content-end align-items-start">
+                            <button class="btn btn-secondary m-1" onclick="openAddInterventionModal()">
+                                <i class="fas fa-plus"></i> <span class="d-lg-inline d-none">Nouvelle intervention</span>
+                            </button>
+                            <div class="filter-dropdown">
+                                <button class="btn btn-primary m-1">
+                                    <i class="fas fa-filter"></i> <span class="d-lg-inline d-none">Filtres</span> 
+                                </button>
+                                <div class="filter-dropdown-content">
+                                    <div class="filter-group">
+                                        <h4>Type d'équipement</h4>
+                                        <div class="filter-options">
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> PC Portable
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> PC Bureau
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Imprimante
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Écran
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Autre
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="filter-group">
+                                        <h4>Statut</h4>
+                                        <div class="filter-options">
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Disponible
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> En utilisation
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> En maintenance
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Hors service
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">Appliquer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Ticket</th>
+                                    <th>Équipement</th>
+                                    <th>Technicien</th>
+                                    <th>Date</th>
+                                    <th>Durée</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>INT-001</td>
+                                    <td>TKT-2023-045</td>
+                                    <td>Écran Samsung</td>
+                                    <td>Paul Technicien</td>
+                                    <td>15/05/2023</td>
+                                    <td>2h</td>
+                                    <td><span class="status status-completed">Terminée</span></td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier" onclick="openEditInterventionModal()"></i>
+                                            <i class="fas fa-file-pdf" title="Rapport"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INT-002</td>
+                                    <td>TKT-2023-044</td>
+                                    <td>PC Portable Dell</td>
+                                    <td>Marie Réparatrice</td>
+                                    <td>14/05/2023</td>
+                                    <td>1h30</td>
+                                    <td><span class="status status-completed">Terminée</span></td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-file-pdf" title="Rapport"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INT-003</td>
+                                    <td>TKT-2023-043</td>
+                                    <td>Imprimante HP</td>
+                                    <td>Paul Technicien</td>
+                                    <td>12/05/2023</td>
+                                    <td>0h45</td>
+                                    <td><span class="status status-completed">Terminée</span></td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-file-pdf" title="Rapport"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INT-004</td>
+                                    <td>TKT-2023-042</td>
+                                    <td>PC Bureau Lenovo</td>
+                                    <td>Jean Maintenancier</td>
+                                    <td>10/05/2023</td>
+                                    <td>3h</td>
+                                    <td><span class="status status-in-progress">En cours</span></td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-file-pdf" title="Rapport"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>INT-005</td>
+                                    <td>TKT-2023-041</td>
+                                    <td>PC Portable Apple</td>
+                                    <td>Marie Réparatrice</td>
+                                    <td>08/05/2023</td>
+                                    <td>-</td>
+                                    <td><span class="status status-planned">Planifiée</span></td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-file-pdf" title="Rapport"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Default Table Example -->
+    </section>
+    
+    <!-- Modal pour ajouter une intervention -->
+    <div id="addInterventionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Nouvelle Intervention</h2>
+                <span class="close-btn" onclick="closeAddInterventionModal()">&times;</span>
+            </div>
+            <form id="addInterventionForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="interventionTicket">Ticket associé</label>
+                        <select id="interventionTicket" required>
+                            <option value="">Sélectionner un ticket...</option>
+                            <option value="TKT-2023-045">TKT-2023-045 - Écran ne s'allume pas</option>
+                            <option value="TKT-2023-044">TKT-2023-044 - Clavier défectueux</option>
+                            <option value="TKT-2023-043">TKT-2023-043 - Imprimante en panne</option>
+                            <option value="TKT-2023-042">TKT-2023-042 - Problème réseau</option>
+                            <option value="TKT-2023-041">TKT-2023-041 - Batterie PC</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="interventionTechnician">Technicien</label>
+                        <select id="interventionTechnician" required>
+                            <option value="">Sélectionner un technicien...</option>
+                            <option value="TECH-001">Paul Technicien</option>
+                            <option value="TECH-002">Marie Réparatrice</option>
+                            <option value="TECH-003">Jean Maintenancier</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="interventionDate">Date prévue</label>
+                        <input type="datetime-local" id="interventionDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="interventionStatus">Statut</label>
+                        <select id="interventionStatus" required>
+                            <option value="planned">Planifiée</option>
+                            <option value="in-progress">En cours</option>
+                            <option value="completed">Terminée</option>
+                            <option value="cancelled">Annulée</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="interventionDescription">Description de l'intervention</label>
+                    <textarea id="interventionDescription" rows="4" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="interventionDuration">Durée (heures)</label>
+                        <input type="number" step="0.25" id="interventionDuration">
+                    </div>
+                    <div class="form-group">
+                        <label for="interventionCost">Coût (€)</label>
+                        <input type="number" step="0.01" id="interventionCost">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="interventionParts">Pièces changées</label>
+                    <textarea id="interventionParts" rows="2" placeholder="Liste des pièces changées, séparées par des virgules"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="interventionResult">Résultat</label>
+                    <textarea id="interventionResult" rows="3" placeholder="Résultat de l'intervention..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeAddInterventionModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal pour voir/modifier une intervention -->
+    <div id="viewInterventionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Intervention INT-001</h2>
+                <span class="close-btn" onclick="closeViewInterventionModal()">&times;</span>
+            </div>
+            
+            <div class="intervention-details">
+                <div class="detail-row">
+                    <div class="detail-label">Ticket associé:</div>
+                    <div class="detail-value">TKT-2023-045 - Écran ne s'allume pas</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Équipement:</div>
+                    <div class="detail-value">EQ-004 - Écran Samsung (SN-SAM-98765)</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Technicien:</div>
+                    <div class="detail-value">Paul Technicien</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Date:</div>
+                    <div class="detail-value">15/05/2023 - 14:00 à 16:00</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Statut:</div>
+                    <div class="detail-value"><span class="status status-completed">Terminée</span></div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Durée:</div>
+                    <div class="detail-value">2 heures</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Coût:</div>
+                    <div class="detail-value">150,00 €</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Pièces changées:</div>
+                    <div class="detail-value">Carte électronique interne, Câble d'alimentation</div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Description initiale:</label>
+                <div style="padding: 1rem; background-color: #f9f9f9; border-radius: 4px; margin-bottom: 1rem;">
+                    L'écran ne s'allume plus. Le voyant d'alimentation est orange mais aucun affichage. 
+                    Testé avec un autre câble HDMI sur un autre poste - même problème.
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Résultat de l'intervention:</label>
+                <div style="padding: 1rem; background-color: #f9f9f9; border-radius: 4px; margin-bottom: 1rem;">
+                    La carte électronique interne était défectueuse. Remplacement de la carte et du câble d'alimentation 
+                    qui présentait des signes de faiblesse. Tests effectués avec succès après réparation.
+                </div>
+            </div>
+            
+            <div class="timeline">
+                <h3>Historique de l'intervention</h3>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">15/05/2023 - 16:00</div>
+                        <div>Intervention marquée comme terminée</div>
+                        <div class="timeline-user">
+                            <img src="https://via.placeholder.com/24" alt="User">
+                            <span>Paul Technicien</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">15/05/2023 - 14:30</div>
+                        <div>Début de la réparation. Diagnostic effectué.</div>
+                        <div class="timeline-user">
+                            <img src="https://via.placeholder.com/24" alt="User">
+                            <span>Paul Technicien</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">15/05/2023 - 14:00</div>
+                        <div>Intervention commencée</div>
+                        <div class="timeline-user">
+                            <img src="https://via.placeholder.com/24" alt="User">
+                            <span>Paul Technicien</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-content">
+                        <div class="timeline-date">14/05/2023 - 09:15</div>
+                        <div>Intervention planifiée</div>
+                        <div class="timeline-user">
+                            <img src="https://via.placeholder.com/24" alt="User">
+                            <span>Admin Système</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeViewInterventionModal()">Fermer</button>
+                <button type="button" class="btn btn-primary">
+                    <i class="fas fa-file-pdf"></i> Générer le rapport
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gestion des modals
+        function openAddInterventionModal() {
+            document.getElementById('addInterventionModal').style.display = 'block';
+        }
+        
+        function closeAddInterventionModal() {
+            document.getElementById('addInterventionModal').style.display = 'none';
+        }
+        
+        function openViewInterventionModal() {
+            document.getElementById('viewInterventionModal').style.display = 'block';
+        }
+        
+        function closeViewInterventionModal() {
+            document.getElementById('viewInterventionModal').style.display = 'none';
+        }
+        
+        function openEditInterventionModal() {
+            // En réalité, vous chargeriez les données de l'intervention
+            openViewInterventionModal();
+        }
+        
+        // Fermer les modals quand on clique en dehors
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Gestion du formulaire d'ajout
+        document.getElementById('addInterventionForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Ici, vous enverriez les données au serveur
+            alert('Intervention planifiée avec succès!');
+            closeAddInterventionModal();
+            // Recharger la liste des interventions
+        });
+    </script>
+</div>
+{% endblock %}

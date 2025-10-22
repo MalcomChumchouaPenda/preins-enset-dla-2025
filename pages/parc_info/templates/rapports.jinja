@@ -1,0 +1,52 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id='rapports' %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{{ url_for('parc_info.static', filename='css/rapport.css') }}">
+{% endblock %}
+
+{% block page_header %}
+  <h1>Rapports</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Rapports</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% macro report_card(icon, titre, description, action, href) %}
+    <div class="col-lg-4 col-12">
+        <div class="report-card card">
+            <div class="d-flex justify-content-start align-items-start">
+                <i class="{{ icon }}"></i> 
+                <div class="d-flex flex-column justify-content-start">
+                    <h3>{{ titre }}</h3>
+                    <p>{{ description }}</p>
+                    <div class="d-flex justify-content-start">
+                        <a href="{{ href }}" class="btn btn-primary">{{ action }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% block page_main %}
+<div class="container">
+    <section class="report-cards section row g-4">
+        {{ report_card('fas fa-laptop', 'Inventaire des équipements', 
+                        'Rapport complet du parc matériel avec états et localisations',
+                        'Générer', '#') }}
+        {{ report_card('fas fa-exchange-alt', 'Mouvements du mois', 
+                        "Liste des entrées, sorties et transferts d'équipements",
+                        'Générer', '#') }}
+        {{ report_card('fas fa-tools', 'Interventions techniques', 
+                        'Rapport des interventions avec coûts et pièces utilisées',
+                        'Générer', '#') }}
+        {{ report_card('fas fa-chart-line', 'Statistiques annuelles', 
+                        "Graphiques d'évolution du parc et des incidents",
+                        'Voir', '#') }}
+    </section>
+</div>
+{% endblock %}

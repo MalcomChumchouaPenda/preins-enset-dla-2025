@@ -1,0 +1,7 @@
+{% extends "landing/layout.jinja" %} 
+{% set page_id = 'coming_section_pg' %}
+
+{% block page_sections %}
+    {{ landing.coming_soon_section("Section 1", default_deadline()) }}
+    {{ landing.coming_soon_section("Section 2", default_deadline()) }}
+{% endblock %}

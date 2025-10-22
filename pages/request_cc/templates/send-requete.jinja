@@ -1,0 +1,80 @@
+{% extends "dashboard/layout.jinja" %}
+{% set page_id = 'send-requete' %}
+
+{% block page_header %}
+    <h3>{{ _('Deposer une requete') }}</h3>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Home') }}</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('request_cc.controle_role') }}">{{ _('Mes requetes') }}</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ _('Deposer') }}</li>
+      </ol>
+    </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10">
+            <div class="card my-2">
+              <div class="card-header bg-secondary">
+                <h5 class="text-light text-center">Informations sur la requete</h5>
+              </div>
+                <div class="card-body pt-4">
+                  <!-- General Form Elements -->
+                  <form method="post" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                      <label for="inputText" class="col-sm-2 col-form-label">Objet :</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="objet" class="form-control" required>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="inputEmail" class="col-sm-2 col-form-label">Intitule de la matiere:</label>
+                      <div class="col-sm-10">
+                        <input type="text" name="intitule_ec" class="form-control" required placeholder="EC4093(securite informatique)">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="inputPassword" class="col-sm-2 col-form-label">Enseignant :</label>
+                      <div class="col-sm-10">
+                        <select class="form-select" name="responsable_id" required >
+                          <option value=""></option>
+                          {% for teacher in teachers %}
+                          <option value="{{teacher.id}}">{{teacher.nom}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="inputNumber" class="col-sm-2 col-form-label">Piece jointe :</label>
+                      <div class="col-sm-10">
+                        <input class="form-control" name="piece" type="file" id="formFile">
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label for="inputPassword" class="col-sm-2 col-form-label">Description :</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" name="description" style="height: 100px"></textarea>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <label class="col-sm-2 col-form-label"></label>
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary form-control">Deposer</button>
+                      </div>
+                    </div>
+        
+                  </form><!-- End General Form Elements -->
+        
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+  {% block page_authors %}
+    <a href="">Nana, </a>
+    <a href="">Makouho</a>
+  {% endblock %}

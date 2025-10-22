@@ -1,0 +1,403 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id='equipements' %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{{ url_for('parc_info.static', filename='css/equipement.css') }}">
+{% endblock %}
+
+{% block page_header %}
+  <h1>Équipements</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Équipements</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container">
+    <section class="section row g-4">
+        <!-- Default Table -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Gestion des Équipements</h5>
+                    <div class="d-flex flex-lg-row flex-column justify-content-between">            
+                        <div class="search-filter">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" placeholder="Rechercher un équipement..." id="searchInput">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end align-items-start">
+                            <button class="btn btn-secondary m-1" onclick="openAddEquipmentModal()">
+                                <i class="fas fa-plus"></i> <span class="d-lg-inline d-none">Ajouter</span>
+                            </button>
+                            <button class="btn btn-secondary m-1">
+                                <i class="fas fa-file-export"></i> <span class="d-lg-inline d-none">Exporter</span>
+                            </button>
+                            <div class="filter-dropdown">
+                                <button class="btn btn-primary m-1">
+                                    <i class="fas fa-filter"></i> <span class="d-lg-inline d-none">Filtres</span> 
+                                </button>
+                                <div class="filter-dropdown-content">
+                                    <div class="filter-group">
+                                        <h4>Type d'équipement</h4>
+                                        <div class="filter-options">
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> PC Portable
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> PC Bureau
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Imprimante
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Écran
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Autre
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="filter-group">
+                                        <h4>Statut</h4>
+                                        <div class="filter-options">
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Disponible
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> En utilisation
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> En maintenance
+                                            </label>
+                                            <label class="filter-option">
+                                                <input type="checkbox" checked> Hors service
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">Appliquer</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Numéro de série</th>
+                                    <th>Fournisseur</th>
+                                    <th>État</th>
+                                    <th>Emplacement</th>
+                                    <th>Détenteur</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>EQ-001</td>
+                                    <td>PC Portable</td>
+                                    <td>SN-DELL-12345</td>
+                                    <td>Dell</td>
+                                    <td><span class="status status-in-use">En utilisation</span></td>
+                                    <td>Bureau 203</td>
+                                    <td>Jean Dupont</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier" onclick="openEditEquipmentModal()"></i>
+                                            <i class="fas fa-exchange-alt" title="Mouvement"></i>
+                                            <i class="fas fa-tools" title="Maintenance"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EQ-002</td>
+                                    <td>Imprimante</td>
+                                    <td>SN-HP-67890</td>
+                                    <td>HP</td>
+                                    <td><span class="status status-available">Disponible</span></td>
+                                    <td>Stock</td>
+                                    <td>-</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-exchange-alt" title="Mouvement"></i>
+                                            <i class="fas fa-tools" title="Maintenance"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EQ-003</td>
+                                    <td>PC Bureau</td>
+                                    <td>SN-LEN-54321</td>
+                                    <td>Lenovo</td>
+                                    <td><span class="status status-maintenance">En maintenance</span></td>
+                                    <td>Atelier TI</td>
+                                    <td>-</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-exchange-alt" title="Mouvement"></i>
+                                            <i class="fas fa-tools" title="Maintenance"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EQ-004</td>
+                                    <td>Écran</td>
+                                    <td>SN-SAM-98765</td>
+                                    <td>Samsung</td>
+                                    <td><span class="status status-out-of-service">Hors service</span></td>
+                                    <td>Stock défectueux</td>
+                                    <td>-</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-exchange-alt" title="Mouvement"></i>
+                                            <i class="fas fa-tools" title="Maintenance"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EQ-005</td>
+                                    <td>PC Portable</td>
+                                    <td>SN-APP-13579</td>
+                                    <td>Apple</td>
+                                    <td><span class="status status-in-use">En utilisation</span></td>
+                                    <td>Bureau 105</td>
+                                    <td>Marie Martin</td>
+                                    <td>
+                                        <div class="action-icons">
+                                            <i class="fas fa-eye" title="Voir"></i>
+                                            <i class="fas fa-edit" title="Modifier"></i>
+                                            <i class="fas fa-exchange-alt" title="Mouvement"></i>
+                                            <i class="fas fa-tools" title="Maintenance"></i>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Default Table Example -->
+    </section>
+    
+    <!-- Modal pour ajouter un équipement -->
+    <div id="addEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Ajouter un nouvel équipement</h2>
+                <span class="close-btn" onclick="closeAddEquipmentModal()">&times;</span>
+            </div>
+            <form id="addEquipmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="equipmentType">Type d'équipement</label>
+                        <select id="equipmentType" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="pc_portable">PC Portable</option>
+                            <option value="pc_bureau">PC Bureau</option>
+                            <option value="imprimante">Imprimante</option>
+                            <option value="ecran">Écran</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serialNumber">Numéro de série</label>
+                        <input type="text" id="serialNumber" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="supplier">Fournisseur</label>
+                        <input type="text" id="supplier" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="acquisitionDate">Date d'acquisition</label>
+                        <input type="date" id="acquisitionDate" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="warrantyDate">Date de fin de garantie</label>
+                        <input type="date" id="warrantyDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="value">Valeur (€)</label>
+                        <input type="number" step="0.01" id="value">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Statut</label>
+                        <select id="status" required>
+                            <option value="available">Disponible</option>
+                            <option value="in_use">En utilisation</option>
+                            <option value="maintenance">En maintenance</option>
+                            <option value="out_of_service">Hors service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Emplacement</label>
+                        <input type="text" id="location" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeAddEquipmentModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal pour modifier un équipement -->
+    <div id="editEquipmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Modifier l'équipement</h2>
+                <span class="close-btn" onclick="closeEditEquipmentModal()">&times;</span>
+            </div>
+            <form id="editEquipmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editEquipmentType">Type d'équipement</label>
+                        <select id="editEquipmentType" required>
+                            <option value="pc_portable" selected>PC Portable</option>
+                            <option value="pc_bureau">PC Bureau</option>
+                            <option value="imprimante">Imprimante</option>
+                            <option value="ecran">Écran</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editSerialNumber">Numéro de série</label>
+                        <input type="text" id="editSerialNumber" value="SN-DELL-12345" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editSupplier">Fournisseur</label>
+                        <input type="text" id="editSupplier" value="Dell" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAcquisitionDate">Date d'acquisition</label>
+                        <input type="date" id="editAcquisitionDate" value="2022-05-15" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editWarrantyDate">Date de fin de garantie</label>
+                        <input type="date" id="editWarrantyDate" value="2024-05-15">
+                    </div>
+                    <div class="form-group">
+                        <label for="editValue">Valeur (€)</label>
+                        <input type="number" step="0.01" id="editValue" value="1299.99">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editStatus">Statut</label>
+                        <select id="editStatus" required>
+                            <option value="available">Disponible</option>
+                            <option value="in_use" selected>En utilisation</option>
+                            <option value="maintenance">En maintenance</option>
+                            <option value="out_of_service">Hors service</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLocation">Emplacement</label>
+                        <input type="text" id="editLocation" value="Bureau 203" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editNotes">Notes</label>
+                    <textarea id="editNotes" rows="3">Équipement attribué à Jean Dupont depuis le 01/06/2022</textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeEditEquipmentModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Gestion des modals
+        function openAddEquipmentModal() {
+            document.getElementById('addEquipmentModal').style.display = 'block';
+        }
+        
+        function closeAddEquipmentModal() {
+            document.getElementById('addEquipmentModal').style.display = 'none';
+        }
+        
+        function openEditEquipmentModal() {
+            document.getElementById('editEquipmentModal').style.display = 'block';
+        }
+        
+        function closeEditEquipmentModal() {
+            document.getElementById('editEquipmentModal').style.display = 'none';
+        }
+        
+        // Fermer les modals quand on clique en dehors
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Gestion du formulaire d'ajout
+        document.getElementById('addEquipmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Ici, vous enverriez les données au serveur
+            alert('Équipement ajouté avec succès!');
+            closeAddEquipmentModal();
+            // Recharger la liste des équipements
+        });
+        
+        // Gestion du formulaire de modification
+        document.getElementById('editEquipmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Ici, vous enverriez les données au serveur
+            alert('Équipement modifié avec succès!');
+            closeEditEquipmentModal();
+            // Recharger la liste des équipements
+        });
+        
+        // Recherche en temps réel
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+    </script>
+</div>
+{% endblock %}

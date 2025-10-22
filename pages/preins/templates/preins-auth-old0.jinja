@@ -1,0 +1,63 @@
+{% extends "login/layout.jinja" %}
+{% set head_title='Inscription' %}
+
+
+{% block custom_css %}
+    <link href="{{ url_for('preins.static', filename='css/form.css') }}" rel="stylesheet">
+{% endblock %}
+
+
+{% block page_form %}
+<form class="login-form container d-flex flex-column align-items-center" 
+      method="POST" action="{{ url_for('preins.auth', next=next) }}">
+
+        {{ form.csrf_token }}
+
+        <!-- Header -->
+        <div class="row w-100 pt-5 pb-4 d-flex justify-content-center">
+            <div class="col-10 text-center">
+                <h4>{{ _("Identifiez-vous pour commencer l'inscription") }}</h4>
+            </div>
+        </div>
+
+        <!-- Fields -->
+        <div class="row d-flex justify-content-center">
+            <div class="col-lg-7 col-10">
+                <div class="row g-3">
+                  <div class="col-12">
+                    {{ form.nom.label(class_="form-label", required=true)}}
+                    {{ form.nom(class_="form-control") }}
+                  </div>
+                  <div class="col-12">
+                    {{ form.prenom.label(class_="form-label")}}
+                    {{ form.prenom(class_="form-control") }}
+                  </div>
+                  <div class="col-12">
+                    {{ form.niveau.label(class_="form-label", required=true)}}
+                    {{ form.niveau(class_="form-select") }}
+                  </div>
+                  <div class="col-12">
+                    {{ form.option.label(class_="form-label", required=true)}}
+                    {{ form.option(class_="form-select") }}
+                  </div>
+                </div>
+            </div>
+        </div><!-- End Fields -->
+  
+      <!-- Buttons -->
+      <div class="btn-group d-flex flex-row-reverse pt-4">
+        <div>
+            <button type="button" class="btn btn-secondary" onclick="history.back()">Annuler</button>
+            <button type="submit" class="btn btn-primary">Commencer</button>
+        </div>
+      </div><!-- End Buttons -->
+
+</form>
+{% endblock %}
+
+{% block page_authors %}
+    <a>Malcom C. Penda, </a>
+    <a>Kapsoh Kevrane, </a>
+    <a>Jeazet Kevrane, </a>
+    <a>Jeazet Kevrane</a>
+{% endblock %}

@@ -1,0 +1,219 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id='mouvements' %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{{ url_for('parc_info.static', filename='css/mouvement.css') }}">
+{% endblock %}
+
+{% block page_header %}
+  <h1>Mouvements</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Mouvements</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container">
+    <section class="section row g-4">
+        <div class="col-lg-6">
+            <div class="card my-2">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        {# <i class="fas fa-exchange-alt"></i>  #}
+                        Enregistrer un mouvement
+                    </h2>
+                    <form class="row g-3 movement-form" id="movementForm">
+                        <div class="col-md-12">
+                            <label for="movementType" class="form-label">Type de mouvement</label>
+                            <select id="movementType" class="form-select" aria-label="Default select example">
+                                <option value="">Sélectionner...</option>
+                                <option value="in">Entrée</option>
+                                <option value="out">Sortie</option>
+                                <option value="transfer">Transfert</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="movementEquipment" class="form-label">Équipement</label>
+                            <select id="movementEquipment" class="form-select" required>
+                                <option value="">Sélectionner un équipement...</option>
+                                <option value="EQ-001">EQ-001 - PC Portable Dell (SN-DELL-12345)</option>
+                                <option value="EQ-002">EQ-002 - Imprimante HP (SN-HP-67890)</option>
+                                <option value="EQ-003">EQ-003 - PC Bureau Lenovo (SN-LEN-54321)</option>
+                                <option value="EQ-004">EQ-004 - Écran Samsung (SN-SAM-98765)</option>
+                                <option value="EQ-005">EQ-005 - PC Portable Apple (SN-APP-13579)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="movementUser" class="form-label">Utilisateur</label>
+                            <select id="movementUser" class="form-select">
+                                <option value="">Sélectionner un utilisateur...</option>
+                                <option value="USER-001">Jean Dupont</option>
+                                <option value="USER-002">Marie Martin</option>
+                                <option value="USER-003">Pierre Durand</option>
+                                <option value="USER-004">Sophie Lambert</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="movementDate" class="form-label">Date</label>
+                            <input class="form-control" type="datetime-local" id="movementDate" required>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="movementLocation" class="form-label">Nouvel emplacement</label>
+                            <input class="form-control" type="text" id="movementLocation" required>
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label for="movementLocation" class="form-label">Commentaire</label>
+                            <textarea class="form-control" id="movementComment" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-actions d-flex justify-content-end">
+                            <button type="reset" class="btn btn-light m-1">Annuler</button>
+                            <button type="submit" class="btn btn-primary m-1">Enregistrer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card my-2">
+                <div class="card-body">
+                    <h2 class="card-title">Historique récent</h2>
+                    <ul class="movement-list list-group">
+                        <li class="movement-item list-group-item">
+                            <div class="movement-header">
+                                <div class="movement-title">Sortie d'équipement</div>
+                                <span class="movement-type movement-out">Sortie</span>
+                            </div>
+                            <div class="movement-details">
+                                <div>
+                                    <span class="movement-equipment">EQ-001 - PC Portable Dell</span>
+                                    <span class="movement-date">Aujourd'hui, 10:30</span>
+                                </div>
+                                <div class="movement-user">
+                                    <span>Jean Dupont</span>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="movement-item list-group-item">
+                            <div class="movement-header">
+                                <div class="movement-title">Transfert d'équipement</div>
+                                <span class="movement-type movement-transfer">Transfert</span>
+                            </div>
+                            <div class="movement-details">
+                                <div>
+                                    <span class="movement-equipment">EQ-003 - PC Bureau Lenovo</span>
+                                    <span class="movement-date">Hier, 15:45</span>
+                                </div>
+                                <div class="movement-user">
+                                    <span>Marie Martin</span>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="movement-item list-group-item">
+                            <div class="movement-header">
+                                <div class="movement-title">Entrée d'équipement</div>
+                                <span class="movement-type movement-in">Entrée</span>
+                            </div>
+                            <div class="movement-details">
+                                <div>
+                                    <span class="movement-equipment">EQ-002 - Imprimante HP</span>
+                                    <span class="movement-date">Hier, 09:15</span>
+                                </div>
+                                <div class="movement-user">
+                                    <span>Nouvel équipement</span>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="movement-item list-group-item">
+                            <div class="movement-header">
+                                <div class="movement-title">Sortie d'équipement</div>
+                                <span class="movement-type movement-out">Sortie</span>
+                            </div>
+                            <div class="movement-details">
+                                <div>
+                                    <span class="movement-equipment">EQ-005 - PC Portable Apple</span>
+                                    <span class="movement-date">Lundi, 14:20</span>
+                                </div>
+                                <div class="movement-user">
+                                    <span>Pierre Durand</span>
+                                </div>
+                            </div>
+                        </li>
+                        
+                        <li class="movement-item list-group-item">
+                            <div class="movement-header">
+                                <div class="movement-title">Transfert d'équipement</div>
+                                <span class="movement-type movement-transfer">Transfert</span>
+                            </div>
+                            <div class="movement-details">
+                                <div>
+                                    <span class="movement-equipment">EQ-004 - Écran Samsung</span>
+                                    <span class="movement-date">Lundi, 11:10</span>
+                                </div>
+                                <div class="movement-user">
+                                    <span>Sophie Lambert</span>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    
+    <script>
+        // Gestion du formulaire de mouvement
+        document.getElementById('movementForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Récupérer les valeurs du formulaire
+            const type = document.getElementById('movementType').value;
+            const equipment = document.getElementById('movementEquipment').value;
+            const user = document.getElementById('movementUser').value;
+            const date = document.getElementById('movementDate').value;
+            const location = document.getElementById('movementLocation').value;
+            const comment = document.getElementById('movementComment').value;
+            
+            // Ici, vous enverriez les données au serveur
+            console.log('Nouveau mouvement enregistré:', {
+                type, equipment, user, date, location, comment
+            });
+            
+            // Afficher un message de succès
+            alert('Mouvement enregistré avec succès!');
+            
+            // Réinitialiser le formulaire
+            this.reset();
+            
+            // En réalité, vous voudriez peut-être actualiser la liste des mouvements
+        });
+        
+        // Gestion dynamique du formulaire en fonction du type de mouvement
+        document.getElementById('movementType').addEventListener('change', function() {
+            const userField = document.getElementById('movementUser');
+            
+            if (this.value === 'in') {
+                userField.required = false;
+                userField.disabled = true;
+                userField.value = '';
+            } else {
+                userField.required = true;
+                userField.disabled = false;
+            }
+        });
+    </script>
+</div>
+{% endblock %}

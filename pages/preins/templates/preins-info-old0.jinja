@@ -1,0 +1,145 @@
+{% extends "login/layout.jinja" %}
+{% set head_title='Inscription' %}
+
+{% block custom_css %}
+    <link href="{{ url_for('preins.static', filename='css/form.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_form %}
+<form id="signin-form" class="container d-flex flex-column align-items-center" 
+    method="POST" action="{{ url_for('preins.info', next=next) }}">
+
+        {{ form.csrf_token }}
+    
+        <!-- Header -->
+        <div class="row w-100 pt-5 pb-5 d-flex justify-content-center">
+            <div class="col-10 text-center">
+                <h4>{{ _("Inscription") }} <span id="step-count"></span></h4>
+            </div>
+        </div>
+
+        <!-- Identity tab -->
+        <div class="tab w-100">
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8 col-10">
+                    <div class="row g-4">
+                        <div class="col-lg-4 col-10">
+                            {{ form.date_naiss.label(class_="form-label", required=true)}}
+                            {{ form.date_naiss(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-8 col-10">
+                            {{ form.lieu_naiss.label(class_="form-label", required=true)}}
+                            {{ form.lieu_naiss(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-4 col-10">
+                            {{ form.sexe.label(class_="form-label", required=true)}}
+                            {{ form.sexe(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-4 col-10">
+                            {{ form.situation.label(class_="form-label", required=true)}}
+                            {{ form.situation(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-4 col-10">
+                            {{ form.langue.label(class_="form-label", required=true)}}
+                            {{ form.langue(class_="form-select") }}
+                        </div>
+
+                        <div class="col-lg-8 col-10">
+                            {{ form.email.label(class_="form-label", required=true)}}
+                            {{ form.email(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-4 col-10">
+                            {{ form.telephone.label(class_="form-label", required=true)}}
+                            {{ form.telephone(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-9 col-10">
+                            {{ form.diplome.label(class_="form-label", required=true)}}
+                            {{ form.diplome(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-3 col-10">
+                            {{ form.annee_diplome.label(class_="form-label", required=true)}}
+                            {{ form.annee_diplome(class_="form-control") }}
+                        </div>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Identity tab-->
+
+        <!-- Origin tab -->
+        <div class="tab w-100">
+            <div class="row d-flex justify-content-center">
+                <div class="col-lg-8 col-10">
+                    <div class="row g-4">
+                        <div class="col-lg-6 col-10">
+                            {{ form.nationalite.label(class_="form-label", required=true)}}
+                            {{ form.nationalite(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.departement.label(class_="form-label", required=true)}}
+                            {{ form.departement(class_="form-select") }}
+                        </div>
+
+                        <div class="col-lg-6 col-10">
+                            {{ form.nom_pere.label(class_="form-label")}}
+                            {{ form.nom_pere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.profession_pere.label(class_="form-label")}}
+                            {{ form.profession_pere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.telephone_pere.label(class_="form-label")}}
+                            {{ form.telephone_pere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.residence_pere.label(class_="form-label")}}
+                            {{ form.residence_pere(class_="form-control") }}
+                        </div>   
+                        
+                        <div class="col-lg-6 col-10">
+                            {{ form.nom_mere.label(class_="form-label")}}
+                            {{ form.nom_mere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.profession_mere.label(class_="form-label")}}
+                            {{ form.profession_mere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.telephone_mere.label(class_="form-label")}}
+                            {{ form.telephone_mere(class_="form-control") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.residence_mere.label(class_="form-label")}}
+                            {{ form.residence_mere(class_="form-control") }}
+                        </div>              
+                    </div>
+                </div>
+            </div>
+        </div><!-- End Origin tab-->
+
+      <div class="btn-group d-flex flex-row-reverse pt-5">
+        <div>
+          <button class="btn btn-secondary" id="cancelBtn" type="button" onclick="">Annuler</button>
+          <button class="btn btn-secondary" id="prevBtn" type="button" onclick="nextPrev(-1)">Precedent</button>
+          <button class="btn btn-primary" id="nextBtn" type="button" onclick="nextPrev(1)">Suivant</button>
+        </div>
+      </div>
+      
+      <!-- Circles which indicates the steps of the form: -->
+      <div id="steps" style="text-align:center;margin-top:40px;">
+        <span class="step"></span>
+        <span class="step"></span>
+      </div>
+
+            
+</form>
+{% endblock %}
+
+{% block custom_js %}
+  <script src="{{ url_for('preins.static', filename='js/form.js') }}"></script>
+{% endblock %}
+
+{% block page_authors %}
+    <a>Nana & Makouhou</a>
+{% endblock %}

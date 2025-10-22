@@ -1,0 +1,345 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id='tickets' %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{{ url_for('parc_info.static', filename='css/tickets.css') }}">
+{% endblock %}
+
+{% block page_header %}
+  <h1>Tickets</h1>
+  <nav class="pb-3" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Tickets</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block page_main %}
+<div class="container">
+    <section class="section row g-4">
+        <div class="col-12">
+            <div class="card my-0">
+                <div class="card-body">
+                    <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-between align-items-center pt-2">
+                            <h1 class="card-title">Liste des Tickets</h1>
+                            <div class="d-flex justify-content-end align-items-end">
+                                <button class="btn btn-secondary m-1" onclick="openNewTicketModal()">
+                                    <i class="fas fa-plus"></i> <span class="d-lg-inline d-none">Nouveau Ticket</span>
+                                </button>
+                                <div class="filter-dropdown">
+                                    <button class="btn btn-primary m-1">
+                                        <i class="fas fa-filter"></i> <span class="d-lg-inline d-none">Filtres</span> 
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="tickets-list col-5">
+                                <div class="ticket-item active" onclick="selectTicket(this, 'ticket1')">
+                                    <div class="ticket-header">
+                                        <div class="ticket-title">Écran ne s'allume pas</div>
+                                        <span class="ticket-status status-urgent">Urgent</span>
+                                    </div>
+                                    <div class="ticket-equipment">EQ-004 - Écran Samsung</div>
+                                    <div class="ticket-date">
+                                        <span>Créé: 12/05/2023</span>
+                                        <span>#TKT-2023-045</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="ticket-item" onclick="selectTicket(this, 'ticket2')">
+                                    <div class="ticket-header">
+                                        <div class="ticket-title">Clavier ne fonctionne pas correctement</div>
+                                        <span class="ticket-status status-in-progress">En cours</span>
+                                    </div>
+                                    <div class="ticket-equipment">EQ-001 - PC Portable Dell</div>
+                                    <div class="ticket-date">
+                                        <span>Créé: 10/05/2023</span>
+                                        <span>#TKT-2023-044</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="ticket-item" onclick="selectTicket(this, 'ticket3')">
+                                    <div class="ticket-header">
+                                        <div class="ticket-title">Imprimante en panne de papier</div>
+                                        <span class="ticket-status status-resolved">Résolu</span>
+                                    </div>
+                                    <div class="ticket-equipment">EQ-002 - Imprimante HP</div>
+                                    <div class="ticket-date">
+                                        <span>Créé: 08/05/2023</span>
+                                        <span>#TKT-2023-043</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="ticket-item" onclick="selectTicket(this, 'ticket4')">
+                                    <div class="ticket-header">
+                                        <div class="ticket-title">Problème de connexion réseau</div>
+                                        <span class="ticket-status status-closed">Fermé</span>
+                                    </div>
+                                    <div class="ticket-equipment">EQ-003 - PC Bureau Lenovo</div>
+                                    <div class="ticket-date">
+                                        <span>Créé: 05/05/2023</span>
+                                        <span>#TKT-2023-042</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="ticket-item" onclick="selectTicket(this, 'ticket5')">
+                                    <div class="ticket-header">
+                                        <div class="ticket-title">Batterie ne tient pas la charge</div>
+                                        <span class="ticket-status status-open">Ouvert</span>
+                                    </div>
+                                    <div class="ticket-equipment">EQ-005 - PC Portable Apple</div>
+                                    <div class="ticket-date">
+                                        <span>Créé: 03/05/2023</span>
+                                        <span>#TKT-2023-041</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ticket-details col-7 h-100" id="ticketDetails">
+                                <div id="ticket1" class="ticket-content">
+                                    <div class="ticket-details-header d-flex flex-column">
+                                        <h2 class="ticket-details-title my-4">Écran ne s'allume pas</h2>
+                                        <div class="ticket-meta">
+                                            <div class="meta-item">
+                                                <span class="meta-label">Statut</span>
+                                                <span class="meta-value status-urgent">Urgent</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-label">Priorité</span>
+                                                <span class="meta-value">Haute</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-label">Équipement</span>
+                                                <span class="meta-value">EQ-004 - Écran Samsung</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-label">Créé le</span>
+                                                <span class="meta-value">12/05/2023 à 09:15</span>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="meta-label">Créé par</span>
+                                                <span class="meta-value">Jean Dupont</span>
+                                            </div>
+                                        </div>
+                                        <div class="ticket-actions">
+                                            <button class="btn btn-secondary">
+                                                <i class="fas fa-edit"></i> Modifier
+                                            </button>
+                                            <button class="btn btn-primary">
+                                                <i class="fas fa-check"></i> Résoudre
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ticket-description">
+                                        <h3>Description</h3>
+                                        <p>L'écran de mon poste ne s'allume plus depuis ce matin. Le voyant d'alimentation est allumé en orange, mais aucun affichage. J'ai essayé de débrancher et rebrancher le câble d'alimentation et le câble HDMI, mais sans succès. Le problème semble venir de l'écran lui-même car lorsque je branche un autre écran, il fonctionne correctement.</p>
+                                        <p>Ce problème bloque complètement mon travail car je ne peux pas utiliser mon poste.</p>
+                                    </div>
+                                    
+                                    <div class="ticket-history">
+                                        <h3 class="history-title">Historique</h3>
+                                        
+                                        <div class="history-item urgent">
+                                            <div class="history-content">
+                                                Ticket marqué comme urgent par l'utilisateur
+                                            </div>
+                                            <div class="history-date">12/05/2023 à 09:15</div>
+                                            <div class="history-user">
+                                                <i class="bi bi-person-fill"></i>
+                                                <span>Jean Dupont</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="history-item">
+                                            <div class="history-content">
+                                                Ticket créé
+                                            </div>
+                                            <div class="history-date">12/05/2023 à 09:15</div>
+                                            <div class="history-user">
+                                                <i class="bi bi-person-fill"></i>
+                                                <span>Jean Dupont</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ticket-form">
+                                        <h3>Ajouter une note</h3>
+                                        <form id="ticketNoteForm">
+                                            <div class="form-group">
+                                                <label for="ticketStatus">Statut</label>
+                                                <select id="ticketStatus">
+                                                    <option value="open">Ouvert</option>
+                                                    <option value="in-progress">En cours</option>
+                                                    <option value="resolved">Résolu</option>
+                                                    <option value="closed">Fermé</option>
+                                                    <option value="urgent" selected>Urgent</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="ticketNote">Note</label>
+                                                <textarea id="ticketNote" placeholder="Ajoutez une note ou une mise à jour sur ce ticket..."></textarea>
+                                            </div>
+                                            <div class="form-actions">
+                                                <button type="button" class="btn btn-light">Annuler</button>
+                                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                
+                                <!-- Autres tickets seraient cachés par défaut -->
+                                <div id="ticket2" class="ticket-content" style="display: none;">
+                                    <!-- Contenu du ticket 2 -->
+                                </div>
+                                <div id="ticket3" class="ticket-content" style="display: none;">
+                                    <!-- Contenu du ticket 3 -->
+                                </div>
+                                <div id="ticket4" class="ticket-content" style="display: none;">
+                                    <!-- Contenu du ticket 4 -->
+                                </div>
+                                <div id="ticket5" class="ticket-content" style="display: none;">
+                                    <!-- Contenu du ticket 5 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Modal pour nouveau ticket -->
+    <div id="newTicketModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Créer un nouveau ticket</h2>
+                <span class="close-btn" onclick="closeNewTicketModal()">&times;</span>
+            </div>
+            <form id="newTicketForm">
+                <div class="form-group">
+                    <label for="ticketSubject">Sujet</label>
+                    <input type="text" id="ticketSubject" placeholder="Décrivez brièvement le problème..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ticketEquipment">Équipement concerné</label>
+                    <select id="ticketEquipment" required>
+                        <option value="">Sélectionner un équipement...</option>
+                        <option value="EQ-001">EQ-001 - PC Portable Dell (SN-DELL-12345)</option>
+                        <option value="EQ-002">EQ-002 - Imprimante HP (SN-HP-67890)</option>
+                        <option value="EQ-003">EQ-003 - PC Bureau Lenovo (SN-LEN-54321)</option>
+                        <option value="EQ-004">EQ-004 - Écran Samsung (SN-SAM-98765)</option>
+                        <option value="EQ-005">EQ-005 - PC Portable Apple (SN-APP-13579)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ticketPriority">Priorité</label>
+                    <select id="ticketPriority" required>
+                        <option value="low">Basse</option>
+                        <option value="medium" selected>Moyenne</option>
+                        <option value="high">Haute</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ticketDescription">Description détaillée</label>
+                    <textarea id="ticketDescription" rows="5" placeholder="Décrivez le problème en détail, les étapes pour le reproduire, etc..." required></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeNewTicketModal()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Créer le ticket</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sélection d'un ticket dans la liste
+        function selectTicket(element, ticketId) {
+            // Retirer la classe active de tous les tickets
+            document.querySelectorAll('.ticket-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Ajouter la classe active au ticket sélectionné
+            element.classList.add('active');
+            
+            // Masquer tous les contenus de ticket
+            document.querySelectorAll('.ticket-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Afficher le contenu du ticket sélectionné
+            document.getElementById(ticketId).style.display = 'block';
+        }
+        
+        // Gestion du modal nouveau ticket
+        function openNewTicketModal() {
+            document.getElementById('newTicketModal').style.display = 'block';
+        }
+        
+        function closeNewTicketModal() {
+            document.getElementById('newTicketModal').style.display = 'none';
+        }
+        
+        // Fermer le modal quand on clique en dehors
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+        
+        // Gestion du formulaire de nouveau ticket
+        document.getElementById('newTicketForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Récupérer les valeurs du formulaire
+            const subject = document.getElementById('ticketSubject').value;
+            const equipment = document.getElementById('ticketEquipment').value;
+            const priority = document.getElementById('ticketPriority').value;
+            const description = document.getElementById('ticketDescription').value;
+            
+            // Ici, vous enverriez les données au serveur
+            console.log('Nouveau ticket créé:', {
+                subject, equipment, priority, description
+            });
+            
+            // Afficher un message de succès
+            alert('Ticket créé avec succès!');
+            
+            // Fermer le modal
+            closeNewTicketModal();
+            
+            // En réalité, vous voudriez actualiser la liste des tickets
+        });
+        
+        // Gestion du formulaire de note de ticket
+        document.getElementById('ticketNoteForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Récupérer les valeurs du formulaire
+            const status = document.getElementById('ticketStatus').value;
+            const note = document.getElementById('ticketNote').value;
+            
+            // Ici, vous enverriez les données au serveur
+            console.log('Note ajoutée au ticket:', {
+                status, note
+            });
+            
+            // Afficher un message de succès
+            alert('Note enregistrée avec succès!');
+            
+            // Réinitialiser le formulaire
+            this.reset();
+            
+            // En réalité, vous voudriez actualiser l'historique du ticket
+        });
+    </script>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+<!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="addjustifi" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary">
+                <h5 class="modal-title text-light" id="exampleModalLabel">Ajouter un justificatif</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" enctype="multipart/form-data">
+
+                    <label for="inputText" class="form-label">Nom du justificatif :</label>
+                    <input type="text" name="libelle" class="form-control" required>
+                    <input type="text" name="requete_id" value="{{requete.id}}" hidden required>
+                    <br>
+                    <label for="inputNumber" class="form-label">Justificatif :</label>
+                    <input class="form-control" name="justificatif" type="file" id="formFile" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="Submit" class="btn btn-primary">Envoyer</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>

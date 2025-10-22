@@ -1,0 +1,203 @@
+{% extends "dashboard/layout.jinja" %}
+{% set page_id = 'soumettre' %}
+
+{% block custom_css %}
+  <link href="{{ url_for('request_cc.static', filename='style.css')}}" rel="stylesheet">
+{% endblock %}
+
+{% block page_header %}
+  <h1>{{ _('Mes requetes') }}</h1>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Home') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ _('Mes requetes') }}</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% macro alert_requete_vide(message) %}
+<div class="container-fluid">
+    <div class="row gy-5">
+        <div class="col-3 mt-0">
+            <div class="alert alert-info" role="alert">
+                {{ message }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro vue_requete(requete) %}
+<div class="col-lg-4 col-md-6 mt-0">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title ms-0 mt-3 mb-0 ps-0 py-2">
+                <a class href="#">
+                    Requete no {{ requete.id}}:  {{requete.objet}}
+                </a>
+            </h5>
+            <ul class="events-info mx-0 px-0">
+                <li><i class="bi bi-alarm me-1"></i>Date: <b>{{requete.date_engr.strftime('%d/%m/%Y %H:%M')}}</b></li>
+                <li><i class="bi bi-bell me-1"></i>Statut: <b class="text-{{requete.get_statut.status.color}}">{{requete.status}}</b></li>
+            </ul>
+            <p>
+                {{requete.description[:150]}} ... 
+                <a href="{{ url_for('request_cc.get_detail', id=requete.id) }}">Voir plus</a>
+            </p>
+        </div>
+        <div class="card-footer d-flex justify-content-end">
+            
+                <a href="{{url_for('blog.delete_post', id=requete.id)}}" class="btn btn-primary mx-1">supprimer</a>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+
+{% block page_main %}
+<section class="events">
+    <div class="container-fluid">
+        <div class="row gy-5">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="d-flex justify-content-start my-5 me-auto">
+            </div>
+
+            <!-- Pills Tabs -->
+            <ul class="nav nav-pills mt-0 mb-5 pb-4" id="pills-tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="pills-tous" aria-selected="true" class="nav-link active" 
+                            data-bs-target="#pills-tous" data-bs-toggle="pill" id="pills-tous-tab" 
+                            role="tab" type="button">
+                        Tous</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="pills-attente" aria-selected="false" class="nav-link" 
+                            data-bs-target="#pills-attente" data-bs-toggle="pill" id="pills-attente-tab" 
+                            role="tab" type="button">
+                        En attente</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="pills-suspend" aria-selected="false" class="nav-link" 
+                            data-bs-target="#pills-suspend" data-bs-toggle="pill" id="pills-suspend-tab" 
+                            role="tab" type="button">
+                        Suspendue</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="pills-approuv" aria-selected="false" class="nav-link" 
+                            data-bs-target="#pills-approuv" data-bs-toggle="pill" id="pills-approuv-tab" 
+                            role="tab" type="button">
+                        Approuvés</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="pills-rejet" aria-selected="false" class="nav-link" 
+                            data-bs-target="#pills-rejet" data-bs-toggle="pill" id="pills-rejet-tab" 
+                            role="tab" type="button">
+                        Rejetés</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button aria-controls="pills-termin" aria-selected="false" class="nav-link" 
+                            data-bs-target="#pills-termin" data-bs-toggle="pill" id="pills-termin-tab" 
+                            role="tab" type="button">
+                        terminés</button>
+                </li>
+            </ul>
+            <div class="tab-content pt-0 mt-1" id="myTabContent">
+                <div aria-labelledby="tous-tab" class="tab-pane fade show active" id="pills-tous" role="tabpanel">
+                    {% if requetes | length == 0 %}
+                        {{ alert_requete_vide('Aucune requete') }}
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row gy-5">
+                                {% for requete in requetes %}
+                                    {{ vue_requete(requete) }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div aria-labelledby="attente-tab" class="tab-pane fade" id="pills-attente" role="tabpanel">
+                    {% if debut | length == 0 %}
+                        {{ alert_requete_vide('Aucun requete en attente') }}
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row gy-5">
+                                {% for requete in debut %}
+                                    {{ vue_requete(requete) }}
+                                {% endfor %}
+                            </div>  
+                        </div>  
+                    {% endif %}
+                </div>
+                <div aria-labelledby="suspend-tab" class="tab-pane fade" id="pills-suspend" role="tabpanel">
+                    {% if debut | length == 0 %}
+                        {{ alert_requete_vide('Aucune requete suspendue') }}
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row gy-5">
+                                {% for requete in suspendu %}
+                                    {{ vue_requete(requete) }}
+                                {% endfor %}
+                            </div>  
+                        </div>  
+                    {% endif %}
+                </div>
+                <div aria-labelledby="approuv-tab" class="tab-pane fade" id="pills-approuv" role="tabpanel">
+                    {% if approuver | length == 0 %}
+                        {{ alert_requete_vide('Aucun requete approuvée') }}
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row gy-5">
+                            {% for requete in approuver %}
+                                {{ vue_requete(requete) }}
+                            {% endfor %}
+                            </div>  
+                        </div>  
+                    {% endif %}
+                </div>
+                <div aria-labelledby="rejet-tab" class="tab-pane fade" id="pills-rejet" role="tabpanel">
+                    {% if rejeter | length == 0 %}
+                        {{ alert_requete_vide('Aucun requete rejeté') }}
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row gy-5">
+                            {% for requete in rejeter %}
+                                {{ vue_requete(requete) }}
+                            {% endfor %}
+                            </div>  
+                        </div>  
+                    {% endif %}
+                </div>
+                <div aria-labelledby="termin-tab" class="tab-pane fade" id="pills-termin" role="tabpanel">
+                    {% if terminer | length == 0 %}
+                        {{ alert_requete_vide('Aucun requete terminé') }}
+                    {% else %}
+                        <div class="container-fluid">
+                            <div class="row gy-5">
+                            {% for requete in terminer %}
+                                {{ vue_requete(requete) }}
+                            {% endfor %}
+                            </div>  
+                        </div>  
+                    {% endif %}
+                </div>   
+            </div>
+            <!-- End Pills Tabs -->
+
+        </div>
+    </div>
+</section>
+{% endblock%}
+{% block page_authors %}
+    <a href="">Nana, </a>
+    <a href="">Makouho</a>
+  {% endblock %}

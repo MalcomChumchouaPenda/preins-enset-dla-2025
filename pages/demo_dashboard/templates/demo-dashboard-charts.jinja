@@ -1,0 +1,99 @@
+{% extends 'dashboard/layout.jinja' %}
+{% set page_id = 'charts_pg' %}
+
+{% block page_header %}
+  <h1>{{ _('Data charts') }}</h1>
+  <p>{{ _('Chart.JS Examples. You can check the <a href="https://www.chartjs.org/docs/latest/samples/" target="_blank">official website</a> for more examples.') }}</p>
+{% endblock %}
+
+{% block page_main %}
+  <div class="container">
+    <section class="section row g-4">
+
+          <!-- Line Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Line Chart</h5>
+                <canvas id="lineChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Line CHart -->
+  
+          <!-- Bar Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Bar CHart</h5>                
+                <canvas id="barChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Bar CHart -->
+
+          <!-- Pie Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Pie Chart</h5>
+                <canvas id="pieChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Pie CHart -->
+  
+          <!-- Doughnut Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Doughnut Chart</h5>
+                <canvas id="doughnutChart" style="max-height: 400px;"></canvas>  
+              </div>
+            </div>
+          </div><!-- End Doughnut CHart -->
+  
+          <!-- Radar Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Radar Chart</h5>
+                <canvas id="radarChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Radar CHart -->
+  
+          <!-- Polar Area Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Polar Area Chart</h5>
+                <canvas id="polarAreaChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Polar Area Chart -->
+          
+          <!-- Stacked Bar Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Stacked Bar Chart</h5>
+                <canvas id="stakedBarChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Stacked Bar Chart -->
+  
+          <!-- Bubble Chart -->
+          <div class="col-lg-6">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Bubble Chart</h5>
+                <canvas id="bubbleChart" style="max-height: 400px;"></canvas>
+              </div>
+            </div>
+          </div><!-- End Bubble Chart -->
+  
+    </section>
+  </div>
+{% endblock %}
+
+{% block custom_js %}
+  <script src="{{ url_for('demo_dashboard.static', filename='js/demo-charts.js') }}"></script>
+{% endblock %}

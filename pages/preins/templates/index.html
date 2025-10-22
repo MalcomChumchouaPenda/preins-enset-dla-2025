@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiches D'inscription ENSET DLA</title>
+    <link rel="stylesheet" href="{{ url_for('preins.static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> FICHE D'INSCRIPTION</h1>
+            <p>École Normale Superieur D'enseignement Technique De Douala</p>
+        </div>
+        
+        <!-- Messages flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="flashes">
+    {% for category, message in messages %}
+      <li class="{{ category }}">{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+        
+        <div class="form-content">
+            <div class="note">
+                <strong>NB :</strong> À faire remplir par le candidat lui-même car ses informations sont d'une importance capitale pour la délivrance des effets académiques.
+            </div>
+<br><hr><br>  
+    <div class="form-container">
+        <form action="/generer" method="POST" enctype="multipart/form-data">
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Nationalité <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="nationalite" required>
+                </div>
+                
+                <div class="form-row">
+                <div class="form-group">
+                    <label for="departement">Departement <span class="required">*</span></label>
+                    <select id="departement" name="departement" required>
+                        <option value="" disabled selected>Choisissez un département</option>
+                        <option value="GINFO">Génie Informatique</option>
+                        <option value="GEL">Génie Électrique</option>
+                        <option value="GCI">Génie Civil</option>
+                        <option value="GME">Génie Mécanique</option>
+                        <option value="GCH">Génie Chimique</option>
+                        <option value="GFO">Génie Forestier</option>
+                        <option value="STEG">Sciences Techniques Économiques et Gestion</option>
+                        <option value="ITH">Industrie Textile et Habillement</option>
+                        <option value="ESF">Économie Sociale et Familiale</option>
+                        <option value="TAD">Techniques Administratives</option>
+                        <option value="ESB">Éducation Scientifique de Base</option>
+                        <option value="SE">Sciences de l'Éducation</option>
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <label for="option">Option <span class="required">*</span></label>
+                    <select id="option" name="option" required>
+                    <option value="" disabled selected>Choisissez une option</option>
+                        <!-- Rempli dynamiquement -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="niveau">Niveau visée <span class="required">*</span></label>
+                <select id="niveau" name="niveau" required>
+                    <option value="" disabled selected>Choisissez un niveau</option>
+                    <option value="1">1<sup>ère</sup> année</option>
+                    <option value="3">3<sup>ème</sup> année</option>
+                    <option value="4">4<sup>ème</sup> année</option>
+                </select>
+            </div>
+                
+                <div class="form-group full-width">
+                    <label class="form-label">Nom et Prénom <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="nom_prenom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Date de naissance <span class="required">*</span>:</label>
+                    <input class="form-input" type="date" name="date_naissance" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Lieu de naissance <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="lieu_naissance" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Sexe <span class="required">*</span>:</label>
+                    <select class="form-select" name="sexe" required>
+                        <option value="">Sélectionner</option>
+                        <option value="Féminin">Féminin</option>
+                        <option value="Masculin">Masculin</option>
+                    </select>
+                </div>
+                        
+            <div class="form-group">
+                <label for="situation_matrimoniale">Situation Matrimoniale <span class="required">*</span></label>
+                <select id="situation_matrimoniale" name="situation_matrimoniale" required>
+                    <option value="" disabled selected>Choisissez une situation matrimoniale</option>
+                    <option value="celibataire">Célibataire</option>
+                    <option value="marie">Marié(e)</option>
+                    <option value="divorce">Divorcé(e)</option>
+                </select>
+            </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="region_origine">Région d'origine <span class="required">*</span></label>
+                    <select class="form-input" id="region_origine" name="region_origine" required>
+                        <option value="" disabled selected>Choisissez une région</option>
+                        <option value="adamaoua">Adamaoua</option>
+                        <option value="centre">Centre</option>
+                        <option value="est">Est</option>
+                        <option value="extreme-nord">Extrême-Nord</option>
+                        <option value="littoral">Littoral</option>
+                        <option value="nord">Nord</option>
+                        <option value="nord-ouest">Nord-Ouest</option>
+                        <option value="ouest">Ouest</option>
+                        <option value="sud">Sud</option>
+                        <option value="sud-ouest">Sud-Ouest</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Département d'origine <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="departement_origine" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Langue <span class="required">*</span>:</label>
+                    <select class="form-select" name="langue" required>
+                        <option value="">Sélectionner</option>
+                        <option value="Français">Français</option>
+                        <option value="Anglais">Anglais</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Téléphone <span class="required">*</span>:</label>
+                    <input class="form-input" type="tel" name="telephone" required pattern="[0-9]{9}">
+                </div>
+                
+                <div class="form-group full-width">
+                    <label class="form-label">Email <span class="required">*</span>:</label>
+                    <input class="form-input" type="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Diplôme obtenu <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="diplome" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Année d'obtention <span class="required">*</span>:</label>
+                    <input class="form-input" type="number" name="annee_diplome" min="1900" max="2099" required>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Informations du père / tuteur</h3>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Nom <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="nom_pere" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Profession <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="profession_pere" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Téléphone <span class="required">*</span>:</label>
+                    <input class="form-input" type="tel" name="telephone_pere" required pattern="[0-9]{9}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ville de résidence <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="ville_residence_pere" required>
+                </div>
+            </div>
+            
+            <h3 class="section-title">Informations de la mère</h3>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Nom <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="nom_mere" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Profession <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="profession_mere" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Téléphone <span class="required">*</span>:</label>
+                    <input class="form-input" type="tel" name="telephone_mere" required pattern="[0-9]{9}">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ville de résidence <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="ville_residence_mere" required>
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Matricule <span class="required">*</span>:</label>
+                    <input class="form-input" type="text" name="matricule" required disabled placeholder="(Réservé aux responsables des Niveaux)">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Photo <span class="required">*</span>:</label>
+                    <input class="form-file" type="file" name="photo" accept="image/*" required>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-generate">Soumettre</button>
+        </form>
+    </div>
+
+        
+        <div class="instructions">
+            <p><strong>Instructions:</strong></p>
+            <ul>
+                <li>Les champs marqués d'un astérisque (*) sont obligatoires</li>
+                <li>La photo d'identité doit etre une photo 4*4 avec fond unie</li>
+                <li>Formats de photo acceptés: JPG, PNG, GIF</li>
+                <li>La fiche d'inscription sera automatiquement téléchargée après génération</li>
+                <li>Le champ "Matricule" est réservé à l'administration.</li>
+                <li>L'année scolaire est pré-remplie avec 2025-2026</li>
+            </ul>
+        </div>
+    </div>
+<!-- Footer Stylisé -->
+
+
+
+<script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+
+</body>
+<footer class="footer">
+    <div class="footer-content">
+        <div class="footer-item">
+            <span class="footer-icon">©</span>
+            <span class="year">2025</span>
+            <span>ENSET Douala - Tous droits réservés</span>
+        </div>
+        
+        <span class="footer-separator">•</span>
+        
+        <div class="footer-item">
+            <span class="footer-icon"></span>
+            <span>Crée par N CORP</span>
+        </div>
+        
+        <span class="footer-separator">•</span>
+        
+        <div class="footer-item">
+            <span class="footer-icon"></span>
+            <a href="mailto:contact@enset.cm" class="footer-link">cabenset@yahoo.fr</a>
+        </div>
+        
+        <span class="footer-separator"></span>
+        
+        <div class="footer-item">
+            <span class="footer-icon"></span>
+            <a href="https://enset.cm" class="footer-link" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+</html>
