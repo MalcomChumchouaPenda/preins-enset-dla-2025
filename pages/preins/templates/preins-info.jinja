@@ -14,22 +14,34 @@
 {% block page_main %}
 <div class="container">
     <section class="section row g-4 pt-0">
-        <div class="col-lg-10 col-12">
+
+        <!-- Actions initiales -->
+        <div class="row mt-3 g-3">
+            <div class="text-center">
+                <a href="#" class="btn btn-secondary btn-lg m-1">Modifier la fiche</a>
+                <a href="#" class="btn btn-primary btn-lg m-1">Imprimer la fiche</a>
+            </div>
+        </div><!-- End Actions initiales -->
+
+        <form class="col-lg-10 col-12"  method="POST" action="{{ url_for('preins.info', next=next) }}">
+                    
+            {{ form.csrf_token }}
+
+            <div class="row">
+                {% if form.errors %}
+                <div class="col-12 p-3">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ form.errors }}
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Info generales -->
             <div class="card my-2">
                 <div class="card-body">
-                    <form class="row g-3" method="POST" action="{{ url_for('preins.info', next=next) }}">
-                    
-                        {{ form.csrf_token }}
-
-                        {% if form.errors %}
-                        <div class="col-12 p-3">
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                {{ form.errors }}
-                                <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
-                            </div>
-                        </div>
-                        {% endif %}
-
+                    <div class="row g-3">
                         <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6>                        
                         <div class="col-12">
                             {{ form.nom.label(class_="form-label", required=true)}}
@@ -55,7 +67,14 @@
                             {{ form.situation_matrimoniale.label(class_="form-label", required=true)}}
                             {{ form.situation_matrimoniale(class_="form-select") }}
                         </div>
+                    </div>
+                </div>
+            </div>  <!-- End Info generales -->
 
+            <!-- Origine géographique -->
+            <div class="card my-2">
+                <div class="card-body">
+                    <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">2. Origine géographique</h6>
                         <div class="col-lg-6 col-10">
                             {{ form.langue.label(class_="form-label", required=true)}}
@@ -73,7 +92,14 @@
                             {{ form.departement_origine_id.label(class_="form-label", required=true)}}
                             {{ form.departement_origine_id(class_="form-select") }}
                         </div>
-
+                    </div>
+                </div>
+            </div> <!-- End Origine géographique -->
+            
+            <!-- Coordonnées -->
+            <div class="card my-2">
+                <div class="card-body">
+                    <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">3. Coordonnées</h6>
                         <div class="col-lg-6 col-10">
                             {{ form.telephone.label(class_="form-label", required=true)}}
@@ -83,7 +109,14 @@
                             {{ form.email.label(class_="form-label")}}
                             {{ form.email(class_="form-control") }}
                         </div>
-
+                    </div>
+                </div>
+            </div> <!-- End Coordonnées -->
+            
+            <!-- Informations académiques -->
+            <div class="card my-2">
+                <div class="card-body">
+                    <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">4. Informations académiques</h6>
                         <div class="col-12">
                             {{ form.departement_academique.label(class_="form-label")}}
@@ -105,7 +138,15 @@
                             {{ form.annee_diplome.label(class_="form-label", required=true)}}
                             {{ form.annee_diplome(class_="form-control") }}
                         </div>
+                    </div>
+                </div>
+            </div> <!-- End Informations académiques -->
+            
 
+            <!-- Informations sur le père -->
+            <div class="card my-2">
+                <div class="card-body">
+                    <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">5. Informations sur le père</h6>
                         <div class="col-lg-6 col-10">
                             {{ form.nom_pere.label(class_="form-label")}}
@@ -123,7 +164,15 @@
                             {{ form.ville_residence_pere.label(class_="form-label")}}
                             {{ form.ville_residence_pere(class_="form-control") }}
                         </div>  
+                    </div>
+                </div>
+            </div> <!-- End Informations sur le père -->
+            
 
+            <!-- Informations sur la mère -->
+            <div class="card my-2">
+                <div class="card-body">
+                    <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">6. Informations sur la mère</h6>
                         <div class="col-lg-6 col-10">
                             {{ form.nom_mere.label(class_="form-label")}}
@@ -140,17 +189,19 @@
                         <div class="col-lg-6 col-10">
                             {{ form.ville_residence_mere.label(class_="form-label")}}
                             {{ form.ville_residence_mere(class_="form-control") }}
-                        </div>    
-
-                        <div class="text-center mt-4">
-                            <button type="reset" class="btn btn-secondary btn-lg">Annuler l'inscription</button>
-                            <button type="submit" class="btn btn-primary btn-lg">Valider l'inscription</button>
                         </div>
-
-                    </form>
+                    </div>
                 </div>
-            </div>  
-        </div>
+            </div> <!-- End Informations sur la mère -->
+
+            <!-- Actions finales -->
+            <div class="row mt-3 g-3">
+                <div class="text-center">
+                    <button type="reset" class="btn btn-secondary btn-lg m-1">Annuler l'inscription</button>
+                    <button type="submit" class="btn btn-primary btn-lg m-1">Valider l'inscription</button>
+                </div>
+            </div><!-- End Actions finales -->
+        </form>
     </section>
 </div>
 {% endblock %}
