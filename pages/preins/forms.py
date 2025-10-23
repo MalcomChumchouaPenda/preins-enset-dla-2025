@@ -5,7 +5,11 @@ from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, IntegerField, EmailField
 from wtforms.validators import DataRequired
-from . import choices
+
+
+SEXES = [('F', 'Feminin'), ('M', 'Masculin')]
+STATUTS = [('C', 'Celibataire'), ('M', 'Marie(e)'), ('V', 'Veuf(ve)')]
+LANGUES = [('FR', 'Francais'), ('EN', 'Anglais')]
 
 
 class InfoForm(FlaskForm):
@@ -15,24 +19,25 @@ class InfoForm(FlaskForm):
     prenom = StringField(_l('Prenoms'))
     date_naissance = StringField(_l('Date de naissance'), validators=[DataRequired()])
     lieu_naissance = StringField(_l('Lieu de naissance'), validators=[DataRequired()])
-    sexe = SelectField(_l('Sexe'), validators=[DataRequired()], choices=choices.SEXES)
-    situation_matrimoniale = SelectField(_l('Situation Matrimoniale'), validators=[DataRequired()], 
-                                        choices=choices.STATUTS)
+    sexe = SelectField(_l('Sexe'), validators=[DataRequired()], choices=SEXES)
+    situation_matrimoniale = SelectField(_l('Situation Matrimoniale'), 
+                                         validators=[DataRequired()], 
+                                         choices=STATUTS)
 
     # Origine géographique
-    nationalite = SelectField(_l('Nationalité'), validators=[DataRequired()], choices=choices.NATIONALITE)
+    nationalite = SelectField(_l('Nationalité'), validators=[DataRequired()])
     region_origine = SelectField(_l("Region d'origine"), validators=[DataRequired()])
-    departement_origine = SelectField(_l("Departement d'origine"), validators=[DataRequired()])
-    langue = SelectField(_l('Langue'), validators=[DataRequired()], choices=choices.LANGUES)
+    departement_origine_id = SelectField(_l("Departement d'origine"), validators=[DataRequired()])
+    langue = SelectField(_l('Langue'), validators=[DataRequired()], choices=LANGUES)
 
     # Coordonnées
     telephone = StringField(_l('Téléphone'), validators=[DataRequired()])
     email = EmailField(_l('Email'))
     
     # Informations académiques
-    departement = SelectField(_l('Departement'), validators=[DataRequired()])
-    option = SelectField(_l('Option'), validators=[DataRequired()])
-    niveau = SelectField(_l('Niveau'),  validators=[DataRequired()], choices=choices.NIVEAUX)
+    departement_academique = StringField(_l('Departement'), validators=[])
+    option = StringField(_l('Option'), validators=[])
+    niveau = StringField(_l('Niveau'),  validators=[])
     diplome = StringField(_l("Diplôme d'entrée"), validators=[DataRequired()])
     annee_diplome = IntegerField(_l("Année d'obtention"), validators=[DataRequired()])
 
@@ -58,6 +63,6 @@ class ErrorForm(FlaskForm):
 
     option_admis = SelectField(_l('Option sur le communiqué'))
     option_correct = SelectField(_l('Option corrigée'))
-    niveau_admis = SelectField(_l('Niveau sur le communiqué'), choices=choices.NIVEAUX)
-    niveau_correct = SelectField(_l('Niveau corrigée'), choices=choices.NIVEAUX)
+    niveau_admis = SelectField(_l('Niveau sur le communiqué'))
+    niveau_correct = SelectField(_l('Niveau corrigée'))
 

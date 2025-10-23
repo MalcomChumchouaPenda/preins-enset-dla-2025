@@ -1,9 +1,7 @@
 
 import os
-import re
-import csv
-from io import BytesIO
 from datetime import datetime
+
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
@@ -14,42 +12,83 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
-from .models import db, Preinscription
+
+from services.formations_v0_0.models import Classe
+from services.regions_v0_0.models import Pays, Region, Departement
+from .models import db, Preinscription, Admission, Requete
 
 
 store_dir = os.path.join(os.path.dirname(__file__), 'store')
 
 
-def list_departements():
-    filepath = os.path.join(store_dir, 'departements.csv')
-    with open(filepath, mode='r') as file:
-        reader = csv.DictReader(file, delimiter=';')
-        records = list(reader)
-    return records
+def lister_nationalites():
+    query = db.session.query(Pays)
+    items = [('', 'Choisir...')]
+    for record in query.all():
+        val = record.id
+        text = record.nom
+        items.append((val, text))
+    return items
 
-def list_options():
-    filepath = os.path.join(store_dir, 'options.csv')
-    with open(filepath, mode='r') as file:
-        reader = csv.DictReader(file, delimiter=";")
-        records = list(reader)
-    return records
+def lister_regions():
+    query = db.session.query(Region)
+    items = [('', 'Choisir...')]
+    for record in query.all():
+        pays = record.pays
+        val = pays.id + '-' + record.id 
+        text = record.nom
+        items.append((val, text))
+    return items
+
+def lister_departements():
+    query = db.session.query(Departement)
+    items = [('', 'Choisir...')]
+    for record in query.all():
+        region = record.region
+        pays = region.pays
+        val = pays.id + '-' + region.id + '-' + record.id 
+        text = record.nom
+        items.append((val, text))
+    return items
 
 
-def check_admis(data):
-    filepath = os.path.join(store_dir, 'admis.csv')
-    with open(filepath, mode='r') as file:
-        reader = csv.DictReader(file, delimiter=';')
-        records = []
-        for row in reader:
-            nom = ' '.join([data['nom'], data.get('prenom', '')])
-            nom = re.sub('\s+', ' ', nom)
-            if row['noms'] == nom  and row['option'] == data['option']:
-                records.append(row)
-    return len(records) > 0
+def chercher_admission(id):
+    query = db.session.query(Admission)
+    query = query.filter_by(id=id)
+    admission = query.one_or_none()
+    if admission is not None:
+        query = db.session.query(Classe)
+        query = query.filter_by(id=admission.classe_id)
+        classe = query.one_or_none()
+        setattr(admission, 'classe', classe)
+    return admission
 
 
+def enregistrer_inscription(data):
+    inscription = Preinscription(**data)
+    db.session.add(inscription)
+    db.session.commit()
 
-def generer_fiche_inscription(data, nom_fichier):
+    query = db.session.query(Departement)
+    query = query.filter_by(id=inscription.departement_origine_id)
+    departement_origine = query.one_or_none()
+    setattr(inscription, 'departement_origine', departement_origine)
+    
+    query = db.session.query(Classe)
+    query = query.filter_by(id=inscription.admission.classe_id)
+    classe = query.one_or_none()
+    setattr(inscription.admission, 'classe', classe)
+    return inscription
+
+
+def enregistrer_requete(data):
+    requete = Requete(**data)
+    db.session.add(requete)
+    db.session.commit()
+    return requete
+
+
+def generer_fiche_inscription(inscription, nom_fichier):
     """
     Génère un PDF de fiche d'inscription ENSET avec des coordonnées fixes et la photo de l'étudiant.
 
@@ -58,6 +97,11 @@ def generer_fiche_inscription(data, nom_fichier):
         nom_fichier (str): Nom du fichier de sortie.
     """
 
+    # recuperation des autres infos
+    # admission = inscription.admission
+    # departement = region_tasks.chercher_departement(inscription.departement_origine_id)
+    # classe = format_tasks.chercher_classe(admission.classe_id)
+    
     # Créer le canvas
     c = canvas.Canvas(nom_fichier, pagesize=A4)
     width, height = A4
@@ -142,54 +186,45 @@ def generer_fiche_inscription(data, nom_fichier):
     # c.drawString(20*mm, height - 71*mm, "NB : À faire remplir par le candidat lui-même car ses informations sont d'une importance capitale pour la")
     # c.drawString(20*mm, height - 75*mm, "délivrance des effets académiques.")
 
-        # --- 4. CHAMPS DU FORMULAIRE AVEC COORDONNÉES FIXES ---
+    # --- 4. CHAMPS DU FORMULAIRE AVEC COORDONNÉES FIXES ---
     y_pos = height - 85*mm
     x_label = 20*mm
     x_value = 58*mm
     line_spacing = 12*mm
-    
-    # Formater la date de naissance
-    date_naissance = data.get('date_naissance', '')
-    if date_naissance:
-        try:
-            date_obj = datetime.strptime(date_naissance, '%Y-%m-%d')
-            date_formatee = date_obj.strftime('%d/%m/%Y')
-        except:
-            date_formatee = date_naissance
-    else:
-        date_formatee = ''
 
     # Dessin des champs, ligne par ligne
     c.setFillColor(couleur_texte_noir)
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "N° D'ORDRE :_________________")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('num_ordre', '').upper())
+    c.drawString(x_value, y_pos, inscription.admission.id.upper())
     y_pos -= line_spacing
     
+    departement_origine = inscription.departement_origine
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "NATIONALITÉ :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('nationalite', '').upper())
+    c.drawString(x_value, y_pos, departement_origine.region.pays.nom.upper())
     y_pos -= line_spacing
 
+    classe = inscription.admission.classe
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "DÉPARTEMENT / FILIÈRE CHOISIE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value + 28*mm, y_pos, data.get('departement', '').upper())
+    c.drawString(x_value + 28*mm, y_pos, classe.filiere.departement.id.upper())
     y_pos -= line_spacing
 
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "OPTION CHOISIE :")
     c.setFont(font_bold_name, 11)
-    option =f"{data.get('option', '').upper()} {data.get('niveau', '').upper()}"
+    option =f"{classe.filiere.code_udo} {classe.niveau.id[-1]}"
     c.drawString(x_value, y_pos, option)
     y_pos -= line_spacing
 
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "NOM ET PRÉNOMS :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value , y_pos, data.get('nom_prenom', '').upper())
+    c.drawString(x_value , y_pos, inscription.nom_complet.upper())
     y_pos -= line_spacing
     
     # Champs sur la même ligne (Date de naissance et Lieu)
@@ -199,12 +234,12 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "DATE DE NAISSANCE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value , y_pos, date_formatee.upper())
+    c.drawString(x_value , y_pos, inscription.date_naissance.upper())
 
     c.setFont(font_name, 9)
     c.drawString(x_label2 - 5*mm, y_pos, "LIEU :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2 - 5*mm, y_pos, data.get('lieu_naissance', '').upper())
+    c.drawString(x_value2 - 5*mm, y_pos, inscription.lieu_naissance.upper())
     y_pos -= line_spacing
 
     # Champs sur la même ligne (Sexe et Situation matrimoniale)
@@ -213,12 +248,12 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "SEXE (F/M) :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('sexe', '').upper())
+    c.drawString(x_value, y_pos, inscription.sexe.upper())
 
     c.setFont(font_name, 9)
-    c.drawString(x_label2, y_pos, "SITUATION MATRIMONIALE (M/C/D) :")
+    c.drawString(x_label2, y_pos, "SITUATION MATRIMONIALE (M/C/V) :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('situation_matrimoniale', '').upper())
+    c.drawString(x_value2, y_pos, inscription.situation_matrimoniale.upper())
     y_pos -= line_spacing
 
     # Champs sur la même ligne (Région et Département d'origine)
@@ -227,12 +262,12 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "RÉGION D'ORIGINE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('region_origine', '').upper())
+    c.drawString(x_value, y_pos, departement_origine.region.nom.upper())
     
     c.setFont(font_name, 9)
     c.drawString(x_label2 + 2*mm, y_pos, "DÉPARTEMENT D'ORIGINE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2- 2*mm, y_pos, data.get('departement_origine', '').upper())
+    c.drawString(x_value2- 2*mm, y_pos, departement_origine.nom.upper())
     y_pos -= line_spacing
 
     # Champs sur la même ligne (Langue et Téléphone)
@@ -241,12 +276,12 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "LANGUE (F/A) :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('langue', '').upper())
+    c.drawString(x_value, y_pos, inscription.langue.upper())
     
     c.setFont(font_name, 9)
     c.drawString(x_label2, y_pos, "TÉLÉPHONE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('telephone', '').upper())
+    c.drawString(x_value2, y_pos, inscription.telephone.upper())
     y_pos -= line_spacing
 
     x_label2 = width/2 + 10*mm
@@ -254,12 +289,12 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "EMAIL :")
     c.setFont(font_bold_name, 9)
-    c.drawString(x_value, y_pos, data.get('email', '').upper())
+    c.drawString(x_value, y_pos, inscription.email.upper())
     
     c.setFont(font_bold_name, 9)
     c.drawString(x_label2, y_pos, "MATRICULE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('matricule', '').upper())
+    c.drawString(x_value2, y_pos, inscription.matricule.upper())
     y_pos -= line_spacing
     
     # Champs sur la même ligne (Diplôme et Année d'obtention)
@@ -268,12 +303,12 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "DIPLÔME OBTENU :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('diplome', '').upper())
+    c.drawString(x_value, y_pos, inscription.diplome.upper())
     
     c.setFont(font_name, 9)
     c.drawString(x_label2, y_pos, "ANNÉE D'OBTENTION :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, str(data.get('annee_diplome', '')))
+    c.drawString(x_value2, y_pos, str(inscription.annee_diplome))
     y_pos -= line_spacing  # Espace entre les sections
     
     x_label2 = width/2
@@ -282,13 +317,13 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "NOM DU PÈRE/TUTEUR :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value+ 9*mm, y_pos, data.get('nom_pere', '').upper())
+    c.drawString(x_value+ 9*mm, y_pos, inscription.nom_pere.upper())
     
     
     c.setFont(font_name, 9)
     c.drawString(x_label2, y_pos, "PROFESSION DU PÈRE/TUTEUR :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('profession_pere', '').upper())
+    c.drawString(x_value2, y_pos, inscription.profession_pere.upper())
     y_pos -= line_spacing
     
     x_label2 = width/2 + 2*mm
@@ -296,13 +331,13 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "TÉLÉPHONE DU PÈRE/TUTEUR :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value+ 19*mm, y_pos, data.get('telephone_pere', '').upper())
+    c.drawString(x_value+ 19*mm, y_pos, inscription.telephone_pere.upper())
    
     
     c.setFont(font_name, 9)
     c.drawString(x_label2, y_pos, "VILLE DE RÉSIDENCE DU PÈRE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('ville_residence_pere', '').upper())
+    c.drawString(x_value2, y_pos, inscription.ville_residence_pere.upper())
     y_pos -= line_spacing
 
     x_label2 = width/2 - 5*mm
@@ -310,13 +345,13 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "NOM DE LA MÈRE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value, y_pos, data.get('nom_mere', '').upper())
+    c.drawString(x_value, y_pos, inscription.nom_mere.upper())
     
     
     c.setFont(font_name, 9)
     c.drawString(x_label2, y_pos, "PROFESSION DE LA MÈRE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('profession_mere', '').upper())
+    c.drawString(x_value2, y_pos, inscription.profession_mere.upper())
     y_pos -= line_spacing
     
     x_label2 = width/2 
@@ -324,13 +359,13 @@ def generer_fiche_inscription(data, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_label, y_pos, "TÉLÉPHONE DE LA MÈRE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value+ 19*mm, y_pos, data.get('telephone_mere', '').upper())
+    c.drawString(x_value+ 19*mm, y_pos, inscription.telephone_mere.upper())
     
     
     c.setFont(font_name, 9)
     c.drawString(x_label2, y_pos, "VILLE DE RÉSIDENCE DE LA MÈRE :")
     c.setFont(font_bold_name, 11)
-    c.drawString(x_value2, y_pos, data.get('ville_residence_mere', '').upper())
+    c.drawString(x_value2, y_pos, inscription.ville_residence_mere.upper())
     y_pos -= line_spacing 
     
     
@@ -345,15 +380,38 @@ def generer_fiche_inscription(data, nom_fichier):
 
 
 
-def generer_fiche_correction(data, output_path="fiche_correction.pdf"):
+def generer_fiche_correction(data, output_path):
     """
     Génère un PDF de demande de correction des erreurs d'identité
-    d’un candidat définitivement admis à l’ENSET Douala.
+    d'un candidat définitivement admis à l'ENSET Douala.
 
     Paramètres:
         data (dict): Contient les données de l'étudiant.
         output_path (str): Chemin du fichier de sortie.
     """
+
+    # tests
+    data = {
+        "reference": "une erreur sur mon nom et sr ma date de naissance",
+        "nom": "KAPSON NJIPGUEP",
+        "prenom": "ARLETTE KEVRANE",
+        "date_lieu_naissance": "02 mars 2003 à DOUALA",
+        "nationalite": "CAMEROUNAISE",
+        "matricule": "23NII001A",
+        "filiere": "Génie Informatique / Informatique Industrielle",
+        "niveau": "3",
+        "erreurs": [
+            # {"champ": "Nom ou/et prénom", "ancien": "KAPSON NJIPGUE", "nouveau": "KAPSOH NJIPGUEP"},
+            # {"champ": "Option ou/et filière choisie", "ancien": "Génie Informatique", "nouveau": "Informatique Industrielle"},
+            # {"champ": "Cycle d'entrée", "ancien": "1er Cycle", "nouveau": "2e Cycle"}
+        ],
+        "pieces": [
+            "Copie du baccalauréat",
+            "Copie de la carte d'identité",
+            "Attestation d'admission signée"
+        ],
+        "fichier_sortie": "fiche_preinscription_test.pdf"
+    }
 
     # === Initialisation du canvas ===
     c = canvas.Canvas(output_path, pagesize=A4)
@@ -426,8 +484,8 @@ def generer_fiche_correction(data, output_path="fiche_correction.pdf"):
 
     c.setFillColorRGB(0,0,0)
     c.setFont(font_bold_name, 13)
-    c.drawCentredString(width/2, height - 60*mm, "DEMANDE DE CORRECTION DES ERREURS SUR L'IDENTITÉ D'UN")
-    c.drawCentredString(width/2, height - 67*mm, "CANDIDAT DÉFINITIVEMENT ADMIS")
+    c.drawCentredString(width/2, height - 60*mm, "DEMANDE DE CORRECTION DES ERREURS RELATIVES")
+    c.drawCentredString(width/2, height - 67*mm, " A UN CANDIDAT ADMIS")
 
     # === Informations de l'étudiant ===
     y_pos = height - 80*mm
@@ -484,7 +542,8 @@ def generer_fiche_correction(data, output_path="fiche_correction.pdf"):
         table_data.append(["(aucune erreur spécifiée)", "", ""])
 
     col_widths = [50 * mm, 62 * mm, 62 * mm] 
-    row_heights = [13 * mm, 13 * mm, 13 * mm, 13 * mm]
+    row_heights = [13 * mm for _ in range(len(table_data))]
+    # row_heights = [13 * mm, 13 * mm, 13 * mm, 13 * mm]
 
     t = Table(table_data, colWidths=col_widths, rowHeights=row_heights)
     t.setStyle(TableStyle([

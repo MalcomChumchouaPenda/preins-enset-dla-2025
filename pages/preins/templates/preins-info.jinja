@@ -58,20 +58,20 @@
 
                         <h6 class="card-title mx-1 mt-4 mb-0">2. Origine géographique</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.nationalite.label(class_="form-label", required=true)}}
-                            {{ form.nationalite(class_="form-select") }}
-                        </div>
-                        <div class="col-lg-6 col-10">
                             {{ form.langue.label(class_="form-label", required=true)}}
                             {{ form.langue(class_="form-select") }}
+                        </div>
+                        <div class="col-lg-6 col-10">
+                            {{ form.nationalite.label(class_="form-label", required=true)}}
+                            {{ form.nationalite(class_="form-select") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.region_origine.label(class_="form-label", required=true)}}
                             {{ form.region_origine(class_="form-select") }}
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.departement_origine.label(class_="form-label", required=true)}}
-                            {{ form.departement_origine(class_="form-select") }}
+                            {{ form.departement_origine_id.label(class_="form-label", required=true)}}
+                            {{ form.departement_origine_id(class_="form-select") }}
                         </div>
 
                         <h6 class="card-title mx-1 mt-4 mb-0">3. Coordonnées</h6>
@@ -86,16 +86,16 @@
 
                         <h6 class="card-title mx-1 mt-4 mb-0">4. Informations académiques</h6>
                         <div class="col-12">
-                            {{ form.departement.label(class_="form-label", required=true)}}
-                            {{ form.departement(class_="form-select") }}
+                            {{ form.departement_academique.label(class_="form-label")}}
+                            {{ form.departement_academique(class_="form-control", disabled=true) }}
                         </div>
                         <div class="col-12">
-                            {{ form.option.label(class_="form-label", required=true)}}
-                            {{ form.option(class_="form-select") }}
+                            {{ form.option.label(class_="form-label")}}
+                            {{ form.option(class_="form-control", disabled=true) }}
                         </div>
                         <div class="col-lg-8 col-10">
-                            {{ form.niveau.label(class_="form-label", required=true)}}
-                            {{ form.niveau(class_="form-select") }}
+                            {{ form.niveau.label(class_="form-label")}}
+                            {{ form.niveau(class_="form-control", disabled=true) }}
                         </div>
                         <div class="col-lg-8 col-10">
                             {{ form.diplome.label(class_="form-label", required=true)}}
@@ -154,3 +154,12 @@
     </section>
 </div>
 {% endblock %}
+
+{% block vendor_js %}
+    <script src="{{ url_for('static', filename='vendor/jquery-3.6.0.min.js') }}"></script>  
+{% endblock %}
+
+{% block custom_js %}
+    <script src="{{ url_for('preins.static', filename='js/info.js') }}"></script>
+{% endblock %}
+
