@@ -2,6 +2,7 @@
 import os
 import re
 import csv
+from io import BytesIO
 from datetime import datetime
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -47,30 +48,14 @@ def check_admis(data):
     return len(records) > 0
 
 
-def save_request(data):
-    pass
 
-def save_preinscription(data):
-    pass
-
-
-def generate_request(matricule):
-    pass
-
-
-def generate_inscription(matricule):
-    pass
-
-
-
-def generer_fiche_inscription(data, nom_fichier="fiche_inscription.pdf"):
+def generer_fiche_inscription(data, nom_fichier):
     """
     Génère un PDF de fiche d'inscription ENSET avec des coordonnées fixes et la photo de l'étudiant.
 
     Args:
         data (dict): Dictionnaire contenant les informations de l'étudiant.
         nom_fichier (str): Nom du fichier de sortie.
-        photo_path (str): Chemin vers le fichier de la photo de l'étudiant.
     """
 
     # Créer le canvas
@@ -348,17 +333,16 @@ def generer_fiche_inscription(data, nom_fichier="fiche_inscription.pdf"):
     c.drawString(x_value2, y_pos, data.get('ville_residence_mere', '').upper())
     y_pos -= line_spacing 
     
-   
     
     # --- 5. SIGNATURE ET CACHET ---
     # c.setFont(font_name, 10)
     # c.drawString(width - 70*mm, y_pos-6*mm, "SIGNATURE")
     # # c.line(width - 90*mm, y_pos - 25*mm, width - 30*mm, y_pos - 25*mm)
-
    
     # Sauvegarder le PDF
     c.save()
     return nom_fichier
+
 
 
 def generer_fiche_correction(data, output_path="fiche_correction.pdf"):
