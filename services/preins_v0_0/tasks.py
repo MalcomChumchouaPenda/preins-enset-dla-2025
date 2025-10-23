@@ -69,6 +69,19 @@ def enregistrer_inscription(data):
     db.session.add(inscription)
     db.session.commit()
 
+def creer_inscription(user_id):
+    inscription = Preinscription(admission_id=user_id)
+    return inscription
+
+def rechercher_inscription(user_id):
+    query = db.session.query(Preinscription)
+    query = query.filter_by(admission_id=user_id)
+    query = query.order_by(Preinscription.id.desc())
+    inscriptions = query.all()
+    if len(inscriptions) == 0:
+        return None
+
+    inscription = inscriptions[0]
     query = db.session.query(Departement)
     query = query.filter_by(id=inscription.departement_origine_id)
     departement_origine = query.one_or_none()

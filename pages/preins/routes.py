@@ -7,7 +7,7 @@ from flask_babel import lazy_gettext as _l
 from flask import render_template, request, url_for, redirect, send_file
 from core.utils import UiBlueprint
 from core.config import db
-from .forms import InfoForm, ErrorForm
+from .forms import InfoForm, EditInfoForm, ErrorForm
 from services.preins_v0_0 import tasks
 from services.preins_v0_0.models import Preinscription, Requete
 from services.formations_v0_0 import tasks as format_tasks
@@ -20,12 +20,32 @@ temp_dir = os.path.join(static_dir, 'temp')
 os.makedirs(temp_dir, exist_ok=True)
 
 
-@ui.route('/', methods=['GET', 'POST'])
+@ui.route('/')
 @ui.login_required
 def info():
+    user_id = current_user.id
+    inscription = tasks.rechercher_inscription(user_id)
+    if inscription is None:
+        return redirect(url_for('preins.edit_info'))
+    
+    departement_origine = inscription.departement_origine
+    classe = inscription.admission.classe
+    form = InfoForm(obj=inscription)    
+    form.nationalite.data = departement_origine.region.pays.nom
+    form.region_origine.data = departement_origine.region.nom
+    form.departement_origine.data = departement_origine.nom
+    form.departement_academique.data = classe.filiere.departement.nom.upper()
+    form.option.data = classe.filiere.nom
+    form.niveau.data = classe.niveau.nom
+    return render_template('preins-info.jinja', form=form)
+
+
+@ui.route('/edit', methods=['GET', 'POST'])
+@ui.login_required
+def edit_info():
     next = request.args.get('next')
     obj = Preinscription()
-    form = InfoForm(obj=obj)
+    form = EditInfoForm(obj=obj)
     form.nationalite.choices = tasks.lister_nationalites()
     form.region_origine.choices = tasks.lister_regions()
     form.departement_origine_id.choices = tasks.lister_departements()
@@ -43,24 +63,15 @@ def info():
                     'nationalite', 'region_origine', 'csrf_token']
         for name in inutiles:
             data.pop(name)
-        inscription = tasks.enregistrer_inscription(data)
-
-        identifiant = current_user.id.lower()
-        nom_fichier_pdf = f"fiche_inscription_{identifiant}.pdf"
-        chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
-        fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
-        return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
-    
-    # recherche de la classe
-    query = db.session.query(Classe)
-    query = query.filter_by(id=admission.classe_id)
-    classe = query.one_or_none()
+        tasks.enregistrer_inscription(data)
+        return redirect(url_for('preins.info'))
 
     # fixation des valeurs par defaut
+    classe = admission.classe
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom
     form.niveau.data = classe.niveau.nom
-    return render_template('preins-info.jinja', form=form, next=next)
+    return render_template('preins-info-edit.jinja', form=form, next=next)
 
 
 @ui.route('/requete', methods=['GET', 'POST'])

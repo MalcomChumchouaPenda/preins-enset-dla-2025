@@ -15,6 +15,46 @@ LANGUES = [('FR', 'Francais'), ('EN', 'Anglais')]
 class InfoForm(FlaskForm):
 
     # Informations personnelles de base
+    nom = StringField(_l('Noms'), validators=[])
+    prenom = StringField(_l('Prenoms'))
+    date_naissance = StringField(_l('Date de naissance'), validators=[])
+    lieu_naissance = StringField(_l('Lieu de naissance'), validators=[])
+    sexe = StringField(_l('Sexe'), validators=[])
+    situation_matrimoniale = SelectField(_l('Situation Matrimoniale'), validators=[])
+
+    # Origine géographique
+    nationalite = StringField(_l('Nationalité'), validators=[])
+    region_origine = StringField(_l("Region d'origine"), validators=[])
+    departement_origine = StringField(_l("Departement d'origine"), validators=[])
+    langue = StringField(_l('Langue'), validators=[])
+
+    # Coordonnées
+    telephone = StringField(_l('Téléphone'), validators=[DataRequired()])
+    email = EmailField(_l('Email'))
+    
+    # Informations académiques
+    departement_academique = StringField(_l('Departement'), validators=[])
+    option = StringField(_l('Option'), validators=[])
+    niveau = StringField(_l('Niveau'),  validators=[])
+    diplome = StringField(_l("Diplôme d'entrée"), validators=[])
+    annee_diplome = IntegerField(_l("Année d'obtention"), validators=[])
+
+    # Informations du père/tuteur
+    nom_pere = StringField(_l('Nom du pere'))
+    profession_pere = StringField(_l('Profession du pere'))
+    telephone_pere = StringField(_l('Téléphone du pere'))
+    ville_residence_pere = StringField(_l('Residence du pere'))
+
+    # Informations de la mère
+    nom_mere = StringField(_l('Nom de la mere'))
+    profession_mere = StringField(_l('Profession de la mere'))
+    telephone_mere = StringField(_l('Téléphone de la mere'))
+    ville_residence_mere = StringField(_l('Residence de la mere'))
+    
+
+class EditInfoForm(FlaskForm):
+
+    # Informations personnelles de base
     nom = StringField(_l('Noms'), validators=[DataRequired()])
     prenom = StringField(_l('Prenoms'))
     date_naissance = StringField(_l('Date de naissance'), validators=[DataRequired()])
