@@ -12,6 +12,11 @@ class Pays(db.Model):
     nationalite = db.Column(db.String(100))
     regions = db.relationship('Region', back_populates='pays')
 
+    @property
+    def full_id(self):
+        return self.id
+
+
 
 class Region(db.Model):
     __bind_key__ = 'regions_v0'
@@ -25,6 +30,10 @@ class Region(db.Model):
     etranger = db.Column(db.Boolean, default=False)
     departements = db.relationship('Departement', back_populates='region')
 
+    @property
+    def full_id(self):
+        return self.pays.full_id + '-' + self.id
+    
 
 class Departement(db.Model):
     __bind_key__ = 'regions_v0'
@@ -35,4 +44,8 @@ class Departement(db.Model):
     region = db.relationship('Region', back_populates='departements')
     nom = db.Column(db.String(100), nullable=False)
     etranger = db.Column(db.Boolean, default=False)
+
+    @property
+    def full_id(self):
+        return self.region.full_id + '-' + self.id
 

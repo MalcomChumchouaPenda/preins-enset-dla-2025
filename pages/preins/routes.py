@@ -37,25 +37,30 @@ def info():
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom
     form.niveau.data = classe.niveau.nom
-    return render_template('preins-info.jinja', form=form)
+    return render_template('preins-view-form.jinja', form=form)
 
 
 @ui.route('/edit', methods=['GET', 'POST'])
 @ui.login_required
 def edit_info():
-    next = request.args.get('next')
-    obj = Preinscription()
-    form = EditInfoForm(obj=obj)
+    user_id = current_user.id
+    inscription = tasks.rechercher_inscription(user_id)
+    if inscription is None:
+        inscription = Preinscription() 
+        admission = tasks.chercher_admission(user_id)
+    else:
+        admission = inscription.admission
+        
+    # create a edit form
+    form = EditInfoForm(obj=inscription)
     form.nationalite.choices = tasks.lister_nationalites()
     form.region_origine.choices = tasks.lister_regions()
     form.departement_origine_id.choices = tasks.lister_departements()
-
+    
+    # traitement et enregistrement des donnees
     # print('\n', form.data)
-    admission = tasks.chercher_admission(current_user.id)
     if form.validate_on_submit():
         data = form.data
-
-        # traitement et enregistrement des donnees
         data['admission_id'] = admission.id
         data['matricule'] = 'test'
         data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
@@ -71,7 +76,23 @@ def edit_info():
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom
     form.niveau.data = classe.niveau.nom
-    return render_template('preins-info-edit.jinja', form=form, next=next)
+    if hasattr(inscription, 'departement_origine'):
+        departement_origine = inscription.departement_origine
+        form.nationalite.data = departement_origine.region.pays.full_id
+        form.region_origine.data = departement_origine.region.full_id
+        form.departement_origine_id.data = departement_origine.full_id
+    return render_template('preins-edit-form.jinja', form=form)
+
+
+@ui.route('/print')
+@ui.login_required
+def print_info():
+    user_id = current_user.id
+    inscription = tasks.rechercher_inscription(user_id)
+    nom_fichier_pdf = f"fiche_inscription_{user_id.lower()}.pdf"
+    chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
+    fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
+    return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
 
 
 @ui.route('/requete', methods=['GET', 'POST'])

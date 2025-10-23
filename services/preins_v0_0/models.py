@@ -60,9 +60,16 @@ class Preinscription(db.Model):
     # Métadonnées
     date_inscription = db.Column(db.DateTime, default=datetime.now) 
 
+
     @property
     def nom_complet(self):
         return ' '.join([self.nom, self.prenom])
+    
+    # @property
+    # def nationalite(self):
+    #     if hasattr(self, 'departement_origine'):
+    #         return self.departement_origine.region.pays.nom
+    
     
 
 class Requete(db.Model):

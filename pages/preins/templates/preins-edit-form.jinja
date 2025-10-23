@@ -15,23 +15,16 @@
 <div class="container">
     <section class="section row g-4 pt-0">
     
-        <!-- Alertes -->
         {% if message %}
+        <!-- Alertes -->
         <div class="alert alert-{{ message.type }} alert-dismissible fade show" role="alert">
             {{ message.text }}
             <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
         </div>
         {% endif %}
 
-        <!-- Actions initiales -->
-        <div class="row mt-3 d-flex justify-content-center">
-            <div class="col-lg-6 col-12 d-flex justify-content-center">
-                <a href="#" class="btn btn-secondary btn-lg m-1">Modifier la fiche</a>
-                <a href="#" class="btn btn-primary btn-lg m-1">Imprimer la fiche</a>
-            </div>
-        </div><!-- End Actions initiales -->
 
-        <form class="col-lg-10 col-12">
+        <form class="col-lg-10 col-12"  method="POST" action="{{ url_for('preins.edit_info') }}">
                     
             {{ form.csrf_token }}
 
@@ -52,28 +45,28 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6>                        
                         <div class="col-12">
-                            {{ form.nom.label(class_="form-label")}}
-                            {{ form.nom(class_="form-control", disabled=true) }}
+                            {{ form.nom.label(class_="form-label", required=true)}}
+                            {{ form.nom(class_="form-control") }}
                         </div>
                         <div class="col-12">
                             {{ form.prenom.label(class_="form-label")}}
-                            {{ form.prenom(class_="form-control", disabled=true) }}
+                            {{ form.prenom(class_="form-control") }}
                         </div>                
                         <div class="col-lg-4 col-10">
-                            {{ form.date_naissance.label(class_="form-label")}}
-                            {{ form.date_naissance(class_="form-control", disabled=true) }}
+                            {{ form.date_naissance.label(class_="form-label", required=true)}}
+                            {{ form.date_naissance(class_="form-control") }}
                         </div>
                         <div class="col-lg-8 col-10">
-                            {{ form.lieu_naissance.label(class_="form-label")}}
-                            {{ form.lieu_naissance(class_="form-control", disabled=true) }}
+                            {{ form.lieu_naissance.label(class_="form-label", required=true)}}
+                            {{ form.lieu_naissance(class_="form-control") }}
                         </div>
                         <div class="col-lg-4 col-10">
-                            {{ form.sexe.label(class_="form-label")}}
-                            {{ form.sexe(class_="form-select", disabled=true) }}
+                            {{ form.sexe.label(class_="form-label", required=true)}}
+                            {{ form.sexe(class_="form-select") }}
                         </div>
                         <div class="col-lg-4 col-10">
-                            {{ form.situation_matrimoniale.label(class_="form-label")}}
-                            {{ form.situation_matrimoniale(class_="form-select", disabled=true) }}
+                            {{ form.situation_matrimoniale.label(class_="form-label", required=true)}}
+                            {{ form.situation_matrimoniale(class_="form-select") }}
                         </div>
                     </div>
                 </div>
@@ -85,20 +78,20 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">2. Origine géographique</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.langue.label(class_="form-label")}}
-                            {{ form.langue(class_="form-control", disabled=true) }}
+                            {{ form.langue.label(class_="form-label", required=true)}}
+                            {{ form.langue(class_="form-select") }}
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.nationalite.label(class_="form-label")}}
-                            {{ form.nationalite(class_="form-control", disabled=true) }}
+                            {{ form.nationalite.label(class_="form-label", required=true)}}
+                            {{ form.nationalite(class_="form-select") }}
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.region_origine.label(class_="form-label")}}
-                            {{ form.region_origine(class_="form-control", disabled=true) }}
+                            {{ form.region_origine.label(class_="form-label", required=true)}}
+                            {{ form.region_origine(class_="form-select") }}
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.departement_origine.label(class_="form-label")}}
-                            {{ form.departement_origine(class_="form-control", disabled=true) }}
+                            {{ form.departement_origine_id.label(class_="form-label", required=true)}}
+                            {{ form.departement_origine_id(class_="form-select") }}
                         </div>
                     </div>
                 </div>
@@ -110,12 +103,12 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">3. Coordonnées</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.telephone.label(class_="form-label")}}
-                            {{ form.telephone(class_="form-control", disabled=true) }}
+                            {{ form.telephone.label(class_="form-label", required=true)}}
+                            {{ form.telephone(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.email.label(class_="form-label")}}
-                            {{ form.email(class_="form-control", disabled=true) }}
+                            {{ form.email(class_="form-control") }}
                         </div>
                     </div>
                 </div>
@@ -139,12 +132,12 @@
                             {{ form.niveau(class_="form-control", disabled=true) }}
                         </div>
                         <div class="col-lg-8 col-10">
-                            {{ form.diplome.label(class_="form-label")}}
-                            {{ form.diplome(class_="form-control", disabled=true) }}
+                            {{ form.diplome.label(class_="form-label", required=true)}}
+                            {{ form.diplome(class_="form-control") }}
                         </div>
                         <div class="col-lg-4 col-10">
-                            {{ form.annee_diplome.label(class_="form-label")}}
-                            {{ form.annee_diplome(class_="form-control", disabled=true) }}
+                            {{ form.annee_diplome.label(class_="form-label", required=true)}}
+                            {{ form.annee_diplome(class_="form-control") }}
                         </div>
                     </div>
                 </div>
@@ -158,19 +151,19 @@
                         <h6 class="card-title mx-1 mt-4 mb-0">5. Informations sur le père</h6>
                         <div class="col-lg-6 col-10">
                             {{ form.nom_pere.label(class_="form-label")}}
-                            {{ form.nom_pere(class_="form-control", disabled=true) }}
+                            {{ form.nom_pere(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.profession_pere.label(class_="form-label")}}
-                            {{ form.profession_pere(class_="form-control", disabled=true) }}
+                            {{ form.profession_pere(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.telephone_pere.label(class_="form-label")}}
-                            {{ form.telephone_pere(class_="form-control", disabled=true) }}
+                            {{ form.telephone_pere(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.ville_residence_pere.label(class_="form-label")}}
-                            {{ form.ville_residence_pere(class_="form-control", disabled=true) }}
+                            {{ form.ville_residence_pere(class_="form-control") }}
                         </div>  
                     </div>
                 </div>
@@ -184,34 +177,32 @@
                         <h6 class="card-title mx-1 mt-4 mb-0">6. Informations sur la mère</h6>
                         <div class="col-lg-6 col-10">
                             {{ form.nom_mere.label(class_="form-label")}}
-                            {{ form.nom_mere(class_="form-control", disabled=true) }}
+                            {{ form.nom_mere(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.profession_mere.label(class_="form-label")}}
-                            {{ form.profession_mere(class_="form-control", disabled=true) }}
+                            {{ form.profession_mere(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.telephone_mere.label(class_="form-label")}}
-                            {{ form.telephone_mere(class_="form-control", disabled=true) }}
+                            {{ form.telephone_mere(class_="form-control") }}
                         </div>
                         <div class="col-lg-6 col-10">
                             {{ form.ville_residence_mere.label(class_="form-label")}}
-                            {{ form.ville_residence_mere(class_="form-control", disabled=true) }}
+                            {{ form.ville_residence_mere(class_="form-control") }}
                         </div>
                     </div>
                 </div>
             </div> <!-- End Informations sur la mère -->
 
+            <!-- Actions finales -->
+            <div class="row mt-3 g-3">
+                <div class="text-center">
+                    <button type="reset" class="btn btn-secondary btn-lg m-1">Annuler l'inscription</button>
+                    <button type="submit" class="btn btn-primary btn-lg m-1">Valider l'inscription</button>
+                </div>
+            </div><!-- End Actions finales -->
         </form>
-        
-        <!-- Actions finales -->
-        <div class="row mt-3 d-flex justify-content-center">
-            <div class="col-lg-6 col-12 d-flex justify-content-center">
-                <a href="#" class="btn btn-secondary btn-lg m-1">Modifier la fiche</a>
-                <a href="#" class="btn btn-primary btn-lg m-1">Imprimer la fiche</a>
-            </div>
-        </div><!-- End Actions finales -->
-
     </section>
 </div>
 {% endblock %}
