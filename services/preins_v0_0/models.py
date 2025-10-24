@@ -3,6 +3,15 @@ from datetime import datetime
 from core.config import db
 
 
+class CommuniqueAdmission(db.Model):
+    __bind_key__ = 'preins_v0'
+    __tablename__ = 'communiques_admissions'
+    
+    id = db.Column(db.String(20), primary_key=True)
+    numero = db.Column(db.String(50), primary_key=True)
+    objet = db.Column(db.String(150), primary_key=True)
+
+
 class Admission(db.Model):
     __bind_key__ = 'preins_v0'
     __tablename__ = 'admissions'
@@ -11,7 +20,7 @@ class Admission(db.Model):
     nom_complet = db.Column(db.String(400), nullable=False)
     classe_id = db.Column(db.String(10), nullable=False)
     statut = db.Column(db.String(10), nullable=False) # code type
-    communique = db.Column(db.String(100), nullable=False) # numero
+    communique_id = db.Column(db.String(100), nullable=False) # numero
     preinscriptions = db.relationship('Preinscription', back_populates='admission')
     requetes = db.relationship('Requete', back_populates='admission')
 
@@ -49,13 +58,13 @@ class Preinscription(db.Model):
     nom_pere = db.Column(db.String(200), nullable=True)
     profession_pere = db.Column(db.String(100), nullable=True)
     telephone_pere = db.Column(db.String(20), nullable=True)
-    ville_residence_pere = db.Column(db.String(100), nullable=True)
+    residence_pere = db.Column(db.String(100), nullable=True)
     
     # Informations de la mère
     nom_mere = db.Column(db.String(200), nullable=True)
     profession_mere = db.Column(db.String(100), nullable=True)
     telephone_mere = db.Column(db.String(20), nullable=True)
-    ville_residence_mere = db.Column(db.String(100), nullable=True)
+    residence_mere = db.Column(db.String(100), nullable=True)
     
     # Métadonnées
     date_inscription = db.Column(db.DateTime, default=datetime.now) 
@@ -65,11 +74,31 @@ class Preinscription(db.Model):
     def nom_complet(self):
         return ' '.join([self.nom, self.prenom])
     
-    # @property
-    # def nationalite(self):
-    #     if hasattr(self, 'departement_origine'):
-    #         return self.departement_origine.region.pays.nom
+    @property
+    def sexe_complet(self):
+        if self.sexe[0] == 'F':
+            return 'Feminin'
+        return 'Masculin'
+
+    @property
+    def situation_matrimoniale_complete(self):
+        code = self.situation_matrimoniale[0]
+        if code == 'M':
+            if self.sexe[0] == 'M':
+                return 'Marié'
+            return 'Mariée'
+        elif code == 'V':
+            if self.sexe[0] == 'M':
+                return 'Veuf'
+            return 'Veuve'
+        return 'Celibataire'
     
+    @property
+    def langue_complete(self):
+        code = self.langue
+        if code.upper() == 'FR':
+            return 'Francais'
+        return 'Anglais'
     
 
 class Requete(db.Model):

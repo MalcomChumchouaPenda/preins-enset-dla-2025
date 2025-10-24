@@ -43,13 +43,13 @@ class InfoForm(FlaskForm):
     nom_pere = StringField(_l('Nom du pere'))
     profession_pere = StringField(_l('Profession du pere'))
     telephone_pere = StringField(_l('Téléphone du pere'))
-    ville_residence_pere = StringField(_l('Residence du pere'))
+    residence_pere = StringField(_l('Residence du pere'))
 
     # Informations de la mère
     nom_mere = StringField(_l('Nom de la mere'))
     profession_mere = StringField(_l('Profession de la mere'))
     telephone_mere = StringField(_l('Téléphone de la mere'))
-    ville_residence_mere = StringField(_l('Residence de la mere'))
+    residence_mere = StringField(_l('Residence de la mere'))
     
 
 class EditInfoForm(FlaskForm):
@@ -85,13 +85,13 @@ class EditInfoForm(FlaskForm):
     nom_pere = StringField(_l('Nom du pere'))
     profession_pere = StringField(_l('Profession du pere'))
     telephone_pere = StringField(_l('Téléphone du pere'))
-    ville_residence_pere = StringField(_l('Residence du pere'))
+    residence_pere = StringField(_l('Residence du pere'))
 
     # Informations de la mère
     nom_mere = StringField(_l('Nom de la mere'))
     profession_mere = StringField(_l('Profession de la mere'))
     telephone_mere = StringField(_l('Téléphone de la mere'))
-    ville_residence_mere = StringField(_l('Residence de la mere'))
+    residence_mere = StringField(_l('Residence de la mere'))
     
 
 class ErrorForm(FlaskForm):

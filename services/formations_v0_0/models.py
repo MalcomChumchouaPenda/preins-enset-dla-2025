@@ -50,3 +50,7 @@ class Classe(db.Model):
     filiere_id = db.Column(db.String(10), db.ForeignKey('filieres.id'))
     filiere = db.relationship('Filiere', back_populates='classes')
 
+    @property
+    def code_complet(self):
+        return f'{self.filiere.code_udo}{self.niveau_id[-1]}'
+

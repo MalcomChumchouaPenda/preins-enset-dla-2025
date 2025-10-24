@@ -89,6 +89,8 @@ def edit_info():
 def print_info():
     user_id = current_user.id
     inscription = tasks.rechercher_inscription(user_id)
+    if inscription is None:
+        return redirect(url_for('preins.edit_info'))
     nom_fichier_pdf = f"fiche_inscription_{user_id.lower()}.pdf"
     chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
     fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
