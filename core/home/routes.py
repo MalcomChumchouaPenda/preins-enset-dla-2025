@@ -21,27 +21,10 @@ static_dir = os.path.join(os.path.dirname(__file__), 'static')
 def index():
     locale = get_locale() 
     print('\n\tlocale', locale)
-    heros = []
-    for i in range(3):
-        msg = os.path.join(static_dir, f'md/hero-msg-{i+1}-{locale}.md')
-        img = f'img/hero-bg-{i+1}.jpg'
-        heros.append(dict(msg=msg, img=img))
-    speech = os.path.join(static_dir, f'md/speech-{locale}.md')
-    left = os.path.join(static_dir, f'md/about-left-{locale}.md')
-    right = os.path.join(static_dir, f'md/about-right-{locale}.md')
-    about = dict(left=left, right=right)
-    events = [{'title':_("Titre de l'evenement %(i)s", i=i),
-              'image': url_for('demo_landing.static', filename=f'img/event-{i}.jpg'),
-              'category': _('Paire') if i%2 == 0 else _('Impaire'),
-              'date': '10/02/2021'}
-                for i in range(1, 7)]
-    features = read_json(os.path.join(static_dir, f'json/features-{locale}.json'))
-    stats = read_json(os.path.join(static_dir, 'json/stats.json'))
-    for stat in stats:
-        stat['text'] = stat[f'text_{locale}']
-    return render_template('home.jinja', heros=heros, speech=speech,
-                           about=about, events=events, stats=stats,
-                           features=features)
+    msg = os.path.join(static_dir, f'md/hero-msg-{locale}.md')
+    img = f'img/hero-bg.jpg'
+    hero = dict(msg=msg, img=img)
+    return render_template('home.jinja', hero=hero)
 
 class LoginForm(FlaskForm):
     id = StringField(_l('identifiant'), validators=[DataRequired()])
