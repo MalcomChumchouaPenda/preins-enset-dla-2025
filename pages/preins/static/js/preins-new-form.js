@@ -5,6 +5,7 @@ $(document).ready(function() {
     $('#region_origine').attr('disabled', 'disabled')
     $('#departement_origine_id').attr('disabled', 'disabled')
 
+    console.log($('#region_origine').val())
 
     // fonctions de mise a jour des regions
     function updateRegions(choice) {
@@ -60,6 +61,7 @@ $(document).ready(function() {
     // precedures evenementielles
     $('#nationalite').change(function () {
         choice = $(this).val();
+        alert('update after changes for' + choice)
         var propagate = updateRegions(choice);
         if (propagate) {
             updateDepartements(choice);

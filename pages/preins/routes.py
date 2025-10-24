@@ -9,9 +9,8 @@ from core.utils import UiBlueprint
 from core.config import db
 from .forms import InfoForm, EditInfoForm, ErrorForm
 from services.preins_v0_0 import tasks
-from services.preins_v0_0.models import Preinscription, Requete
+from services.preins_v0_0.models import Inscription, Requete
 from services.formations_v0_0 import tasks as format_tasks
-from services.formations_v0_0.models import Classe
 
 
 ui = UiBlueprint(__name__)
@@ -26,7 +25,7 @@ def info():
     user_id = current_user.id
     inscription = tasks.rechercher_inscription(user_id)
     if inscription is None:
-        return redirect(url_for('preins.edit_info'))
+        return redirect(url_for('preins.new_info'))
     
     departement_origine = inscription.departement_origine
     classe = inscription.admission.classe
@@ -40,16 +39,12 @@ def info():
     return render_template('preins-view-form.jinja', form=form)
 
 
-@ui.route('/edit', methods=['GET', 'POST'])
+@ui.route('/new', methods=['GET', 'POST'])
 @ui.login_required
-def edit_info():
+def new_info():
     user_id = current_user.id
-    inscription = tasks.rechercher_inscription(user_id)
-    if inscription is None:
-        inscription = Preinscription() 
-        admission = tasks.chercher_admission(user_id)
-    else:
-        admission = inscription.admission
+    inscription = Inscription() 
+    admission = tasks.chercher_admission(user_id)
         
     # create a edit form
     form = EditInfoForm(obj=inscription)
@@ -58,7 +53,7 @@ def edit_info():
     form.departement_origine_id.choices = tasks.lister_departements()
     
     # traitement et enregistrement des donnees
-    # print('\n', form.data)
+    print('\n', form.data)
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
@@ -76,11 +71,48 @@ def edit_info():
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom
     form.niveau.data = classe.niveau.nom
-    if hasattr(inscription, 'departement_origine'):
-        departement_origine = inscription.departement_origine
-        form.nationalite.data = departement_origine.region.pays.full_id
-        form.region_origine.data = departement_origine.region.full_id
-        form.departement_origine_id.data = departement_origine.full_id
+    return render_template('preins-new-form.jinja', form=form)
+
+
+@ui.route('/edit', methods=['GET', 'POST'])
+@ui.login_required
+def edit_info():
+    user_id = current_user.id
+    inscription = tasks.rechercher_inscription(user_id)
+    admission = inscription.admission
+    
+    if request.method == 'POST':
+        form = EditInfoForm()
+    else:
+        form = EditInfoForm(obj=inscription)
+    form.nationalite.choices = tasks.lister_nationalites()
+    form.region_origine.choices = tasks.lister_regions()
+    form.departement_origine_id.choices = tasks.lister_departements()
+    
+    # traitement et enregistrement des donnees
+    print('\n', form.data)
+    if form.validate_on_submit():
+        data = form.data
+        data['admission_id'] = admission.id
+        data['matricule'] = 'test'
+        data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
+        inutiles = ['departement_academique', 'option', 'niveau', 
+                    'nationalite', 'region_origine', 'csrf_token']
+        for name in inutiles:
+            data.pop(name)
+        tasks.enregistrer_inscription(data)
+        return redirect(url_for('preins.info'))
+
+
+    # fixation des valeurs par defaut
+    classe = admission.classe
+    departement_origine = inscription.departement_origine
+    form.departement_academique.data = classe.filiere.departement.nom.upper()
+    form.option.data = classe.filiere.nom
+    form.niveau.data = classe.niveau.nom
+    form.nationalite.data = departement_origine.region.pays.full_id
+    form.region_origine.data = departement_origine.region.full_id
+    form.departement_origine_id.data = departement_origine.full_id
     return render_template('preins-edit-form.jinja', form=form)
 
 

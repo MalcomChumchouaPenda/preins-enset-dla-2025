@@ -8,8 +8,8 @@ class CommuniqueAdmission(db.Model):
     __tablename__ = 'communiques_admissions'
     
     id = db.Column(db.String(20), primary_key=True)
-    numero = db.Column(db.String(50), primary_key=True)
-    objet = db.Column(db.String(150), primary_key=True)
+    numero = db.Column(db.String(50), nullable=False)
+    objet = db.Column(db.String(150), nullable=False)
 
 
 class Admission(db.Model):
@@ -20,17 +20,18 @@ class Admission(db.Model):
     nom_complet = db.Column(db.String(400), nullable=False)
     classe_id = db.Column(db.String(10), nullable=False)
     statut = db.Column(db.String(10), nullable=False) # code type
-    communique_id = db.Column(db.String(100), nullable=False) # numero
-    preinscriptions = db.relationship('Preinscription', back_populates='admission')
+    communique_id = db.Column(db.String(20), db.ForeignKey('communiques_admissions.id'))
+    communique = db.relationship('CommuniqueAdmission')
+    inscriptions = db.relationship('Inscription', back_populates='admission')
     requetes = db.relationship('Requete', back_populates='admission')
 
     
-class Preinscription(db.Model):
+class Inscription(db.Model):
     __bind_key__ = 'preins_v0'
-    __tablename__ = 'preinscriptions'
+    __tablename__ = 'inscriptions'
     id = db.Column(db.Integer, primary_key=True)
     admission_id = db.Column(db.String(12), db.ForeignKey('admissions.id'))
-    admission = db.relationship('Admission', back_populates='preinscriptions')
+    admission = db.relationship('Admission', back_populates='inscriptions')
     
     # Informations personnelles de base
     nom = db.Column(db.String(200), nullable=False)

@@ -15,27 +15,26 @@ from reportlab.lib import colors
 
 from services.formations_v0_0.models import Classe
 from services.regions_v0_0.models import Pays, Region, Departement
-from .models import db, Preinscription, Admission, Requete
+from services.regions_v0_0 import tasks as region_tasks
+from .models import db, Inscription, Admission, Requete
 
 
 store_dir = os.path.join(os.path.dirname(__file__), 'store')
 
 
 def lister_nationalites():
-    query = db.session.query(Pays)
-    items = [(row.full_id, row.nom) for row in query.all()]
+    items = region_tasks.list_nationalites(full_id=True)
     items.insert(0, ('', 'Choisir...'))
     return items
 
 def lister_regions():
-    query = db.session.query(Region)
-    items = [(row.full_id, row.nom) for row in query.all()]
+    items = region_tasks.list_regions(full_id=True)
     items.insert(0, ('', 'Choisir...'))
     return items
 
 def lister_departements():
-    query = db.session.query(Departement)
-    items = [(row.full_id, row.nom) for row in query.all()]
+    items = region_tasks.list_departements(full_id=True)
+    print(items)
     items.insert(0, ('', 'Choisir...'))
     return items
 
@@ -53,18 +52,18 @@ def chercher_admission(id):
 
 
 def enregistrer_inscription(data):
-    inscription = Preinscription(**data)
+    inscription = Inscription(**data)
     db.session.add(inscription)
     db.session.commit()
 
 def creer_inscription(user_id):
-    inscription = Preinscription(admission_id=user_id)
+    inscription = Inscription(admission_id=user_id)
     return inscription
 
 def rechercher_inscription(user_id):
-    query = db.session.query(Preinscription)
+    query = db.session.query(Inscription)
     query = query.filter_by(admission_id=user_id)
-    query = query.order_by(Preinscription.id.desc())
+    query = query.order_by(Inscription.id.desc())
     inscriptions = query.all()
     if len(inscriptions) == 0:
         return None

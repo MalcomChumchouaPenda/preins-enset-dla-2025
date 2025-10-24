@@ -3,4 +3,4 @@ from flask_restx import Resource, fields
 from core.utils import ApiNamespace
 
 
-ns = ApiNamespace('preins', description="Gestion des preinscriptions")
+ns = ApiNamespace('preins', description="Gestion des inscriptions")

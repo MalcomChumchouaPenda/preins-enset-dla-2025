@@ -2,14 +2,14 @@
 from core.config import db
 from core.utils import Stat, Alert
 from core.auth.tasks import add_role, add_user, add_roles_to_user
-from .models import Admission, Preinscription
+from .models import Admission, Inscription, CommuniqueAdmission
 
 
 def init_stats(user):
     stats = []
     if user.has_role('developper'):
         stats.extend([
-            Stat('Preinscriptions', 'Nombre', value='142', rank=0),
+            Stat('Inscriptions', 'Nombre', value='142', rank=0),
         ])
     return stats
 
@@ -60,6 +60,12 @@ def init_data():
     session = db.session
     add_role(session, 'admis', 'Etudiants admis')
 
+    # creation des communiques
+    communique = CommuniqueAdmission(id="Fake")
+    communique.numero = '001/Fake/ du 12/05/2006'
+    communique.objet = 'Portant admission des candidats tests'
+
+
     # creation des users et admissions
     for row in admission_data:
         add_user(session, row['id'], row['nom_complet'], '0000')
@@ -68,7 +74,7 @@ def init_data():
     session.commit()
 
     # creation d'une inscription
-    session.merge(Preinscription(**preins_data))
+    session.merge(Inscription(**preins_data))
     session.commit()
 
     
