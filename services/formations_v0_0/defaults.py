@@ -55,6 +55,7 @@ def init_data():
     for row in data:
         filiere = Filiere(
             id  = row['code_filiere'],
+            prefix= row['prefix'],
             code_udo = row['code_sco'],
             code_enset = row['code_filiere'],
             nom = row['nom'],

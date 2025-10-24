@@ -1,6 +1,7 @@
 
 import os
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -13,8 +14,10 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 
+from core.auth.tasks import add_user, add_roles_to_user
+from core.auth.models import User
 from services.formations_v0_0.models import Classe
-from services.regions_v0_0.models import Pays, Region, Departement
+from services.regions_v0_0.models import Departement
 from services.regions_v0_0 import tasks as region_tasks
 from .models import db, Inscription, Admission, Requete
 
@@ -51,10 +54,53 @@ def chercher_admission(id):
     return admission
 
 
-def enregistrer_inscription(data):
+def ajouter_inscription(data):
+    session = db.session
     inscription = Inscription(**data)
-    db.session.add(inscription)
-    db.session.commit()
+    creer_matricule(session, inscription)
+    session.add(inscription)
+    session.commit()
+    
+def creer_matricule(session, inscription):
+    admission = chercher_admission(inscription.admission_id)
+    # print(admission.communique_id, admission.communique)
+    annee = admission.communique.annee_academique[2:4]
+    statut = admission.statut[0]
+    classe = admission.classe
+    prefix = classe.filiere.prefix
+    niveau = classe.niveau.id[-1]
+
+    if niveau == '4':
+        num_size = 2
+        filtre = f'{annee}N{prefix}L%{statut}'
+    elif niveau == '3':
+        num_size = 2
+        filtre = f'{annee}N{prefix}B%{statut}'
+    else:
+        num_size = 3
+        filtre = f'{annee}N{prefix}%{statut}'
+
+    # print('\nfuser', session.query(User).all())
+    for i in range(10):
+        try:
+            count = session.query(User).filter(User.id.like(filtre)).count()
+            # print('\n\tfilter', i, filtre, count)
+            num = str(count + 1).rjust(num_size, '0')
+            matricule = filtre.replace('%', num)
+            add_user(session, matricule, inscription.nom, '0000', first_name=inscription.prenom)
+            add_roles_to_user(session, matricule, 'student')
+            admission.matricule = matricule
+            return matricule
+        except IntegrityError as e:
+            session.rollback()
+
+
+def modifier_inscription(data):
+    session = db.session
+    inscription = Inscription(**data)
+    session.add(inscription)
+    session.commit()
+    
 
 def creer_inscription(user_id):
     inscription = Inscription(admission_id=user_id)
@@ -158,11 +204,13 @@ def generer_fiche_inscription(inscription, nom_fichier):
 
     
     # --- 2. TITRE DU FORMULAIRE ---
+    admission = inscription.admission
+    communique = admission.communique
     c.setFont(font_bold_name, 18)
     c.setFillColor(couleur_bleu_ud)
-    c.drawCentredString(width/2, height - 58*mm, f"FICHE D'INSCRIPTION {inscription.annee_academique}")
+    c.drawCentredString(width/2, height - 58*mm, f"FICHE D'INSCRIPTION {communique.annee_academique}")
     
-    classe = inscription.admission.classe
+    classe = admission.classe
     formation = classe.filiere.formation
     c.setFont(font_bold_name, 14)
     c.drawCentredString(width/2, height - 68*mm, formation.nom.upper())
@@ -199,14 +247,14 @@ def generer_fiche_inscription(inscription, nom_fichier):
     c.drawString(x_b1, y_a, "N° D'ORDRE :")
     c.setFillColor(couleur_bleu_ud)
     c.setFont(font_bold_name, 10)
-    c.drawString(x_b1 + 22*mm, y_a, inscription.admission.id)
+    c.drawString(x_b1 + 22*mm, y_a, admission.id)
 
     c.setFillColor(couleur_texte_noir)
     c.setFont(font_name, 9)
     c.drawString(x_b3, y_a, "MATRICULE :")
     c.setFillColor(couleur_bleu_ud)
     c.setFont(font_bold_name, 10)
-    c.drawString(x_b3 + 22*mm, y_a, inscription.matricule)
+    c.drawString(x_b3 + 22*mm, y_a, admission.matricule)
     y_a -= dy_b
 
 

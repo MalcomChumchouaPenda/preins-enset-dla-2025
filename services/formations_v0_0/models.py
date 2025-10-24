@@ -31,6 +31,7 @@ class Filiere(db.Model):
     __bind_key__ = 'formations_v0'
     __tablename__ = 'filieres'
     id = db.Column(db.String(10), primary_key=True)
+    prefix = db.Column(db.String(2), nullable=False)
     code_udo = db.Column(db.String(10), nullable=False)
     code_enset = db.Column(db.String(10), nullable=False)
     nom = db.Column(db.String(200), nullable=False)

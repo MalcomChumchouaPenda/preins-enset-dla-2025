@@ -10,6 +10,7 @@ class CommuniqueAdmission(db.Model):
     id = db.Column(db.String(20), primary_key=True)
     numero = db.Column(db.String(50), nullable=False)
     objet = db.Column(db.String(150), nullable=False)
+    annee_academique = db.Column(db.String(20), nullable=False)
 
 
 class Admission(db.Model):
@@ -20,6 +21,7 @@ class Admission(db.Model):
     nom_complet = db.Column(db.String(400), nullable=False)
     classe_id = db.Column(db.String(10), nullable=False)
     statut = db.Column(db.String(10), nullable=False) # code type
+    matricule = db.Column(db.String(9), nullable=True)
     communique_id = db.Column(db.String(20), db.ForeignKey('communiques_admissions.id'))
     communique = db.relationship('CommuniqueAdmission')
     inscriptions = db.relationship('Inscription', back_populates='admission')
@@ -50,10 +52,8 @@ class Inscription(db.Model):
     email = db.Column(db.String(120), nullable=True)
     
     # Informations académiques
-    matricule = db.Column(db.String(50), nullable=True)
     diplome = db.Column(db.String(200), nullable=False)
     annee_diplome = db.Column(db.Integer, nullable=False)
-    annee_academique = db.Column(db.String(20), nullable=False, default='2025-2026')
     
     # Informations du père/tuteur
     nom_pere = db.Column(db.String(200), nullable=True)

@@ -64,17 +64,29 @@ def init_data():
     communique = CommuniqueAdmission(id="Fake")
     communique.numero = '001/Fake/ du 12/05/2006'
     communique.objet = 'Portant admission des candidats tests'
-
+    communique.annee_academique = '2025/2026'
+    session.add(communique)
+    session.commit()
 
     # creation des users et admissions
+    admissions = {}
     for row in admission_data:
         add_user(session, row['id'], row['nom_complet'], '0000')
         add_roles_to_user(session, row['id'], 'student', 'developper', 'admis')
-        session.merge(Admission(**row))
+        admission = Admission(**row)
+        admissions[admission.id] = admission
+        session.merge(admission)
     session.commit()
 
     # creation d'une inscription
+    matricule = preins_data.pop('matricule')
+    add_user(session, matricule, preins_data['nom'], 
+             '0000', first_name=preins_data['prenom'])
+    admission = admissions[preins_data['admission_id']]
+    admission.matricule = matricule
     session.merge(Inscription(**preins_data))
     session.commit()
+
+    
 
     

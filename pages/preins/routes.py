@@ -57,13 +57,12 @@ def new_info():
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        data['matricule'] = 'test'
         data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
         inutiles = ['departement_academique', 'option', 'niveau', 
                     'nationalite', 'region_origine', 'csrf_token']
         for name in inutiles:
             data.pop(name)
-        tasks.enregistrer_inscription(data)
+        tasks.ajouter_inscription(data)
         return redirect(url_for('preins.info'))
 
     # fixation des valeurs par defaut
@@ -79,7 +78,8 @@ def new_info():
 def edit_info():
     user_id = current_user.id
     inscription = tasks.rechercher_inscription(user_id)
-    admission = inscription.admission
+    if inscription is None:
+        return redirect(url_for('preins.new_info'))
     
     if request.method == 'POST':
         form = EditInfoForm()
@@ -91,16 +91,16 @@ def edit_info():
     
     # traitement et enregistrement des donnees
     print('\n', form.data)
+    admission = inscription.admission
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        data['matricule'] = 'test'
         data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
         inutiles = ['departement_academique', 'option', 'niveau', 
                     'nationalite', 'region_origine', 'csrf_token']
         for name in inutiles:
             data.pop(name)
-        tasks.enregistrer_inscription(data)
+        tasks.modifier_inscription(data)
         return redirect(url_for('preins.info'))
 
 
