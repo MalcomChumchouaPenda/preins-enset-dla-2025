@@ -4,10 +4,10 @@ $(document).ready(function() {
     // fonctions de mise a jour des regions
     function updateRegions(choice) {
         var propagate = false;
-        var correctOptions = $('#region_origine option[value^="' + choice + '"]');
-        var incorrectOptions = $('#region_origine option:not([value^="' + choice + '"])');
-        var choiceOption = $('#region_origine option[value=""]');
-        var field = $('#region_origine');
+        var correctOptions = $('#region_origine_id option[value^="' + choice + '"]');
+        var incorrectOptions = $('#region_origine_id option:not([value^="' + choice + '"])');
+        var choiceOption = $('#region_origine_id option[value=""]');
+        var field = $('#region_origine_id');
         
         field.val('');
         if (correctOptions.length == 0 )  {
@@ -54,20 +54,20 @@ $(document).ready(function() {
 
 
     // Mise a jour initiale
-    var pays = $('#nationalite').val()
-    var region = $('#region_origine').val()
+    var pays = $('#nationalite_id').val()
+    var region = $('#region_origine_id').val()
     var dept = $('#departement_origine_id').val()
     console.log(pays)
     console.log(region)
     console.log(dept)
     updateRegions(pays)
-    $('#region_origine').val(region)
+    $('#region_origine_id').val(region)
     updateDepartements(region)
     $('#departement_origine_id').val(dept)
 
 
     // precedures evenementielles
-    $('#nationalite').change(function () {
+    $('#nationalite_id').change(function () {
         choice = $(this).val();
         var propagate = updateRegions(choice);
         if (propagate) {
@@ -77,7 +77,7 @@ $(document).ready(function() {
         }
     })
 
-    $('#region_origine').change(function () {
+    $('#region_origine_id').change(function () {
         choice = $(this).val();
         updateDepartements(choice);
     })

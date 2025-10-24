@@ -3,6 +3,11 @@ from datetime import datetime
 from core.config import db
 
 
+SEXES = {'F':'Feminin', 'M':'Masculin'}
+SITUATIONS = {'C': 'Celibataire', 'M':'Marie(e)', 'V':'Veuf(ve)', 'D':'Divorce(e)'}
+LANGUES = {'FR': 'Francais', 'EN': 'Anglais'}
+
+
 class CommuniqueAdmission(db.Model):
     __bind_key__ = 'preins_v0'
     __tablename__ = 'communiques_admissions'
@@ -41,12 +46,12 @@ class Inscription(db.Model):
     prenom = db.Column(db.String(200), nullable=True)
     date_naissance = db.Column(db.String(20), nullable=False)
     lieu_naissance = db.Column(db.String(100), nullable=False)
-    sexe = db.Column(db.String(10), nullable=False)  
-    situation_matrimoniale = db.Column(db.String(50), nullable=False)
+    sexe_id = db.Column(db.String(10), nullable=False)  
+    situation_matrimoniale_id = db.Column(db.String(50), nullable=False)
     
     # Origine géographique
     departement_origine_id = db.Column(db.String(100), nullable=False)
-    langue = db.Column(db.String(10), nullable=False)  
+    langue_id = db.Column(db.String(10), nullable=False)  
     
     # Coordonnées
     telephone = db.Column(db.String(20), nullable=False)
@@ -77,30 +82,16 @@ class Inscription(db.Model):
         return ' '.join([self.nom, self.prenom])
     
     @property
-    def sexe_complet(self):
-        if self.sexe[0] == 'F':
-            return 'Feminin'
-        return 'Masculin'
+    def sexe(self):
+        return SEXES[self.sexe_id]
 
     @property
-    def situation_matrimoniale_complete(self):
-        code = self.situation_matrimoniale[0]
-        if code == 'M':
-            if self.sexe[0] == 'M':
-                return 'Marié'
-            return 'Mariée'
-        elif code == 'V':
-            if self.sexe[0] == 'M':
-                return 'Veuf'
-            return 'Veuve'
-        return 'Celibataire'
+    def situation_matrimoniale(self):
+        return SITUATIONS[self.situation_matrimoniale_id]
     
     @property
-    def langue_complete(self):
-        code = self.langue
-        if code.upper() == 'FR':
-            return 'Francais'
-        return 'Anglais'
+    def langue(self):
+        return LANGUES[self.langue_id]
     
 
 class Requete(db.Model):

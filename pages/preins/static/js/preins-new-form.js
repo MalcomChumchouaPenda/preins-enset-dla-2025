@@ -2,18 +2,18 @@
 $(document).ready(function() {
 
     // desactivation des choix
-    $('#region_origine').attr('disabled', 'disabled')
+    $('#region_origine_id').attr('disabled', 'disabled')
     $('#departement_origine_id').attr('disabled', 'disabled')
 
-    console.log($('#region_origine').val())
+    console.log($('#region_origine_id').val())
 
     // fonctions de mise a jour des regions
     function updateRegions(choice) {
         var propagate = false;
-        var correctOptions = $('#region_origine option[value^="' + choice + '"]');
-        var incorrectOptions = $('#region_origine option:not([value^="' + choice + '"])');
-        var choiceOption = $('#region_origine option[value=""]');
-        var field = $('#region_origine');
+        var correctOptions = $('#region_origine_id option[value^="' + choice + '"]');
+        var incorrectOptions = $('#region_origine_id option:not([value^="' + choice + '"])');
+        var choiceOption = $('#region_origine_id option[value=""]');
+        var field = $('#region_origine_id');
         
         field.val('');
         if (correctOptions.length == 0 )  {
@@ -59,7 +59,7 @@ $(document).ready(function() {
     }
 
     // precedures evenementielles
-    $('#nationalite').change(function () {
+    $('#nationalite_id').change(function () {
         choice = $(this).val();
         var propagate = updateRegions(choice);
         if (propagate) {
@@ -69,7 +69,7 @@ $(document).ready(function() {
         }
     })
 
-    $('#region_origine').change(function () {
+    $('#region_origine_id').change(function () {
         choice = $(this).val();
         updateDepartements(choice);
     })

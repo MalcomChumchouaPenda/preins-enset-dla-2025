@@ -47,7 +47,7 @@ def init_data():
             statut = 'A' + n
             communique_id = 'Fake'
             add_user(session, id, nom, '0000')
-            add_roles_to_user(session, id, 'student', 'developper', 'admis')
+            add_roles_to_user(session, id, 'student', 'admis')
             admission = Admission(id=id, nom_complet=nom, statut=statut,
                                   classe_id=classe_id, communique_id=communique_id)
             admissions[id] = admission
@@ -62,12 +62,12 @@ def init_data():
             'prenom': f'Prenom Admis {i}',
             'date_naissance': f'01/01/200{i}',
             'lieu_naissance': f'Maternite de la ville {i}',
-            'sexe': random.choice(['F', 'M']),
-            'situation_matrimoniale': random.choice(['C', 'M']),
+            'sexe_id': random.choice(['F', 'M']),
+            'situation_matrimoniale_id': random.choice(['C', 'M']),
             'departement_origine_id': 'dep4',
             'telephone': f'6 70 70 90 9{i}',
             'email': f'admis_demo{i}@yahoo.cm',
-            'langue': random.choice(['FR', 'EN']),
+            'langue_id': random.choice(['FR', 'EN']),
             'diplome': f'Diplome demo type {i}',
             'annee_diplome': f'201{i}',
             'nom_pere': 'Fotso Epoh Atangana Mahamat Luc',

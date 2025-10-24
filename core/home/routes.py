@@ -88,8 +88,9 @@ def access_denied():
 @ui.route('/profile')
 def profile():
     return render_template('dashboard/coming-soon.jinja',
-                           deadline=default_deadline(), 
-                           title=_('Profile'))
+                           deadline=default_deadline(),
+                           page_id='profile_dash', 
+                           title=_('Profil'))
 
 
 @ui.route('/dashboard')

@@ -36,19 +36,6 @@
         </div><!-- End Actions initiales -->
 
         <form class="col-lg-10 col-12">
-                    
-            {{ form.csrf_token }}
-
-            <div class="row">
-                {% if form.errors %}
-                <div class="col-12 p-3">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        {{ form.errors }}
-                        <button aria-label="Close" class="btn-close" data-bs-dismiss="alert" type="button"></button>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
 
             <!-- Info generales -->
             <div class="card my-2">
@@ -56,32 +43,39 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6> 
                         <div class="col-lg-12 col-10">
-                            {{ form.matricule.label(class_="form-label")}}
-                            {{ form.matricule(class_="form-control", disabled=true) }}
+                            <label for="matricule" class="form-label">Matricule</label>
+                            <input type="text" class="form-control" disabled id="matricule" 
+                                   value="{{ inscription.admission.matricule }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.nom.label(class_="form-label")}}
-                            {{ form.nom(class_="form-control", disabled=true) }}
+                            <label for="nom" class="form-label">Noms</label>
+                            <input type="text" class="form-control" disabled id="nom" 
+                                   value="{{ inscription.nom }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.prenom.label(class_="form-label")}}
-                            {{ form.prenom(class_="form-control", disabled=true) }}
+                            <label for="prenom" class="form-label">Prenoms</label>
+                            <input type="text" class="form-control" disabled id="prenom" 
+                                   value="{{ inscription.prenom }}">
                         </div>                
                         <div class="col-lg-4 col-10">
-                            {{ form.date_naissance.label(class_="form-label")}}
-                            {{ form.date_naissance(class_="form-control", disabled=true) }}
+                            <label for="date_naissance" class="form-label">Date de naissance</label>
+                            <input type="text" class="form-control" disabled id="date_naissance" 
+                                   value="{{ inscription.date_naissance }}">
                         </div>
                         <div class="col-lg-8 col-10">
-                            {{ form.lieu_naissance.label(class_="form-label")}}
-                            {{ form.lieu_naissance(class_="form-control", disabled=true) }}
+                            <label for="lieu_naissance" class="form-label">Lieu de naissance</label>
+                            <input type="text" class="form-control" disabled id="lieu_naissance" 
+                                   value="{{ inscription.date_naissance }}">
                         </div>
                         <div class="col-lg-4 col-10">
-                            {{ form.sexe.label(class_="form-label")}}
-                            {{ form.sexe(class_="form-select", disabled=true) }}
+                            <label for="sexe" class="form-label">Sexe</label>
+                            <input type="text" class="form-control" disabled id="sexe" 
+                                   value="{{ inscription.sexe }}">
                         </div>
                         <div class="col-lg-4 col-10">
-                            {{ form.situation_matrimoniale.label(class_="form-label")}}
-                            {{ form.situation_matrimoniale(class_="form-select", disabled=true) }}
+                            <label for="situation_matrimoniale" class="form-label">Situation Matrimoniale</label>
+                            <input type="text" class="form-control" disabled id="situation_matrimoniale" 
+                                   value="{{ inscription.situation_matrimoniale }}">
                         </div>
                     </div>
                 </div>
@@ -93,20 +87,24 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">2. Origine géographique</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.langue.label(class_="form-label")}}
-                            {{ form.langue(class_="form-control", disabled=true) }}
+                            <label for="langue" class="form-label">Langue</label>
+                            <input type="text" class="form-control" disabled id="langue" 
+                                   value="{{ inscription.langue }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.nationalite.label(class_="form-label")}}
-                            {{ form.nationalite(class_="form-control", disabled=true) }}
+                            <label for="nationalite" class="form-label">Nationalité</label>
+                            <input type="text" class="form-control" disabled id="nationalite" 
+                                   value="{{ inscription.departement_origine.region.pays.nom }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.region_origine.label(class_="form-label")}}
-                            {{ form.region_origine(class_="form-control", disabled=true) }}
+                            <label for="region_origine" class="form-label">Region d'origine</label>
+                            <input type="text" class="form-control" disabled id="region_origine" 
+                                   value="{{ inscription.departement_origine.region.nom }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.departement_origine.label(class_="form-label")}}
-                            {{ form.departement_origine(class_="form-control", disabled=true) }}
+                            <label for="departement_origine" class="form-label">Departement d'origine</label>
+                            <input type="text" class="form-control" disabled id="departement_origine" 
+                                   value="{{ inscription.departement_origine.nom }}">
                         </div>
                     </div>
                 </div>
@@ -118,12 +116,14 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">3. Coordonnées</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.telephone.label(class_="form-label")}}
-                            {{ form.telephone(class_="form-control", disabled=true) }}
+                            <label for="telephone" class="form-label">Téléphone</label>
+                            <input type="text" class="form-control" disabled id="telephone" 
+                                   value="{{ inscription.telephone }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.email.label(class_="form-label")}}
-                            {{ form.email(class_="form-control", disabled=true) }}
+                            <label for="email" class="form-label">Email</label>
+                            <input type="text" class="form-control" disabled id="email" 
+                                   value="{{ inscription.email }}">
                         </div>
                     </div>
                 </div>
@@ -135,24 +135,29 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">4. Informations académiques</h6>
                         <div class="col-12">
-                            {{ form.departement_academique.label(class_="form-label")}}
-                            {{ form.departement_academique(class_="form-control", disabled=true) }}
+                            <label for="departement_academique" class="form-label">Departement</label>
+                            <input type="text" class="form-control" disabled id="departement_academique" 
+                                   value="{{ inscription.admission.classe.filiere.departement.nom }}">
                         </div>
                         <div class="col-12">
-                            {{ form.option.label(class_="form-label")}}
-                            {{ form.option(class_="form-control", disabled=true) }}
+                            <label for="option" class="form-label">Option</label>
+                            <input type="text" class="form-control" disabled id="option" 
+                                   value="{{ inscription.admission.classe.filiere.nom }}">
                         </div>
                         <div class="col-lg-8 col-10">
-                            {{ form.niveau.label(class_="form-label")}}
-                            {{ form.niveau(class_="form-control", disabled=true) }}
+                            <label for="niveau" class="form-label">Niveau</label>
+                            <input type="text" class="form-control" disabled id="niveau" 
+                                   value="{{ inscription.admission.classe.niveau.nom }}">
                         </div>
                         <div class="col-lg-8 col-10">
-                            {{ form.diplome.label(class_="form-label")}}
-                            {{ form.diplome(class_="form-control", disabled=true) }}
+                            <label for="diplome" class="form-label">Diplôme d'entrée</label>
+                            <input type="text" class="form-control" disabled id="diplome" 
+                                   value="{{ inscription.diplome }}">
                         </div>
                         <div class="col-lg-4 col-10">
-                            {{ form.annee_diplome.label(class_="form-label")}}
-                            {{ form.annee_diplome(class_="form-control", disabled=true) }}
+                            <label for="annee_diplome" class="form-label">Année d'obtention</label>
+                            <input type="text" class="form-control" disabled id="annee_diplome" 
+                                   value="{{ inscription.annee_diplome }}">
                         </div>
                     </div>
                 </div>
@@ -165,20 +170,24 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">5. Informations sur le père</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.nom_pere.label(class_="form-label")}}
-                            {{ form.nom_pere(class_="form-control", disabled=true) }}
+                            <label for="nom_pere" class="form-label">Nom du pere</label>
+                            <input type="text" class="form-control" disabled id="nom_pere" 
+                                   value="{{ inscription.nom_pere }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.profession_pere.label(class_="form-label")}}
-                            {{ form.profession_pere(class_="form-control", disabled=true) }}
+                            <label for="profession_pere" class="form-label">Profession du pere</label>
+                            <input type="text" class="form-control" disabled id="profession_pere" 
+                                   value="{{ inscription.profession_pere }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.telephone_pere.label(class_="form-label")}}
-                            {{ form.telephone_pere(class_="form-control", disabled=true) }}
+                            <label for="telephone_pere" class="form-label">Téléphone du pere</label>
+                            <input type="text" class="form-control" disabled id="telephone_pere" 
+                                   value="{{ inscription.telephone_pere }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.residence_pere.label(class_="form-label")}}
-                            {{ form.residence_pere(class_="form-control", disabled=true) }}
+                            <label for="residence_pere" class="form-label">Residence du pere</label>
+                            <input type="text" class="form-control" disabled id="residence_pere" 
+                                   value="{{ inscription.residence_pere }}">
                         </div>  
                     </div>
                 </div>
@@ -191,21 +200,25 @@
                     <div class="row g-3">
                         <h6 class="card-title mx-1 mt-4 mb-0">6. Informations sur la mère</h6>
                         <div class="col-lg-6 col-10">
-                            {{ form.nom_mere.label(class_="form-label")}}
-                            {{ form.nom_mere(class_="form-control", disabled=true) }}
+                            <label for="nom_mere" class="form-label">Nom du mere</label>
+                            <input type="text" class="form-control" disabled id="nom_mere" 
+                                   value="{{ inscription.nom_mere }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.profession_mere.label(class_="form-label")}}
-                            {{ form.profession_mere(class_="form-control", disabled=true) }}
+                            <label for="profession_mere" class="form-label">Profession du mère</label>
+                            <input type="text" class="form-control" disabled id="profession_mere" 
+                                   value="{{ inscription.profession_mere }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.telephone_mere.label(class_="form-label")}}
-                            {{ form.telephone_mere(class_="form-control", disabled=true) }}
+                            <label for="telephone_mere" class="form-label">Téléphone du mère</label>
+                            <input type="text" class="form-control" disabled id="telephone_mere" 
+                                   value="{{ inscription.telephone_mere }}">
                         </div>
                         <div class="col-lg-6 col-10">
-                            {{ form.residence_mere.label(class_="form-label")}}
-                            {{ form.residence_mere(class_="form-control", disabled=true) }}
-                        </div>
+                            <label for="residence_mere" class="form-label">Residence du mère</label>
+                            <input type="text" class="form-control" disabled id="residence_mere" 
+                                   value="{{ inscription.residence_mere }}">
+                        </div>  
                     </div>
                 </div>
             </div> <!-- End Informations sur la mère -->
