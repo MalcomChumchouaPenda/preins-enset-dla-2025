@@ -3,7 +3,7 @@ from core.utils import sidebar
 from flask_babel import lazy_gettext as _l
 
 
-menu = sidebar.add('preins_menu', _l('Preinscription'), rank=0, accepted=['developper'])
+menu = sidebar.add('preins_menu', _l('Inscription'), rank=0, accepted=['developper'])
 menu.add('preins_info_pg', 'Fiche', endpoint='preins.info', rank=0)
 menu.add('preins_error_pg', 'Requete', endpoint='preins.error', rank=1)
 

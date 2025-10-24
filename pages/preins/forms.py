@@ -33,6 +33,7 @@ class InfoForm(FlaskForm):
     email = EmailField(_l('Email'))
     
     # Informations académiques
+    matricule = StringField(_l('Matricule'))
     departement_academique = StringField(_l('Departement'), validators=[])
     option = StringField(_l('Option'), validators=[])
     niveau = StringField(_l('Niveau'),  validators=[])

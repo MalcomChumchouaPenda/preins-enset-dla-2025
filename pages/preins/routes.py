@@ -4,7 +4,7 @@ import re
 from flask_login import current_user
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
-from flask import render_template, request, url_for, redirect, send_file
+from flask import render_template, request, url_for, redirect, send_file, flash
 from core.utils import UiBlueprint
 from core.config import db
 from .forms import InfoForm, EditInfoForm, ErrorForm
@@ -28,8 +28,10 @@ def info():
         return redirect(url_for('preins.new_info'))
     
     departement_origine = inscription.departement_origine
-    classe = inscription.admission.classe
-    form = InfoForm(obj=inscription)    
+    admission = inscription.admission
+    classe = admission.classe
+    form = InfoForm(obj=inscription)  
+    form.matricule.data = admission.matricule
     form.nationalite.data = departement_origine.region.pays.nom
     form.region_origine.data = departement_origine.region.nom
     form.departement_origine.data = departement_origine.nom
@@ -53,7 +55,7 @@ def new_info():
     form.departement_origine_id.choices = tasks.lister_departements()
     
     # traitement et enregistrement des donnees
-    print('\n', form.data)
+    # print('\n', form.data)
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
@@ -63,6 +65,7 @@ def new_info():
         for name in inutiles:
             data.pop(name)
         tasks.ajouter_inscription(data)
+        flash('inscription effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
 
     # fixation des valeurs par defaut
@@ -81,17 +84,26 @@ def edit_info():
     if inscription is None:
         return redirect(url_for('preins.new_info'))
     
+    # creation du formulaire avce controle des modifications
+    admission = inscription.admission
     if request.method == 'POST':
         form = EditInfoForm()
     else:
+        count_max = admission.max_inscriptions
+        count = len(admission.inscriptions)
+        if count > count_max:
+            flash(f'Vous ne pouvez modifier cette fiche plus de {count_max} fois', 'danger')
+            return redirect(url_for('preins.info'))
+        flash(f'Vous pourrez encore modifier cette fiche {count_max-count+1} fois', 'warning')
         form = EditInfoForm(obj=inscription)
+    
+    # parametrage des options
     form.nationalite.choices = tasks.lister_nationalites()
     form.region_origine.choices = tasks.lister_regions()
     form.departement_origine_id.choices = tasks.lister_departements()
     
     # traitement et enregistrement des donnees
     print('\n', form.data)
-    admission = inscription.admission
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
@@ -101,8 +113,8 @@ def edit_info():
         for name in inutiles:
             data.pop(name)
         tasks.modifier_inscription(data)
+        flash('modification effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
-
 
     # fixation des valeurs par defaut
     classe = admission.classe

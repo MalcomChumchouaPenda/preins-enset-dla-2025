@@ -26,6 +26,7 @@ class Admission(db.Model):
     communique = db.relationship('CommuniqueAdmission')
     inscriptions = db.relationship('Inscription', back_populates='admission')
     requetes = db.relationship('Requete', back_populates='admission')
+    max_inscriptions = db.Column(db.Integer, default=3)
 
     
 class Inscription(db.Model):

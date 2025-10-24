@@ -61,7 +61,6 @@ $(document).ready(function() {
     // precedures evenementielles
     $('#nationalite').change(function () {
         choice = $(this).val();
-        alert('update after changes for' + choice)
         var propagate = updateRegions(choice);
         if (propagate) {
             updateDepartements(choice);

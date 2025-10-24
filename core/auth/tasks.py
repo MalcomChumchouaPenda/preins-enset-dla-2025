@@ -54,7 +54,6 @@ def remove_role(session, id):
 
 def add_roles_to_user(session, userid, *role_ids):
     user = User.query.get(userid)
-    print(user, userid)
     if user:
         for role_id in role_ids:
             role = Role.query.get(role_id)
