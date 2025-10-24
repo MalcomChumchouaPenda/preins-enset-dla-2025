@@ -22,11 +22,13 @@ class ExtendedSQLAlchemy(SQLAlchemy):
     def get_default_uri(cls, env_name):
         if env_name == 'testing':
             return "sqlite:///:memory:"
-        if env_name == 'development':
+        else:
             return f"sqlite:///{os.path.join(STORE_DIR, 'default.db')}"
-        MYSQL_USER = os.getenv('PIGAL_MYSQL_USER')
-        MYSQL_PWD = os.getenv('PIGAL_MYSQL_PWD')
-        return f"mysql://{MYSQL_USER}:{MYSQL_PWD}@localhost/default"
+        # if env_name == 'development':
+        #     return f"sqlite:///{os.path.join(STORE_DIR, 'default.db')}"
+        # MYSQL_USER = os.getenv('PIGAL_MYSQL_USER')
+        # MYSQL_PWD = os.getenv('PIGAL_MYSQL_PWD')
+        # return f"mysql://{MYSQL_USER}:{MYSQL_PWD}@localhost/default"
     
     def get_binds(self, env_name):
         bind_keys = self._list_core_bind_keys()
@@ -42,11 +44,13 @@ class ExtendedSQLAlchemy(SQLAlchemy):
     def _create_tenant_uri(cls, env_name, key):
         if env_name == 'testing':
             return f"sqlite:///{os.path.join(TESTS_DIR, 'data', key + '.db')}"
-        if env_name == 'development':
+        else:
             return f"sqlite:///{os.path.join(STORE_DIR, key + '.db')}"
-        MYSQL_USER = os.getenv('PIGAL_MYSQL_USER')
-        MYSQL_PWD = os.getenv('PIGAL_MYSQL_PWD')
-        return f"mysql://{MYSQL_USER}:{MYSQL_PWD}@localhost/{key}"
+        # if env_name == 'development':
+        #     return f"sqlite:///{os.path.join(STORE_DIR, key + '.db')}"
+        # MYSQL_USER = os.getenv('PIGAL_MYSQL_USER')
+        # MYSQL_PWD = os.getenv('PIGAL_MYSQL_PWD')
+        # return f"mysql://{MYSQL_USER}:{MYSQL_PWD}@localhost/{key}"
 
     def _list_core_bind_keys(self):
         bind_keys = []

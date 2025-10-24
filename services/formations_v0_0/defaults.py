@@ -37,7 +37,7 @@ def init_data():
     formations = [('FI', 1, 'Formation Initiale'), ('CPS', 3, 'Formation Continue (CPS)')]
     for id, code, nom in formations:
         formation = Formation(id=id, code_systhag=code, nom=nom)
-        db.session.add(formation)
+        db.session.merge(formation)
     db.session.commit()
 
     # departements
