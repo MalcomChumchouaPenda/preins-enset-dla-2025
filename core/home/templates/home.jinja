@@ -11,9 +11,10 @@
 {% block page_hero %}
     <div class="hero-info w-75 d-flex flex-column justify-content-center align-items-center">
       {{ hero.msg | safe_md }}
+      <a href="{{ url_for('home.login') }}" class="btn btn-primary">{{ _('Connexion') }}</a>
     </div> 
     <div class="hero-bg">
-        <img src="{{ url_for('home.static', filename='img/hero-bg.jpg') }}" alt="">
+        <img src="{{ url_for('home.static', filename=hero.img) }}" alt="">
     </div>
 {% endblock %}
 

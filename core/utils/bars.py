@@ -28,6 +28,9 @@ class Entry:
         self.children[id] = entry
         return entry
 
+    def get(self, id):
+        return self.children.get(id)
+
     def to_dict(self):
         data = {'id':self.id,
                 'text':self.text,

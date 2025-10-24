@@ -21,6 +21,12 @@ temp_dir = os.path.join(static_dir, 'temp')
 os.makedirs(temp_dir, exist_ok=True)
 
 
+@ui.route('/doc')
+def doc():
+    return render_template('landing/coming-soon.jinja',
+                           deadline=datetime(2025, 10, 30), 
+                           title="Procedure d'inscription")
+
 @ui.route('/')
 @ui.login_required
 def info():
