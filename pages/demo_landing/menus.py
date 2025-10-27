@@ -3,7 +3,7 @@ from flask_babel import lazy_gettext as _l
 from core.utils import navbar
 
 
-# demomenu = navbar.add('demo_menu', _l('Demo'))
+# demomenu = navbar.add('demo_menu', _l('Demo'), accepted=['developper'])
 # submenu1 = demomenu.add('sub_menu_1', _l('Pages'), rank=0)
 # submenu2 = demomenu.add('sub_menu_2', _l('Heros'), rank=1)
 # submenu3 = demomenu.add('sub_menu_3', _l('Footers'), rank=2)

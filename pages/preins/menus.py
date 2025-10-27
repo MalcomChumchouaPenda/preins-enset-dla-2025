@@ -3,8 +3,8 @@ from core.utils import sidebar, navbar
 from flask_babel import lazy_gettext as _l
 
 
-docmenu = navbar.get('doc_menu')
-submenu1 = docmenu.add('ins_doc_menu', _l('Inscription'), endpoint='preins.doc')
+navbar.add('preins_doc_pg', _l('Procedures'), endpoint='preins.doc')
+navbar.add('preins_info_pg', _l('Inscriptions'), endpoint='preins.info')
 
 dashmenu = sidebar.add('preins_menu', _l('Inscription'), rank=0, accepted=['developper', 'admis'])
 dashmenu.add('preins_info_pg', 'Fiche', endpoint='preins.info', rank=0)
