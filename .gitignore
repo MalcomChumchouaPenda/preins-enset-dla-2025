@@ -210,3 +210,8 @@ nosetests.xml
 
 # archives files
 archives/
+
+# pdf files
+**.pdf
+**/temp/**.pdf
+.*\.pdf
