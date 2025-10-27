@@ -28,6 +28,7 @@ def init_data():
     # creation du role admis
     session = db.session
     add_role(session, 'admis', 'Etudiants admis')
+    add_roles_to_user(session, 'dev1', 'admis')
 
     # creation des communiques
     if not session.query(CommuniqueAdmission).filter_by(id='Fake').first():
@@ -40,6 +41,14 @@ def init_data():
 
     # creation des users et admissions
     if not session.query(Admission).first():
+        admission = Admission(id='dev1', 
+                              nom_complet='Developper', 
+                              statut='AA',
+                              classe_id='BTP4', 
+                              communique_id='Fake')
+        session.add(admission)
+        session.commit()
+
         admissions = {}
         for i in range(1, 10):
             for n in 'AP':

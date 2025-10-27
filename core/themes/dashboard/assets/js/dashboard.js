@@ -295,6 +295,14 @@
     .forEach(function(form) {
       form.addEventListener('submit', function(event) {
         if (!form.checkValidity()) {
+          var firstInvalid = document.querySelector('.form-control:invalid, .form-select:invalid');
+          if (firstInvalid) {
+            firstInvalid.scrollIntoView({
+              behavior: 'smooth',
+              block:'center'
+            })
+          }
+          console.log(firstInvalid);
           event.preventDefault()
           event.stopPropagation()
         }

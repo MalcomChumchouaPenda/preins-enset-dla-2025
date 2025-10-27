@@ -76,15 +76,6 @@ class Config:
     BABEL_DEFAULT_TIMEZONE = 'UTC'
     BABEL_TRANSLATION_DIRECTORIES = os.path.join(ROOT_DIR, 'translations')
 
-    # configuration mail
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USE_SSL = False
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
-
 
 class ProdConfig(Config):
 

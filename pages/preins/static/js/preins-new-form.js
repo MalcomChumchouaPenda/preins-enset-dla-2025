@@ -2,10 +2,10 @@
 $(document).ready(function() {
 
     // desactivation des choix
-    $('#region_origine_id').attr('disabled', 'disabled')
-    $('#departement_origine_id').attr('disabled', 'disabled')
+    $('#region_origine_id').attr('disabled', 'disabled');
+    $('#departement_origine_id').attr('disabled', 'disabled');
 
-    console.log($('#region_origine_id').val())
+    console.log($('#region_origine_id').val());
 
     // fonctions de mise a jour des regions
     function updateRegions(choice) {

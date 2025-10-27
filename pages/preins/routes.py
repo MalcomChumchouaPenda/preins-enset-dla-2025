@@ -28,7 +28,7 @@ def doc():
                            title="Procedure d'inscription")
 
 @ui.route('/')
-@ui.login_required
+@ui.roles_accepted('admis')
 def info():
     user_id = current_user.id
     inscription = tasks.rechercher_inscription(user_id)
@@ -38,7 +38,7 @@ def info():
 
 
 @ui.route('/new', methods=['GET', 'POST'])
-@ui.login_required
+@ui.roles_accepted('admis')
 def new_info():
     user_id = current_user.id
     inscription = Inscription() 
