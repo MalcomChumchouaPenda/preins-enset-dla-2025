@@ -21,11 +21,13 @@ temp_dir = os.path.join(static_dir, 'temp')
 os.makedirs(temp_dir, exist_ok=True)
 
 
-@ui.route('/doc')
+
+@ui.route('/procedures')
+@ui.login_required
 def doc():
-    return render_template('landing/coming-soon.jinja',
-                           deadline=datetime(2025, 10, 30), 
-                           title="Procedure d'inscription")
+    nom_fichier = 'procedures_inscription_auditeurs_libres_2025_2026.jpg'
+    chemin_doc = os.path.join(static_dir, 'images', 'procedures.jpg')
+    return send_file(chemin_doc, as_attachment=True, download_name=nom_fichier)
 
 @ui.route('/')
 @ui.roles_accepted('admis')
@@ -137,7 +139,6 @@ def print_info():
     chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
     fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
     return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
-
 
 @ui.route('/coming-soon')
 @ui.login_required
