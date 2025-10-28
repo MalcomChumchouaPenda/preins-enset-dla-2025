@@ -47,27 +47,24 @@ class InfoForm(FlaskForm):
     annee_diplome = IntegerField(_l("Année d'obtention"), validators=validators1())
 
     # Informations du père/tuteur
-    nom_pere = StringField(_l('Nom du pere'))
-    profession_pere = StringField(_l('Profession du pere'))
-    telephone_pere = StringField(_l('Téléphone du pere'))
-    residence_pere = StringField(_l('Residence du pere'))
+    nom_pere = StringField(_l('Nom du père'))
+    profession_pere = StringField(_l('Profession du père'))
+    telephone_pere = StringField(_l('Téléphone du père'))
+    residence_pere = StringField(_l('Residence du père'))
 
     # Informations de la mère
-    nom_mere = StringField(_l('Nom de la mere'))
-    profession_mere = StringField(_l('Profession de la mere'))
-    telephone_mere = StringField(_l('Téléphone de la mere'))
-    residence_mere = StringField(_l('Residence de la mere'))
+    nom_mere = StringField(_l('Nom de la mère'))
+    profession_mere = StringField(_l('Profession de la mère'))
+    telephone_mere = StringField(_l('Téléphone de la mère'))
+    residence_mere = StringField(_l('Residence de la mère'))
     
 
 class ErrorForm(FlaskForm):
 
-    nom_admis = StringField(_l('Noms sur le communiqué'))
-    nom_correct = StringField(_l('Noms corrigés'))
-    prenom_admis = StringField(_l('Prénoms sur le communiqué'))
-    prenom_correct = StringField(_l('Prénoms corrigés'))
-
-    option_admis = SelectField(_l('Option sur le communiqué'))
-    option_correct = SelectField(_l('Option corrigée'))
-    niveau_admis = SelectField(_l('Niveau sur le communiqué'))
-    niveau_correct = SelectField(_l('Niveau corrigée'))
+    nom_admis = StringField(_l('Noms et prénoms sur le communiqué'))
+    nom_correct = StringField(_l('Noms et prénoms corrigés'))
+    option_admis = StringField(_l('Option sur le communiqué'))
+    option_correct_id = SelectField(_l('Option corrigée'))
+    niveau_admis = StringField(_l('Niveau sur le communiqué'))
+    niveau_correct_id = SelectField(_l('Niveau corrigée'))
 

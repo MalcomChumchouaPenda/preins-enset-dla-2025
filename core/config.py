@@ -114,7 +114,7 @@ configs = {
 #-------------------------------------
 
 def create_app():
-    env_name = os.getenv('FLASK_ENV')
+    env_name = os.getenv('FLASK_ENV', 'production')
     app = Flask(__name__, 
                 static_folder=THEMES_DIR, 
                 template_folder=THEMES_DIR)

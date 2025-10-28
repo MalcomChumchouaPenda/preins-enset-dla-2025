@@ -16,9 +16,10 @@ from reportlab.lib import colors
 
 from core.auth.tasks import add_user, add_roles_to_user
 from core.auth.models import User
-from services.formations_v0_0.models import Classe
+from services.formations_v0_0.models import Classe, Filiere, Niveau
 from services.regions_v0_0.models import Departement
 from services.regions_v0_0 import tasks as region_tasks
+from services.formations_v0_0 import tasks as format_tasks
 from .models import db, Inscription, Admission, Requete
 
 
@@ -37,7 +38,16 @@ def lister_regions():
 
 def lister_departements():
     items = region_tasks.list_departements(full_id=True)
-    print(items)
+    items.insert(0, ('', 'Choisir...'))
+    return items
+
+def lister_filieres():
+    items = format_tasks.list_filieres()
+    items.insert(0, ('', 'Choisir...'))
+    return items
+
+def lister_niveaux():
+    items = format_tasks.list_niveaux()
     items.insert(0, ('', 'Choisir...'))
     return items
 
@@ -127,12 +137,37 @@ def rechercher_inscription(user_id):
     return inscription
 
 
-def enregistrer_requete(data):
+def ajouter_requete(data):
     requete = Requete(**data)
     db.session.add(requete)
     db.session.commit()
     return requete
 
+
+def rechercher_requete(user_id):
+    query = db.session.query(Requete)
+    query = query.filter_by(admission_id=user_id)
+    query = query.order_by(Requete.id.desc())
+    requetes = query.all()
+    if len(requetes) == 0:
+        return None
+
+    requete = requetes[0]
+    query = db.session.query(Filiere)
+    query = query.filter_by(id=requete.option_correct_id)
+    option_correct = query.one_or_none()
+    setattr(requete, 'option_correct', option_correct)
+    
+    query = db.session.query(Niveau)
+    query = query.filter_by(id=requete.niveau_correct_id)
+    niveau_correct = query.one_or_none()
+    setattr(requete, 'niveau_correct', niveau_correct)
+    
+    query = db.session.query(Classe)
+    query = query.filter_by(id=requete.admission.classe_id)
+    classe = query.one_or_none()
+    setattr(requete.admission, 'classe', classe)
+    return requete
 
 
 def generer_fiche_inscription(inscription, nom_fichier):
@@ -431,7 +466,7 @@ def generer_fiche_inscription(inscription, nom_fichier):
 
 
 
-def generer_fiche_correction(data, output_path):
+def generer_fiche_correction(requete, inscription, output_path):
     """
     Génère un PDF de demande de correction des erreurs d'identité
     d'un candidat définitivement admis à l'ENSET Douala.
@@ -441,27 +476,49 @@ def generer_fiche_correction(data, output_path):
         output_path (str): Chemin du fichier de sortie.
     """
 
+    # erreurs
+    erreurs = []
+    if requete.nom_correct:
+         erreurs.append({
+            "champ": "Nom ou/et prénom", 
+            "ancien": requete.admission.nom_complet,
+            "nouveau": requete.nom_correct
+         })
+    if requete.option_correct:
+         erreurs.append({
+            "champ": "Option ou/et filière choisie", 
+            "ancien": requete.admission.classe.filiere.nom,
+            "nouveau": requete.option_correct.nom
+         })
+    if requete.niveau_correct:
+         erreurs.append({
+            "champ": "Cycle d'entrée", 
+            "ancien": requete.admission.classe.niveau.nom,
+            "nouveau": requete.niveau_correct.nom
+         })
+
+
     # tests
     data = {
-        "reference": "une erreur sur mon nom et sr ma date de naissance",
-        "nom": "KAPSON NJIPGUEP",
-        "prenom": "ARLETTE KEVRANE",
-        "date_lieu_naissance": "02 mars 2003 à DOUALA",
-        "nationalite": "CAMEROUNAISE",
-        "matricule": "23NII001A",
-        "filiere": "Génie Informatique / Informatique Industrielle",
-        "niveau": "3",
-        "erreurs": [
-            # {"champ": "Nom ou/et prénom", "ancien": "KAPSON NJIPGUE", "nouveau": "KAPSOH NJIPGUEP"},
-            # {"champ": "Option ou/et filière choisie", "ancien": "Génie Informatique", "nouveau": "Informatique Industrielle"},
-            # {"champ": "Cycle d'entrée", "ancien": "1er Cycle", "nouveau": "2e Cycle"}
-        ],
+        # "reference": "une erreur sur mon nom et sr ma date de naissance",
+        # "nom": "KAPSON NJIPGUEP",
+        # "prenom": "ARLETTE KEVRANE",
+        # "date_lieu_naissance": "02 mars 2003 à DOUALA",
+        # "nationalite": "CAMEROUNAISE",
+        # "matricule": "23NII001A",
+        # "filiere": "Génie Informatique / Informatique Industrielle",
+        # "niveau": "3",
+        # "erreurs": [
+        #     {"champ": "Nom ou/et prénom", "ancien": "KAPSON NJIPGUE", "nouveau": "KAPSOH NJIPGUEP"},
+        #     {"champ": "Option ou/et filière choisie", "ancien": "Génie Informatique", "nouveau": "Informatique Industrielle"},
+        #     {"champ": "Cycle d'entrée", "ancien": "1er Cycle", "nouveau": "2e Cycle"}
+        # ],
         "pieces": [
             "Copie du baccalauréat",
             "Copie de la carte d'identité",
             "Attestation d'admission signée"
         ],
-        "fichier_sortie": "fiche_preinscription_test.pdf"
+        # "fichier_sortie": "fiche_preinscription_test.pdf"
     }
 
     # === Initialisation du canvas ===
@@ -548,16 +605,16 @@ def generer_fiche_correction(data, output_path):
     c.drawString(x_label, y_pos, "Référence du communiqué d'entrée :")
     y_pos -= line_spacing
     c.setFont(font_bold_name, 12)
-    c.drawString(x_label, y_pos, data.get("reference", "Référence non précisée"))
+    c.drawString(x_label, y_pos, inscription.admission.communique.numero)
     y_pos -= line_spacing + 5*mm
 
     infos = [
-        ("Nom de l'étudiant :", data.get("nom", "")),
-        ("Prénom(s) :", data.get("prenom", "")),
-        ("Date et lieu de naissance :", data.get("naissance", "")),
-        ("Matricule :", data.get("matricule", "")),
-        ("Filière :", data.get("filiere", "")),
-        ("Niveau :", data.get("niveau", "")),
+        ("Noms de l'étudiant :", inscription.nom.upper()),
+        ("Prénoms de l'étudiant  :", inscription.prenom.upper()),
+        ("Date et lieu de naissance :", inscription.naissance),
+        ("Matricule :", inscription.admission.matricule),
+        ("Filière :", inscription.admission.classe.filiere.nom),
+        ("Niveau :", inscription.admission.classe.niveau.id[-1]),
     ]
 
     for label, value in infos:
@@ -569,19 +626,14 @@ def generer_fiche_correction(data, output_path):
     y_pos -= 5*mm    
     c.setFont(font_name, 12) 
     c.drawString(x_label, y_pos, "Nature de l'erreur constatée: ")
+
     # === Tableau des erreurs ===
     y_table_start = height - 157*mm
-    data_table = [
-        ["L'Erreur porte sur", "Il est écrit (erreur mentionnée sur \n le communiqué)", 'Lire (correction sollicitée)'],
-        ["Le Nom ou/et le prénom", "", ""],
-        ["L'option ou/et filière choisie", "", ""],
-        ["Cycle d'entrée", "", ""]
-    ]
     table_data = [
     ["L'Erreur porte sur", "Il est écrit (erreur mentionnée sur \n le communiqué)", "Lire (correction sollicitée)"]
     ]
 
-    for err in data.get("erreurs", []):
+    for err in erreurs:
         table_data.append([
             str(err.get("champ", "")),
             str(err.get("ancien", "")),

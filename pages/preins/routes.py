@@ -11,7 +11,6 @@ from flask import render_template, request, url_for, redirect, send_file, flash
 from core.utils import UiBlueprint
 from services.preins_v0_0 import tasks
 from services.preins_v0_0.models import Inscription, Requete
-from services.formations_v0_0 import tasks as format_tasks
 from .forms import InfoForm, ErrorForm
 
 
@@ -36,7 +35,7 @@ def info():
     inscription = tasks.rechercher_inscription(user_id)
     if inscription is None:
         return redirect(url_for('preins.new_info'))
-    return render_template('preins-view-form.jinja', inscription=inscription)
+    return render_template('preins-info.jinja', inscription=inscription)
 
 
 @ui.route('/new', methods=['GET', 'POST'])
@@ -72,11 +71,11 @@ def new_info():
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom
     form.niveau.data = classe.niveau.nom
-    return render_template('preins-new-form.jinja', form=form)
+    return render_template('preins-info-new.jinja', form=form)
 
 
 @ui.route('/edit', methods=['GET', 'POST'])
-@ui.login_required
+@ui.roles_accepted('admis')
 def edit_info():
     user_id = current_user.id
     inscription = tasks.rechercher_inscription(user_id)
@@ -125,17 +124,18 @@ def edit_info():
     form.nationalite_id.data = departement_origine.region.pays.full_id
     form.region_origine_id.data = departement_origine.region.full_id
     form.departement_origine_id.data = departement_origine.full_id
-    return render_template('preins-edit-form.jinja', form=form)
+    return render_template('preins-info-edit.jinja', form=form)
 
 
 @ui.route('/print')
-@ui.login_required
+@ui.roles_accepted('admis')
 def print_info():
     user_id = current_user.id
     inscription = tasks.rechercher_inscription(user_id)
     if inscription is None:
         return redirect(url_for('preins.edit_info'))
     nom_fichier_pdf = f"fiche_inscription_{user_id.lower()}.pdf"
+    nom_fichier_pdf = nom_fichier_pdf.replace('-', '_')
     chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
     fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
     return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
@@ -148,31 +148,6 @@ def coming():
                            page_id="preins_error_pg")
 
 
-@ui.route('/requete', methods=['GET', 'POST'])
-@ui.login_required
-def error():
-    next = request.args.get('next')
-    obj = Requete()
-    form = ErrorForm(obj=obj)
-    niveaux = format_tasks.list_niveaux()
-    filieres = format_tasks.list_filieres()
-    form.option_admis.choices = filieres
-    form.option_correct.choices = filieres
-    form.niveau_admis.choices = niveaux
-    form.niveau_correct.choices = niveaux
-    if form.validate_on_submit():
-        data = form.data
-        data.pop('csrf_token')
-        # if data['nom_correct'] or data['prenom_correct']:
-        #     nom_complet_errone = former_nom(data['nom_admis'], data['prenom_admis'])
-        #     if not data['nom_admis']
-        identifiant = current_user.id.replace(' ', '_').lower()
-        nom_fichier_pdf = f"fiche_correction_{identifiant}.pdf"
-        chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
-        fichier_pdf = tasks.generer_fiche_correction(data, chemin_pdf_final)
-        return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
-    return render_template('preins-error.jinja', form=form, next=next)
-
 
 def former_nom(nom, prenom=''):
     resultat = ' '.join([nom, prenom])
@@ -183,3 +158,66 @@ def nettoyer_nom(nom):
     nom = nom.strip()
     nom = nom.upper()
     return nom
+
+
+@ui.route('/requete')
+@ui.roles_accepted('admis')
+def error():
+    user_id = current_user.id
+    requete = tasks.rechercher_requete(user_id)
+    if requete is None:
+        return redirect(url_for('preins.new_error'))
+    return render_template('preins-error.jinja', requete=requete)
+
+
+@ui.route('/requete/new', methods=['GET', 'POST'])
+@ui.roles_accepted('admis')
+def new_error():
+    user_id = current_user.id
+    requete = Requete() 
+    admission = tasks.chercher_admission(user_id)       
+    if tasks.rechercher_inscription(user_id) is None:
+        flash("Vous devez d'abord vous inscrire", "warning")
+        return redirect(url_for('preins.edit_info'))
+    
+    # create a edit form
+    form = ErrorForm(obj=requete)
+    form.option_correct_id.choices = tasks.lister_filieres()
+    form.niveau_correct_id.choices = tasks.lister_niveaux()
+    
+    # traitement et enregistrement des donnees
+    # print('\n', form.data)
+    if form.validate_on_submit():
+        data = form.data
+        data['admission_id'] = admission.id
+        inutiles = ['nom_admis', 'option_admis', 
+                    'niveau_admis', 'csrf_token']
+        for name in inutiles:
+            data.pop(name)
+        tasks.ajouter_requete(data)
+        flash('Requete cree avec succes', 'success')
+        return redirect(url_for('preins.error'))
+
+    # fixation des valeurs par defaut
+    classe = admission.classe
+    form.nom_admis.data = admission.nom_complet.upper()
+    form.option_admis.data = classe.filiere.nom
+    form.niveau_admis.data = classe.niveau.nom
+    return render_template('preins-error-new.jinja', form=form)
+
+
+@ui.route('/requete/print')
+@ui.roles_accepted('admis')
+def print_error():
+    user_id = current_user.id
+    inscription = tasks.rechercher_inscription(user_id)
+    requete = tasks.rechercher_requete(user_id)
+    if requete is None:
+        return redirect(url_for('preins.new_error')) 
+
+    nom_fichier_pdf = f"requete_correction_{user_id.lower()}.pdf"
+    nom_fichier_pdf = nom_fichier_pdf.replace('-', '_')
+    chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
+    fichier_pdf = tasks.generer_fiche_correction(requete, inscription, chemin_pdf_final)
+    return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
+

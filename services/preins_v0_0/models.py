@@ -32,6 +32,7 @@ class Admission(db.Model):
     inscriptions = db.relationship('Inscription', back_populates='admission')
     requetes = db.relationship('Requete', back_populates='admission')
     max_inscriptions = db.Column(db.Integer, default=3)
+    max_requetes = db.Column(db.Integer, default=2)
 
     
 class Inscription(db.Model):
@@ -93,20 +94,22 @@ class Inscription(db.Model):
     def langue(self):
         return LANGUES[self.langue_id]
     
+    @property
+    def naissance(self):
+        return f'{self.date_naissance} à {self.lieu_naissance}'
+    
 
 class Requete(db.Model):
     __bind_key__ = 'preins_v0'
     __tablename__ = 'requetes'
+
     id = db.Column(db.Integer, primary_key=True)
     admission_id = db.Column(db.String(12), db.ForeignKey('admissions.id'))
     admission = db.relationship('Admission', back_populates='requetes')
 
     # erreur d'identite
-    nom_admis = db.Column(db.String(200), nullable=True)
-    nom_correct = db.Column(db.String(200), nullable=True)
-    prenom_admis = db.Column(db.String(200), nullable=True)
-    prenom_correct = db.Column(db.String(200), nullable=True)
+    nom_correct = db.Column(db.String(400), nullable=True)
 
     # erreur de filiere
-    option_correct = db.Column(db.String(100), nullable=True)
-    niveau_correct = db.Column(db.String(10), nullable=True)
+    option_correct_id = db.Column(db.String(100), nullable=True)
+    niveau_correct_id = db.Column(db.String(10), nullable=True)
