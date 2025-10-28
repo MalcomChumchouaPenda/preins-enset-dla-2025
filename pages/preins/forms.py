@@ -3,7 +3,7 @@
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, IntegerField, EmailField
+from wtforms import StringField, SelectField, IntegerField, EmailField, TextAreaField
 from wtforms.validators import DataRequired
 from services.preins_v0_0.models import SEXES, SITUATIONS, LANGUES
 
@@ -67,4 +67,5 @@ class ErrorForm(FlaskForm):
     option_correct_id = SelectField(_l('Option corrigée'))
     niveau_admis = StringField(_l('Niveau sur le communiqué'))
     niveau_correct_id = SelectField(_l('Niveau corrigée'))
+    justificatifs = TextAreaField(_l('Pièces justificatives'))
 

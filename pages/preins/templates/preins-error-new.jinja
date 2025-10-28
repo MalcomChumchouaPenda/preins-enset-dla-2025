@@ -64,6 +64,18 @@
                 </div>
             </div> <!-- End Erreur Filiere/Niveau -->
 
+            <!-- Pieces justificatifs  -->
+            <div class="card my-2">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <h6 class="card-title mx-1 mt-4 mb-0">C. {{ form.justificatifs.label }}</h6>
+                        <div class="col-lg-6 col-12">                            
+                            {{ form.justificatifs(class_="form-control") }}
+                        </div> 
+                    </div>
+                </div>
+            </div> <!-- End Pieces justificatifs -->
+
             <div class="text-center mt-5">
                 <a href="{{ url_for('preins.info') }}" class="btn btn-secondary btn-lg m-1">Annuler la requête</a>
                 <button type="submit" class="btn btn-primary btn-lg">Valider la requête</button>

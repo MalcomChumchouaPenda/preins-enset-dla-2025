@@ -167,6 +167,7 @@ def error():
     requete = tasks.rechercher_requete(user_id)
     if requete is None:
         return redirect(url_for('preins.new_error'))
+    print('\n\n', requete.justificatifs)
     return render_template('preins-error.jinja', requete=requete)
 
 

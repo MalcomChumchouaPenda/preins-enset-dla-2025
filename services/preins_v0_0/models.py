@@ -44,7 +44,7 @@ class Inscription(db.Model):
     
     # Informations personnelles de base
     nom = db.Column(db.String(200), nullable=False)
-    prenom = db.Column(db.String(200), nullable=True)
+    prenom = db.Column(db.String(200), nullable=True, default='')
     date_naissance = db.Column(db.String(20), nullable=False)
     lieu_naissance = db.Column(db.String(100), nullable=False)
     sexe_id = db.Column(db.String(10), nullable=False)  
@@ -115,6 +115,8 @@ class Requete(db.Model):
     niveau_correct_id = db.Column(db.String(10), nullable=True)
 
     # pieces justificatives
-    justificatif = db.Column(db.Text, nullable=True)
+    justificatifs = db.Column(db.Text, nullable=True)
 
-    
+    # Métadonnées
+    date_requete = db.Column(db.DateTime, default=datetime.now) 
+

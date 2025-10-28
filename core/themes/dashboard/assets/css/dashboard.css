@@ -372,16 +372,18 @@ a {
 
 /* General inputs  */
 
-select, input {
+select, input, textarea {
   box-shadow: none;
 }
 
+textarea:focus, textarea.form-control:focus
 select:focus, select.form-select:focus,
 input:focus, input.form-control:focus {
-  box-shadow: none;
+  box-shadow: none !important; 
   border-color: color-mix(in srgb, var(--accent-color), transparent 50%);
 }
 
+textarea::placeholder, textarea.form-control::placeholder,
 select::placeholder, select.form-select::placeholder,
 input::placeholder, input.form-control::placeholder {
   font-style: italic;

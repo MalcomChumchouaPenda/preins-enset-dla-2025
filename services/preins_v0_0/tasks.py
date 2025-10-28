@@ -170,6 +170,62 @@ def rechercher_requete(user_id):
     return requete
 
 
+def generer_entete(canvas, size):
+    c = canvas
+    width, height = size
+    couleur_bleu_ud = Color(0/255, 60/255, 120/255)
+
+    # definition de la police
+    font_path = os.path.join(store_dir, 'fonts', 'times.ttf')
+    font_name = 'times'
+    pdfmetrics.registerFont(TTFont(font_name, font_path))
+        
+    # Positions fixes pour les logos
+    logo_ud_path = os.path.join(store_dir, 'imgs', 'udo.jpg')
+    logo_enset_path = os.path.join(store_dir, 'imgs', 'enset.jpg')
+    fili = os.path.join(store_dir, 'imgs', 'filigrane.jpg')
+
+    # Vérifier l'existence des fichiers d'image
+    if os.path.exists(logo_ud_path):
+        # Le logo ENSET est placé en haut à gauche
+        c.drawImage(logo_ud_path, 15*mm, height - 40*mm, width=30*mm, height=30*mm)
+    else:
+        c.rect(20*mm, height - 40*mm, 20*mm, 20*mm, stroke=1)
+        c.drawString(25*mm, height - 30*mm, "Logo ENSET")
+
+    if os.path.exists(logo_enset_path):
+        # Le logo de l'Université de Douala est placé en haut à droite, au-dessus de la photo
+        c.drawImage(logo_enset_path, width - 45*mm, height - 40*mm, width=32*mm, height=32*mm)
+    else:
+        c.rect(width - 40*mm, height - 40*mm, 20*mm, 20*mm, stroke=1)
+        c.drawString(width - 35*mm, height - 30*mm, "Logo UD")
+
+    if os.path.exists(fili):
+        c.drawImage(fili, (width-130*mm)/2, (height-130*mm)/2, width=130*mm, height=130*mm, mask='auto') 
+    else:
+        c.rect(width - 80*mm, height - 40*mm, 20*mm, 20*mm, stroke=0)
+
+    c.setFont(font_name, 16)
+    c.setFillColor(couleur_bleu_ud)
+    c.drawCentredString(width/2, height - 15*mm, "UNIVERSITÉ DE DOUALA")
+
+    c.setStrokeColorRGB(0,0,0)
+    c.setLineWidth(0.5)
+    c.line(80*mm, height - 18*mm, width - 80*mm, height - 18*mm)
+
+    c.setFont(font_name, 12)
+    c.drawCentredString(width/2, height - 25*mm, "ÉCOLE NORMALE SUPÉRIEURE")
+    c.drawCentredString(width/2, height - 30*mm, "D'ENSEIGNEMENT TECHNIQUE")
+
+    c.setStrokeColorRGB(0,0,0)
+    c.setLineWidth(0.5)
+    c.line(85*mm, height - 33*mm, width - 85*mm, height - 33*mm)
+
+    c.setFont(font_name, 10)
+    c.drawCentredString(width/2, height - 39*mm, "BP 1872 Douala - Cameroun Tél: (Fax) (237) 33 42 44 39")
+    c.drawCentredString(width/2, height - 43*mm, "www.enset-douala.cm - email: cabenset@yahoo.fr")
+
+
 def generer_fiche_inscription(inscription, nom_fichier):
 
     # Créer le canvas
@@ -179,7 +235,8 @@ def generer_fiche_inscription(inscription, nom_fichier):
     # Définir les couleurs
     couleur_bleu_ud = Color(0/255, 60/255, 120/255)
     couleur_texte_noir = black
-  # --- 1. EN-TÊTE AVEC LOGOS ET TEXTE ---
+  
+    # --- 1. EN-TÊTE AVEC LOGOS ET TEXTE ---
 
     # Positions fixes pour les logos
     logo_ud_path = os.path.join(store_dir, 'imgs', 'udo.jpg')
@@ -458,12 +515,11 @@ def generer_fiche_inscription(inscription, nom_fichier):
     create_date = inscription.date_inscription.strftime('%d/%m/%Y')
     footer = f"fiche créée le {create_date} et generée le {print_date}"
     c.setFont(font_name, 9)
-    c.drawCentredString(width/2, y_a-40*mm, footer)
+    c.drawCentredString(width/2, 7*mm, footer)
 
     # Sauvegarder le PDF
     c.save()
     return nom_fichier
-
 
 
 def generer_fiche_correction(requete, inscription, output_path):
@@ -497,70 +553,11 @@ def generer_fiche_correction(requete, inscription, output_path):
             "nouveau": requete.niveau_correct.nom
          })
 
-
-    # tests
-    data = {
-        # "reference": "une erreur sur mon nom et sr ma date de naissance",
-        # "nom": "KAPSON NJIPGUEP",
-        # "prenom": "ARLETTE KEVRANE",
-        # "date_lieu_naissance": "02 mars 2003 à DOUALA",
-        # "nationalite": "CAMEROUNAISE",
-        # "matricule": "23NII001A",
-        # "filiere": "Génie Informatique / Informatique Industrielle",
-        # "niveau": "3",
-        # "erreurs": [
-        #     {"champ": "Nom ou/et prénom", "ancien": "KAPSON NJIPGUE", "nouveau": "KAPSOH NJIPGUEP"},
-        #     {"champ": "Option ou/et filière choisie", "ancien": "Génie Informatique", "nouveau": "Informatique Industrielle"},
-        #     {"champ": "Cycle d'entrée", "ancien": "1er Cycle", "nouveau": "2e Cycle"}
-        # ],
-        "pieces": [
-            "Copie du baccalauréat",
-            "Copie de la carte d'identité",
-            "Attestation d'admission signée"
-        ],
-        # "fichier_sortie": "fiche_preinscription_test.pdf"
-    }
-
     # === Initialisation du canvas ===
     c = canvas.Canvas(output_path, pagesize=A4)
     width, height = A4
 
-    # === Couleurs ===
-    couleur_bleu_ud = Color(0/255, 60/255, 120/255)
-    couleur_texte_noir = black
-
-    # === Logos et filigrane ===
-    logo_ud_path = os.path.join(store_dir, 'imgs', 'udo.jpg')
-    logo_enset_path = os.path.join(store_dir, 'imgs', 'enset.jpg')
-    fili = os.path.join(store_dir, 'imgs', 'filigrane.jpg')
-    # logo_ud_path = "static/images/univ.png"
-    # logo_enset_path = "static/images/enset_.png"
-    # fili = "static/images/filigrane_finale.png"
-
-    # Logo Université de Douala (gauche)
-    if os.path.exists(logo_ud_path):
-        c.drawImage(logo_ud_path, 15*mm, height - 40*mm, width=30*mm, height=30*mm)
-    else:
-        c.rect(20*mm, height - 40*mm, 20*mm, 20*mm, stroke=1)
-        c.drawString(25*mm, height - 30*mm, "Logo ENSET")
-
-    # Logo ENSET (droite)
-    if os.path.exists(logo_enset_path):
-        c.drawImage(logo_enset_path, width - 45*mm, height - 40*mm, width=32*mm, height=32*mm)
-    else:
-        c.rect(width - 40*mm, height - 40*mm, 20*mm, 20*mm, stroke=1)
-        c.drawString(width - 35*mm, height - 30*mm, "Logo UD")
-
-    # Filigrane (centre)
-    if os.path.exists(fili):
-        c.drawImage(fili, (width-130*mm)/2, (height-130*mm)/2, width=130*mm, height=130*mm, mask='auto')
-
     # === Polices ===
-    # font_path = 'static/font/times.ttf' 
-    # font_name = 'times'
-    # font_bold_path = 'static/font/Crimson-Bold.ttf'
-    # font_bold_name = 'Crimson-Bold'
-
     font_path = os.path.join(store_dir, 'fonts', 'times.ttf')
     font_name = 'times'
 
@@ -571,24 +568,7 @@ def generer_fiche_correction(requete, inscription, output_path):
     pdfmetrics.registerFont(TTFont(font_name, font_path))
 
     # === En-tête principal ===
-    c.setFont(font_name, 20)
-    c.setFillColor(couleur_bleu_ud)
-    c.drawCentredString(width/2, height - 17*mm, "UNIVERSITÉ DE DOUALA")
-
-    c.setStrokeColorRGB(0,0,0)
-    c.setLineWidth(0.5)
-    c.line(80*mm, height - 20*mm, width - 80*mm, height - 20*mm)
-
-    c.setFont(font_name, 14)
-    c.drawCentredString(width/2, height - 27*mm, "ÉCOLE NORMALE SUPÉRIEURE")
-    c.drawCentredString(width/2, height - 32*mm, "D'ENSEIGNEMENT TECHNIQUE")
-
-    c.setStrokeColorRGB(0,0,0)
-    c.line(85*mm, height - 35*mm, width - 85*mm, height - 35*mm)
-
-    c.setFont(font_name, 10)
-    c.drawCentredString(width/2, height - 40*mm, "BP 1872 Douala - Cameroun Tél: (Fax) (237) 33 42 44 39")
-    c.drawCentredString(width/2, height - 43*mm, "www.enset-douala.cm - email: cabenset@yahoo.fr")
+    generer_entete(c, A4)
 
     c.setFillColorRGB(0,0,0)
     c.setFont(font_bold_name, 13)
@@ -609,8 +589,7 @@ def generer_fiche_correction(requete, inscription, output_path):
     y_pos -= line_spacing + 5*mm
 
     infos = [
-        ("Noms de l'étudiant :", inscription.nom.upper()),
-        ("Prénoms de l'étudiant  :", inscription.prenom.upper()),
+        ("Noms et prénoms :", inscription.nom_complet.upper()),
         ("Date et lieu de naissance :", inscription.naissance),
         ("Matricule :", inscription.admission.matricule),
         ("Filière :", inscription.admission.classe.filiere.nom),
@@ -667,13 +646,18 @@ def generer_fiche_correction(requete, inscription, output_path):
     c.drawString(x_label, y_pos, "Pièces justificatives fournies :")
     y_pos -= line_spacing
     c.setFont(font_bold_name, 12)
-    pieces_text = ", ".join(data.get("pieces", [])) if isinstance(data.get("pieces"), list) else str(data.get("pieces"))
-    c.drawString(x_label, y_pos, pieces_text)
-
+    c.drawString(x_label, y_pos, requete.justificatifs)
 
     y_pos -= 25*mm
     c.setFont(font_name, 12)
-    c.drawString(x_label + 120*mm, y_pos, "Signature de l'étudiant")
+    c.drawString(x_label + 120*mm, y_pos, "Signature de l'étudiant(e)")
+
+    # METADONNEES ---
+    print_date = datetime.now().strftime('%d/%m/%Y')
+    create_date = inscription.date_inscription.strftime('%d/%m/%Y')
+    footer = f"fiche créée le {create_date} et generée le {print_date}"
+    c.setFont(font_name, 9)
+    c.drawCentredString(width/2, 7*mm, footer)
 
     # === Sauvegarde ===
     c.save()
