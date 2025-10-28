@@ -113,3 +113,8 @@ class Requete(db.Model):
     # erreur de filiere
     option_correct_id = db.Column(db.String(100), nullable=True)
     niveau_correct_id = db.Column(db.String(10), nullable=True)
+
+    # pieces justificatives
+    justificatif = db.Column(db.Text, nullable=True)
+
+    
