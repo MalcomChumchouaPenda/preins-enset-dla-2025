@@ -235,33 +235,6 @@ def generer_fiche_inscription(inscription, nom_fichier):
     # Définir les couleurs
     couleur_bleu_ud = Color(0/255, 60/255, 120/255)
     couleur_texte_noir = black
-  
-    # --- 1. EN-TÊTE AVEC LOGOS ET TEXTE ---
-
-    # Positions fixes pour les logos
-    logo_ud_path = os.path.join(store_dir, 'imgs', 'udo.jpg')
-    logo_enset_path = os.path.join(store_dir, 'imgs', 'enset.jpg')
-    fili = os.path.join(store_dir, 'imgs', 'filigrane.jpg')
-        
-    # Vérifier l'existence des fichiers d'image
-    if os.path.exists(logo_ud_path):
-            # Le logo ENSET est placé en haut à gauche
-            c.drawImage(logo_ud_path, 15*mm, height - 40*mm, width=30*mm, height=30*mm)
-    else:
-            c.rect(20*mm, height - 40*mm, 20*mm, 20*mm, stroke=1)
-            c.drawString(25*mm, height - 30*mm, "Logo ENSET")
-
-    if os.path.exists(logo_enset_path):
-            # Le logo de l'Université de Douala est placé en haut à droite, au-dessus de la photo
-            c.drawImage(logo_enset_path, width - 45*mm, height - 40*mm, width=32*mm, height=32*mm)
-    else:
-            c.rect(width - 40*mm, height - 40*mm, 20*mm, 20*mm, stroke=1)
-            c.drawString(width - 35*mm, height - 30*mm, "Logo UD")
-
-    if os.path.exists(fili):
-            c.drawImage(fili, (width-130*mm)/2, (height-130*mm)/2, width=130*mm, height=130*mm, mask='auto') 
-    else:
-        c.rect(width - 80*mm, height - 40*mm, 20*mm, 20*mm, stroke=0)
             
     # Texte principal de l'en-tête (centré)
     font_path = os.path.join(store_dir, 'fonts', 'times.ttf')
@@ -270,30 +243,12 @@ def generer_fiche_inscription(inscription, nom_fichier):
     font_bold_path = os.path.join(store_dir, 'fonts', 'Crimson-Bold.ttf')
     font_bold_name = 'Crimson-Bold'
 
-
     pdfmetrics.registerFont(TTFont(font_bold_name, font_bold_path))
     pdfmetrics.registerFont(TTFont(font_name, font_path))
 
-    c.setFont(font_name, 16)
-    c.setFillColor(couleur_bleu_ud)
-    c.drawCentredString(width/2, height - 15*mm, "UNIVERSITÉ DE DOUALA")
-
-    c.setStrokeColorRGB(0,0,0)
-    c.setLineWidth(0.5)
-    c.line(80*mm, height - 18*mm, width - 80*mm, height - 18*mm)
-
-    c.setFont(font_name, 12)
-    c.drawCentredString(width/2, height - 25*mm, "ÉCOLE NORMALE SUPÉRIEURE")
-    c.drawCentredString(width/2, height - 30*mm, "D'ENSEIGNEMENT TECHNIQUE")
-
-    c.setStrokeColorRGB(0,0,0)
-    c.setLineWidth(0.5)
-    c.line(85*mm, height - 33*mm, width - 85*mm, height - 33*mm)
-
-    c.setFont(font_name, 10)
-    c.drawCentredString(width/2, height - 39*mm, "BP 1872 Douala - Cameroun Tél: (Fax) (237) 33 42 44 39")
-    c.drawCentredString(width/2, height - 43*mm, "www.enset-douala.cm - email: cabenset@yahoo.fr")
-
+  
+    # --- 1. EN-TÊTE AVEC LOGOS ET TEXTE ---
+    generer_entete(c, A4)
     
     # --- 2. TITRE DU FORMULAIRE ---
     admission = inscription.admission
@@ -502,7 +457,6 @@ def generer_fiche_inscription(inscription, nom_fichier):
     c.drawString(x_a2 + 20*mm, y_a, inscription.residence_mere.upper())
     y_a -= dy_b 
     
-   
     
     # SIGNATURE ET CACHET
     c.setFont(font_name, 10)

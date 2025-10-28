@@ -8,7 +8,7 @@
       <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
       <li class="breadcrumb-item">...</li>
       <li class="breadcrumb-item"><a href="{{ url_for('preins.error') }}">{{ _('Requete') }}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ _('Creation') }}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{ _('Modification') }}</li>
     </ol>
   </nav>
 {% endblock %}
@@ -28,10 +28,9 @@
                 {% endfor %}
             {% endif %}
         {% endwith%}
-
-
+        
         <form class="col-lg-10 col-12needs-validation" novalidate 
-            method="POST" action="{{ url_for('preins.new_error') }}">
+            method="POST" action="{{ url_for('preins.edit_error') }}">
                     
             {{ form.csrf_token }}
                         
@@ -92,15 +91,15 @@
             </div> <!-- End Pieces justificatifs -->
 
             <div class="text-center mt-5">
-                <a href="{{ url_for('preins.info') }}" class="btn btn-secondary btn-lg m-1">Annuler la requête</a>
-                <button type="submit" class="btn btn-primary btn-lg">Valider la requête</button>
+                <a href="{{ url_for('preins.info') }}" class="btn btn-secondary btn-lg m-1">Annuler la modification</a>
+                <button type="submit" class="btn btn-primary btn-lg">Valider la modification</button>
             </div>
         </form>
+        
     </section>
 </div>
 {% endblock %}
 
 {% block page_authors%} 
-    <a>Malcom C. Penda - </a>
-    <a>Kapsoh Njipguep A. K.</a>
+    <a>Malcom C. Penda</a>
 {% endblock %}

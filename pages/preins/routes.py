@@ -167,7 +167,6 @@ def error():
     requete = tasks.rechercher_requete(user_id)
     if requete is None:
         return redirect(url_for('preins.new_error'))
-    print('\n\n', requete.justificatifs)
     return render_template('preins-error.jinja', requete=requete)
 
 
@@ -205,6 +204,52 @@ def new_error():
     form.option_admis.data = classe.filiere.nom
     form.niveau_admis.data = classe.niveau.nom
     return render_template('preins-error-new.jinja', form=form)
+
+
+@ui.route('requete/edit', methods=['GET', 'POST'])
+@ui.roles_accepted('admis')
+def edit_error():
+    user_id = current_user.id
+    requete = tasks.rechercher_requete(user_id)
+    if requete is None:
+        return redirect(url_for('preins.new_error'))
+    
+    # creation du formulaire avce controle des modifications
+    admission = requete.admission
+    if request.method == 'POST':
+        form = ErrorForm()
+    else:
+        count_max = admission.max_requetes
+        count = len(admission.requetes)
+        if count > count_max:
+            flash(f'Vous ne pouvez modifier cette requete plus de {count_max} fois', 'danger')
+            return redirect(url_for('preins.error'))
+        flash(f'Vous pourrez encore modifier cette requete {count_max-count+1} fois', 'warning')
+        form = ErrorForm(obj=requete)
+    
+    # parametrage des options
+    form.option_correct_id.choices = tasks.lister_filieres()
+    form.niveau_correct_id.choices = tasks.lister_niveaux()
+    
+    # traitement et enregistrement des donnees
+    # print('\n', form.data)
+    if form.validate_on_submit():
+        data = form.data
+        data['admission_id'] = admission.id
+        inutiles = ['nom_admis', 'option_admis', 
+                    'niveau_admis', 'csrf_token']
+        for name in inutiles:
+            data.pop(name)
+        tasks.ajouter_requete(data)
+        flash('Requete modifiee avec succes', 'success')
+        return redirect(url_for('preins.error'))
+
+    # fixation des valeurs par defaut
+    classe = admission.classe
+    form.nom_admis.data = admission.nom_complet.upper()
+    form.option_admis.data = classe.filiere.nom
+    form.niveau_admis.data = classe.niveau.nom
+    return render_template('preins-error-edit.jinja', form=form)
 
 
 @ui.route('/requete/print')
