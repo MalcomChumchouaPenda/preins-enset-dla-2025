@@ -28,27 +28,22 @@ store_dir = os.path.join(os.path.dirname(__file__), 'store')
 
 def lister_nationalites():
     items = region_tasks.list_nationalites(full_id=True)
-    items.insert(0, ('', 'Choisir...'))
     return items
 
 def lister_regions():
     items = region_tasks.list_regions(full_id=True)
-    items.insert(0, ('', 'Choisir...'))
     return items
 
 def lister_departements():
     items = region_tasks.list_departements(full_id=True)
-    items.insert(0, ('', 'Choisir...'))
     return items
 
 def lister_filieres():
     items = format_tasks.list_filieres()
-    items.insert(0, ('', 'Choisir...'))
     return items
 
 def lister_niveaux():
     items = format_tasks.list_niveaux()
-    items.insert(0, ('', 'Choisir...'))
     return items
 
 
@@ -317,7 +312,7 @@ def generer_fiche_inscription(inscription, nom_fichier):
     c.setFont(font_name, 9)
     c.drawString(x_b1, y_a, "DATE DE NAISSANCE :")
     c.setFont(font_bold_name, 10)
-    c.drawString(x_b1 + 36*mm, y_a, inscription.date_naissance)
+    c.drawString(x_b1 + 36*mm, y_a, inscription.date_naissance.strftime('%d/%m/%Y'))
 
     c.setFont(font_name, 9)
     c.drawString(x_b2, y_a, "LIEU :")

@@ -1,5 +1,6 @@
 
 import random
+from datetime import datetime
 from core.config import db
 from core.utils import Stat, Alert
 from core.auth.tasks import add_role, add_user, add_roles_to_user
@@ -66,7 +67,7 @@ def init_data():
             data = {
                 'admission_id': f'dev{i}',
                 'nom': f'Developper {i}',
-                'date_naissance': f'01/01/200{i}',
+                'date_naissance': datetime(2000+i, 1, 1),
                 'lieu_naissance': f'Maternite de la ville {i}',
                 'sexe_id': random.choice(['F', 'M']),
                 'situation_matrimoniale_id': random.choice(['C', 'M']),
@@ -132,7 +133,7 @@ def init_data():
             data = {
                 'admission_id': f'BTP1-25AA-00{i}',
                 'nom': f'Admis Liste A numero {i}',
-                'date_naissance': f'01/01/200{i}',
+                'date_naissance': datetime(2000+i, 1, 1),
                 'lieu_naissance': f'Maternite de la ville {i}',
                 'sexe_id': random.choice(['F', 'M']),
                 'situation_matrimoniale_id': random.choice(['C', 'M']),

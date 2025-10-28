@@ -59,13 +59,13 @@
                         </div>                
                         <div class="col-lg-4 col-10">
                             <label for="date_naissance" class="form-label">Date de naissance</label>
-                            <input type="text" class="form-control" disabled id="date_naissance" 
-                                   value="{{ inscription.date_naissance }}">
+                            <input type="texte" class="form-control" disabled id="date_naissance" 
+                                   value="{{ inscription.date_naissance.strftime('%d/%m/%Y') }}">
                         </div>
                         <div class="col-lg-8 col-10">
                             <label for="lieu_naissance" class="form-label">Lieu de naissance</label>
                             <input type="text" class="form-control" disabled id="lieu_naissance" 
-                                   value="{{ inscription.date_naissance }}">
+                                   value="{{ inscription.lieu_naissance }}">
                         </div>
                         <div class="col-lg-4 col-10">
                             <label for="sexe" class="form-label">Sexe</label>
@@ -89,22 +89,22 @@
                         <div class="col-lg-6 col-10">
                             <label for="langue" class="form-label">Langue</label>
                             <input type="text" class="form-control" disabled id="langue" 
-                                   value="{{ inscription.langue }}">
+                                   value="{{ inscription.langue.upper() }}">
                         </div>
                         <div class="col-lg-6 col-10">
                             <label for="nationalite" class="form-label">Nationalité</label>
                             <input type="text" class="form-control" disabled id="nationalite" 
-                                   value="{{ inscription.departement_origine.region.pays.nom }}">
+                                   value="{{ inscription.departement_origine.region.pays.nom.upper() }}">
                         </div>
                         <div class="col-lg-6 col-10">
                             <label for="region_origine" class="form-label">Region d'origine</label>
                             <input type="text" class="form-control" disabled id="region_origine" 
-                                   value="{{ inscription.departement_origine.region.nom }}">
+                                   value="{{ inscription.departement_origine.region.nom.upper() }}">
                         </div>
                         <div class="col-lg-6 col-10">
                             <label for="departement_origine" class="form-label">Departement d'origine</label>
                             <input type="text" class="form-control" disabled id="departement_origine" 
-                                   value="{{ inscription.departement_origine.nom }}">
+                                   value="{{ inscription.departement_origine.nom.upper() }}">
                         </div>
                     </div>
                 </div>
@@ -137,22 +137,22 @@
                         <div class="col-12">
                             <label for="departement_academique" class="form-label">Departement</label>
                             <input type="text" class="form-control" disabled id="departement_academique" 
-                                   value="{{ inscription.admission.classe.filiere.departement.nom }}">
+                                   value="{{ inscription.admission.classe.filiere.departement.nom.upper() }}">
                         </div>
                         <div class="col-12">
                             <label for="option" class="form-label">Option</label>
                             <input type="text" class="form-control" disabled id="option" 
-                                   value="{{ inscription.admission.classe.filiere.nom }}">
+                                   value="{{ inscription.admission.classe.filiere.nom.upper() }}">
                         </div>
                         <div class="col-lg-8 col-10">
                             <label for="niveau" class="form-label">Niveau</label>
                             <input type="text" class="form-control" disabled id="niveau" 
-                                   value="{{ inscription.admission.classe.niveau.nom }}">
+                                   value="{{ inscription.admission.classe.niveau.nom.upper() }}">
                         </div>
                         <div class="col-lg-8 col-10">
                             <label for="diplome" class="form-label">Diplôme d'entrée</label>
                             <input type="text" class="form-control" disabled id="diplome" 
-                                   value="{{ inscription.diplome }}">
+                                   value="{{ inscription.diplome.upper() }}">
                         </div>
                         <div class="col-lg-4 col-10">
                             <label for="annee_diplome" class="form-label">Année d'obtention</label>

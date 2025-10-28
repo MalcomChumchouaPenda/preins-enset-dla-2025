@@ -45,7 +45,7 @@ class Inscription(db.Model):
     # Informations personnelles de base
     nom = db.Column(db.String(200), nullable=False)
     prenom = db.Column(db.String(200), nullable=True, default='')
-    date_naissance = db.Column(db.String(20), nullable=False)
+    date_naissance = db.Column(db.DateTime, nullable=False)
     lieu_naissance = db.Column(db.String(100), nullable=False)
     sexe_id = db.Column(db.String(10), nullable=False)  
     situation_matrimoniale_id = db.Column(db.String(50), nullable=False)

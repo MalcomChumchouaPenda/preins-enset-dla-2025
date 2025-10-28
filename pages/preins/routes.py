@@ -11,7 +11,7 @@ from flask import render_template, request, url_for, redirect, send_file, flash
 from core.utils import UiBlueprint
 from services.preins_v0_0 import tasks
 from services.preins_v0_0.models import Inscription, Requete
-from .forms import InfoForm, ErrorForm
+from .forms import InfoForm, ErrorForm, choices
 
 
 ui = UiBlueprint(__name__)
@@ -38,6 +38,23 @@ def info():
     return render_template('preins-info.jinja', inscription=inscription)
 
 
+def _pretraitement_inscription(data):
+    # suppression des colonnes inutiles
+    data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
+    inutiles = ['departement_academique', 'option', 'niveau', 'nationalite_id', 
+                'region_origine_id', 'csrf_token']
+    for name in inutiles:
+        data.pop(name)
+
+    # mise en majuscule des colonnes
+    col_maj = ['nom', 'prenom', 'lieu_naissance', 'diplome',
+               'nom_pere', 'profession_pere', 'residence_pere',
+               'nom_mere', 'profession_mere', 'residence_mere']
+    for name in col_maj:
+        data[name] = data[name].upper()
+    return data
+
+
 @ui.route('/new', methods=['GET', 'POST'])
 @ui.roles_accepted('admis')
 def new_info():
@@ -47,21 +64,18 @@ def new_info():
         
     # create a edit form
     form = InfoForm(obj=inscription)
-    form.nationalite_id.choices = tasks.lister_nationalites()
-    form.region_origine_id.choices = tasks.lister_regions()
-    form.departement_origine_id.choices = tasks.lister_departements()
+    form.nationalite_id.choices = choices(tasks.lister_nationalites())
+    form.region_origine_id.choices = choices(tasks.lister_regions())
+    form.departement_origine_id.choices = choices(tasks.lister_departements())
     
     # traitement et enregistrement des donnees
-    # print('\n', form.data)
+    print('\ndata', form.data)
+    print('\nerrors', form.errors)
+    print('\nform', request.form)
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
-        inutiles = ['departement_academique', 'option', 'niveau', 
-                    'nationalite_id', 'region_origine_id', 
-                    'csrf_token']
-        for name in inutiles:
-            data.pop(name)
+        data = _pretraitement_inscription(data)
         tasks.ajouter_inscription(data)
         flash('inscription effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
@@ -69,8 +83,8 @@ def new_info():
     # fixation des valeurs par defaut
     classe = admission.classe
     form.departement_academique.data = classe.filiere.departement.nom.upper()
-    form.option.data = classe.filiere.nom
-    form.niveau.data = classe.niveau.nom
+    form.option.data = classe.filiere.nom.upper()
+    form.niveau.data = classe.niveau.nom.upper()
     return render_template('preins-info-new.jinja', form=form)
 
 
@@ -96,21 +110,16 @@ def edit_info():
         form = InfoForm(obj=inscription)
     
     # parametrage des options
-    form.nationalite_id.choices = tasks.lister_nationalites()
-    form.region_origine_id.choices = tasks.lister_regions()
-    form.departement_origine_id.choices = tasks.lister_departements()
+    form.nationalite_id.choices = choices(tasks.lister_nationalites())
+    form.region_origine_id.choices = choices(tasks.lister_regions())
+    form.departement_origine_id.choices = choices(tasks.lister_departements())
     
     # traitement et enregistrement des donnees
     print('\n', form.data)
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        data['departement_origine_id'] = data['departement_origine_id'].split('-')[-1]
-        inutiles = ['departement_academique', 'option', 'niveau', 
-                    'nationalite_id', 'region_origine_id', 
-                    'csrf_token']
-        for name in inutiles:
-            data.pop(name)
+        data = _pretraitement_inscription(data)
         tasks.modifier_inscription(data)
         flash('modification effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
@@ -119,8 +128,8 @@ def edit_info():
     classe = admission.classe
     departement_origine = inscription.departement_origine
     form.departement_academique.data = classe.filiere.departement.nom.upper()
-    form.option.data = classe.filiere.nom
-    form.niveau.data = classe.niveau.nom
+    form.option.data = classe.filiere.nom.upper()
+    form.niveau.data = classe.niveau.nom.upper()
     form.nationalite_id.data = departement_origine.region.pays.full_id
     form.region_origine_id.data = departement_origine.region.full_id
     form.departement_origine_id.data = departement_origine.full_id
@@ -182,8 +191,8 @@ def new_error():
     
     # create a edit form
     form = ErrorForm(obj=requete)
-    form.option_correct_id.choices = tasks.lister_filieres()
-    form.niveau_correct_id.choices = tasks.lister_niveaux()
+    form.option_correct_id.choices = choices(tasks.lister_filieres())
+    form.niveau_correct_id.choices = choices(tasks.lister_niveaux())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -201,8 +210,8 @@ def new_error():
     # fixation des valeurs par defaut
     classe = admission.classe
     form.nom_admis.data = admission.nom_complet.upper()
-    form.option_admis.data = classe.filiere.nom
-    form.niveau_admis.data = classe.niveau.nom
+    form.option_admis.data = classe.filiere.nom.upper()
+    form.niveau_admis.data = classe.niveau.nom.upper()
     return render_template('preins-error-new.jinja', form=form)
 
 
@@ -228,8 +237,8 @@ def edit_error():
         form = ErrorForm(obj=requete)
     
     # parametrage des options
-    form.option_correct_id.choices = tasks.lister_filieres()
-    form.niveau_correct_id.choices = tasks.lister_niveaux()
+    form.option_correct_id.choices = choices(tasks.lister_filieres())
+    form.niveau_correct_id.choices = choices(tasks.lister_niveaux())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -247,8 +256,8 @@ def edit_error():
     # fixation des valeurs par defaut
     classe = admission.classe
     form.nom_admis.data = admission.nom_complet.upper()
-    form.option_admis.data = classe.filiere.nom
-    form.niveau_admis.data = classe.niveau.nom
+    form.option_admis.data = classe.filiere.nom.upper()
+    form.niveau_admis.data = classe.niveau.nom.upper()
     return render_template('preins-error-edit.jinja', form=form)
 
 

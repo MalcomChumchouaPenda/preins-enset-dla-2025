@@ -1,15 +1,18 @@
 
-
+from datetime import datetime
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, IntegerField, EmailField, TextAreaField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SelectField, IntegerField, EmailField, TextAreaField, DateField
+from wtforms.validators import DataRequired, ValidationError
 from services.preins_v0_0.models import SEXES, SITUATIONS, LANGUES
 
 
 def choices(data):
-    items = sorted([(k,v) for k,v in data.items()])
+    if isinstance(data, dict):
+        items = sorted([(k,v.upper()) for k,v in data.items()])
+    else:
+        items = sorted([(k,v.upper()) for k,v in data])
     items.insert(0, ('', 'Choisir...'))
     return items
 
@@ -22,7 +25,7 @@ class InfoForm(FlaskForm):
     # Informations personnelles de base
     nom = StringField(_l('Noms'), validators=validators1())
     prenom = StringField(_l('Prenoms'))
-    date_naissance = StringField(_l('Date de naissance'), validators=validators1())
+    date_naissance = DateField(_l('Date de naissance'), validators=validators1())
     lieu_naissance = StringField(_l('Lieu de naissance'), validators=validators1())
     sexe_id = SelectField(_l('Sexe'), validators=validators1(), choices=choices(SEXES))
     situation_matrimoniale_id = SelectField(_l('Situation Matrimoniale'), 
@@ -57,7 +60,7 @@ class InfoForm(FlaskForm):
     profession_mere = StringField(_l('Profession de la mère'))
     telephone_mere = StringField(_l('Téléphone de la mère'))
     residence_mere = StringField(_l('Residence de la mère'))
-    
+
 
 class ErrorForm(FlaskForm):
 
