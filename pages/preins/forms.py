@@ -66,8 +66,8 @@ class ErrorForm(FlaskForm):
 
     nom_admis = StringField(_l('Noms et prénoms sur le communiqué'))
     nom_correct = StringField(_l('Noms et prénoms corrigés'))
-    option_admis = StringField(_l('Option sur le communiqué'))
-    option_correct_id = SelectField(_l('Option corrigée'))
+    filiere_admis = StringField(_l('Option sur le communiqué'))
+    filiere_correct_id = SelectField(_l('Option corrigée'))
     niveau_admis = StringField(_l('Niveau sur le communiqué'))
     niveau_correct_id = SelectField(_l('Niveau corrigée'))
     justificatifs = TextAreaField(_l('Pièces justificatives'))

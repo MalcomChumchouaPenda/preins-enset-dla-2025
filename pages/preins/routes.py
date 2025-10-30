@@ -191,7 +191,7 @@ def new_error():
     
     # create a edit form
     form = ErrorForm(obj=requete)
-    form.option_correct_id.choices = choices(tasks.lister_filieres())
+    form.filiere_correct_id.choices = choices(tasks.lister_filieres())
     form.niveau_correct_id.choices = choices(tasks.lister_niveaux())
     
     # traitement et enregistrement des donnees
@@ -199,7 +199,7 @@ def new_error():
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        inutiles = ['nom_admis', 'option_admis', 
+        inutiles = ['nom_admis', 'filiere_admis', 
                     'niveau_admis', 'csrf_token']
         for name in inutiles:
             data.pop(name)
@@ -210,7 +210,7 @@ def new_error():
     # fixation des valeurs par defaut
     classe = admission.classe
     form.nom_admis.data = admission.nom_complet.upper()
-    form.option_admis.data = classe.filiere.nom.upper()
+    form.filiere_admis.data = classe.filiere.nom.upper()
     form.niveau_admis.data = classe.niveau.nom.upper()
     return render_template('preins-error-new.jinja', form=form)
 
@@ -237,7 +237,7 @@ def edit_error():
         form = ErrorForm(obj=requete)
     
     # parametrage des options
-    form.option_correct_id.choices = choices(tasks.lister_filieres())
+    form.filiere_correct_id.choices = choices(tasks.lister_filieres())
     form.niveau_correct_id.choices = choices(tasks.lister_niveaux())
     
     # traitement et enregistrement des donnees
@@ -245,7 +245,7 @@ def edit_error():
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        inutiles = ['nom_admis', 'option_admis', 
+        inutiles = ['nom_admis', 'filiere_admis', 
                     'niveau_admis', 'csrf_token']
         for name in inutiles:
             data.pop(name)
@@ -256,7 +256,7 @@ def edit_error():
     # fixation des valeurs par defaut
     classe = admission.classe
     form.nom_admis.data = admission.nom_complet.upper()
-    form.option_admis.data = classe.filiere.nom.upper()
+    form.filiere_admis.data = classe.filiere.nom.upper()
     form.niveau_admis.data = classe.niveau.nom.upper()
     return render_template('preins-error-edit.jinja', form=form)
 
