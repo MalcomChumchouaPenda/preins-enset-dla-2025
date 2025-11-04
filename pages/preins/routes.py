@@ -54,6 +54,19 @@ def _pretraitement_inscription(data):
         data[name] = data[name].upper()
     return data
 
+def _verification_matricule(data):
+    matricule = data['matricule']
+    if matricule:
+        if data['niveau'] != 4:
+            msg = f"Le matricule '{matricule}' est invalide "
+            msg += '(Vous êtes un nouveau étudiant)'
+            return False, msg
+        elif 'dipet' not in data['diplome'].lower():
+            msg = f"Le matricule '{matricule}' est invalide "
+            msg += '(Vous êtes un nouveau étudiant)'
+            return False, msg
+    return True, ''
+
 
 @ui.route('/new', methods=['GET', 'POST'])
 @ui.roles_accepted('admis')
@@ -74,11 +87,17 @@ def new_info():
     # print('\nform', request.form)
     if form.validate_on_submit():
         data = form.data
-        data['admission_id'] = admission.id
-        data = _pretraitement_inscription(data)
-        tasks.ajouter_inscription(data)
-        flash('inscription effectue avec succes', 'success')
-        return redirect(url_for('preins.info'))
+        valid, msg = _verification_matricule(data)
+        print('\n', valid, data)
+        if valid:
+            data['admission_id'] = admission.id
+            data = _pretraitement_inscription(data)
+            tasks.ajouter_inscription(data)
+            flash('inscription effectue avec succes', 'success')
+            return redirect(url_for('preins.info'))
+        else:
+            flash(msg, 'warning')
+            return redirect(url_for('preins.new_info'))
 
     # fixation des valeurs par defaut
     classe = admission.classe
