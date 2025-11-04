@@ -63,8 +63,15 @@ def chercher_admission(id):
 
 def ajouter_inscription(data):
     session = db.session
+    matricule = data.pop('matricule')
     inscription = Inscription(**data)
-    creer_matricule(session, inscription)
+    if matricule:
+        query = session.query(Admission)
+        query = query.filter_by(id=data['admission_id'])
+        admission = query.one()
+        admission.matricule = matricule
+    else:
+        creer_matricule(session, inscription)
     session.add(inscription)
     session.commit()
     

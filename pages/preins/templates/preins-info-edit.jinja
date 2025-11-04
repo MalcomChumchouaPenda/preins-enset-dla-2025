@@ -46,7 +46,14 @@
             <div class="card my-2">
                 <div class="card-body">
                     <div class="row g-3">
-                        <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6>            
+                        <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6>        
+                        <div class="col-lg-6 col-10">
+                            {{ form.matricule.label(class_="form-label")}}
+                            {{ form.matricule(class_="form-control", disabled=true) }}
+                        </div>         
+                        <div class="col-lg-6 col-2">
+                            <span></span>
+                        </div>     
                         <div class="col-lg-6 col-10">
                             {{ form.nom.label(class_="form-label", required=true)}}
                             {{ form.nom(class_="form-control") }}

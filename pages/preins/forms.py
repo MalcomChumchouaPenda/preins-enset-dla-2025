@@ -23,8 +23,9 @@ def validators1():
 class InfoForm(FlaskForm):
 
     # Informations personnelles de base
-    nom = StringField(_l('Noms'), validators=validators1())
+    matricule = StringField(_l('Matricule'))
     prenom = StringField(_l('Prenoms'))
+    nom = StringField(_l('Noms'), validators=validators1())
     date_naissance = DateField(_l('Date de naissance'), validators=validators1())
     lieu_naissance = StringField(_l('Lieu de naissance'), validators=validators1())
     sexe_id = SelectField(_l('Sexe'), validators=validators1(), choices=choices(SEXES))

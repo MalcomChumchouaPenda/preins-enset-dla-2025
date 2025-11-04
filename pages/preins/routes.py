@@ -69,9 +69,9 @@ def new_info():
     form.departement_origine_id.choices = choices(tasks.lister_departements())
     
     # traitement et enregistrement des donnees
-    print('\ndata', form.data)
-    print('\nerrors', form.errors)
-    print('\nform', request.form)
+    # print('\ndata', form.data)
+    # print('\nerrors', form.errors)
+    # print('\nform', request.form)
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
@@ -82,6 +82,7 @@ def new_info():
 
     # fixation des valeurs par defaut
     classe = admission.classe
+    form.matricule.data = admission.matricule
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom.upper()
     form.niveau.data = classe.niveau.nom.upper()
@@ -126,6 +127,7 @@ def edit_info():
 
     # fixation des valeurs par defaut
     classe = admission.classe
+    form.matricule.data = admission.matricule
     departement_origine = inscription.departement_origine
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom.upper()

@@ -45,7 +45,19 @@
             <div class="card my-2">
                 <div class="card-body">
                     <div class="row g-3">
-                        <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6>                        
+                        <h6 class="card-title mx-1 mt-3 mb-0">1. Informations personnelles</h6>     
+                        <div class="col-lg-6 col-10">
+                            <div class="d-flex justify-content-start">
+                                {{ form.matricule.label(class_="form-label")}}
+                                <div class="text-warning">
+                                    <i class="bi bi-exclamation-triangle ms-2 me-1"></i>Pour ancien etudiant
+                                </div>
+                            </div>
+                            {{ form.matricule(class_="form-control") }}
+                        </div>         
+                        <div class="col-lg-6 col-2">
+                            <span></span>
+                        </div>                                 
                         <div class="col-lg-6 col-10">
                             {{ form.nom.label(class_="form-label", required=true)}}
                             {{ form.nom(class_="form-control") }}
