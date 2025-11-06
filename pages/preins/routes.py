@@ -140,6 +140,7 @@ def edit_info():
         data = form.data
         data['admission_id'] = admission.id
         data = _pretraitement_inscription(data)
+        data.pop('matricule')
         tasks.modifier_inscription(data)
         flash('modification effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
@@ -266,7 +267,7 @@ def edit_error():
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        inutiles = ['nom_admis', 'filiere_admis', 
+        inutiles = ['nom_admis', 'filiere_admis'
                     'niveau_admis', 'csrf_token']
         for name in inutiles:
             data.pop(name)
