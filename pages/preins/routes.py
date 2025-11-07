@@ -6,7 +6,8 @@ from datetime import datetime
 from flask_login import current_user
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
-from flask import render_template, request, url_for, redirect, send_file, flash
+from flask import render_template, url_for, redirect, send_file, flash
+from flask import request, session, current_app
 
 from core.utils import UiBlueprint
 from services.preins_v0_0 import tasks
@@ -19,6 +20,29 @@ static_dir = os.path.join(os.path.dirname(__file__), 'static')
 temp_dir = os.path.join(static_dir, 'temp')
 os.makedirs(temp_dir, exist_ok=True)
 
+
+@ui.before_request
+def prepare_request():
+    _clean_temp_files()
+
+@ui.after_request
+def cleanup_request(response):
+    _clean_temp_files()
+    return response
+
+
+def _clean_temp_files():
+    filenames = os.listdir(temp_dir)
+    logger = current_app.logger
+    logger.info(f'cleaning temp {len(filenames)} files :')
+    for filename in filenames:
+        filepath = os.path.join(temp_dir, filename)
+        try:
+            os.remove(filepath)
+            logger.debug(f'clean {filename}')
+        except OSError as e:
+            logger.warning(e)
+            continue
 
 
 @ui.route('/procedures')
@@ -88,7 +112,7 @@ def new_info():
     if form.validate_on_submit():
         data = form.data
         valid, msg = _verification_matricule(data)
-        print('\n', valid, data)
+        # print('\n', valid, data)
         if valid:
             data['admission_id'] = admission.id
             data = _pretraitement_inscription(data)
@@ -135,7 +159,7 @@ def edit_info():
     form.departement_origine_id.choices = choices(tasks.lister_departements())
     
     # traitement et enregistrement des donnees
-    print('\n', form.data)
+    # print('\n', form.data)
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
