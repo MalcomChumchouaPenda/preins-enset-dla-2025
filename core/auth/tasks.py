@@ -27,6 +27,9 @@ def disconnect_user():
     return True
 
 
+def get_user(session, id):
+    return session.query(User).filter_by(id=id).one_or_none()
+
 def add_user(session, id, last_name, password, first_name=None):
     user = User(id=id, last_name=last_name, first_name=first_name)
     user.set_password(password)

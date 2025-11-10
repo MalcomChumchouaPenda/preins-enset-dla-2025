@@ -78,10 +78,10 @@ def _pretraitement_inscription(data):
         data[name] = data[name].upper()
     return data
 
-def _verification_matricule(data):
+def _verification_matricule(admission, data):
     matricule = data['matricule']
     if matricule:
-        if data['niveau'] != 4:
+        if admission.classe_id[-1] != '4':
             msg = f"Le matricule '{matricule}' est invalide "
             msg += '(Vous êtes un nouveau étudiant)'
             return False, msg
@@ -111,12 +111,12 @@ def new_info():
     # print('\nform', request.form)
     if form.validate_on_submit():
         data = form.data
-        valid, msg = _verification_matricule(data)
+        valid, msg = _verification_matricule(admission, data)
         # print('\n', valid, data)
         if valid:
             data['admission_id'] = admission.id
             data = _pretraitement_inscription(data)
-            tasks.ajouter_inscription(data)
+            tasks.ajouter_inscription(current_user, data)
             flash('inscription effectue avec succes', 'success')
             return redirect(url_for('preins.info'))
         else:
@@ -165,7 +165,7 @@ def edit_info():
         data['admission_id'] = admission.id
         data = _pretraitement_inscription(data)
         data.pop('matricule')
-        tasks.modifier_inscription(data)
+        tasks.modifier_inscription(current_user, data) 
         flash('modification effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
 

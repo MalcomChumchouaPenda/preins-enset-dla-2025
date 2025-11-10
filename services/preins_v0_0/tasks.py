@@ -16,7 +16,7 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Table, TableStyle
 from reportlab.lib import colors
 
-from core.auth.tasks import add_user, add_roles_to_user
+from core.auth.tasks import get_user, add_user, add_roles_to_user
 from core.auth.models import User
 from services.formations_v0_0.models import Classe, Filiere, Niveau
 from services.regions_v0_0.models import Departement
@@ -61,7 +61,7 @@ def chercher_admission(id):
     return admission
 
 
-def ajouter_inscription(data):
+def ajouter_inscription(user, data):
     session = db.session
     matricule = data.pop('matricule')
     inscription = Inscription(**data)
@@ -72,6 +72,8 @@ def ajouter_inscription(data):
         admission.matricule = matricule
     else:
         creer_matricule(session, inscription)
+    user.first_name = inscription.prenom
+    user.last_name = inscription.nom
     session.add(inscription)
     session.commit()
     
@@ -104,14 +106,17 @@ def creer_matricule(session, inscription):
             add_user(session, matricule, inscription.nom, '0000', first_name=inscription.prenom)
             add_roles_to_user(session, matricule, 'student')
             admission.matricule = matricule
+            session.commit()
             return matricule
         except IntegrityError as e:
             session.rollback()
 
 
-def modifier_inscription(data):
+def modifier_inscription(user, data):
     session = db.session
     inscription = Inscription(**data)
+    user.first_name = inscription.prenom
+    user.last_name = inscription.nom 
     session.add(inscription)
     session.commit()
     
@@ -673,6 +678,10 @@ def upload_admissions(session, filename, sep=','):
             add_roles_to_user(session, id, 'admis')
             if id.startswith('dev'):
                 add_roles_to_user(session, id, 'developper')
+            matricule = row.get('matricule')
+            if matricule:
+                add_user(session, matricule, nom, pwd)
+                add_roles_to_user(session, matricule, 'student')
             row['nom_complet'] = nom
             session.add(Admission(**row))
             session.commit()
