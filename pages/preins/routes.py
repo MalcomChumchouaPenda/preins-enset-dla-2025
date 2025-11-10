@@ -34,7 +34,7 @@ def cleanup_request(response):
 def _clean_temp_files():
     filenames = os.listdir(temp_dir)
     logger = current_app.logger
-    logger.info(f'cleaning temp {len(filenames)} files :')
+    logger.debug(f'cleaning temp {len(filenames)} files :')
     for filename in filenames:
         filepath = os.path.join(temp_dir, filename)
         try:
