@@ -8,7 +8,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired
 
-from core.config import login_manager
+from core.config import login_manager, db
 from core.utils import UiBlueprint, read_json, get_locale, default_deadline
 from core.auth.tasks import connect_user, disconnect_user
 
@@ -25,6 +25,7 @@ def index():
     img = f'img/hero-bg.jpg'
     hero = dict(msg=msg, img=img)
     return render_template('home.jinja', hero=hero)
+
 
 class LoginForm(FlaskForm):
     id = StringField(_l('identifiant'), validators=[DataRequired()])
@@ -70,10 +71,26 @@ def access_denied():
 
 @ui.route('/profile')
 def profile():
-    return render_template('dashboard/coming-soon.jinja',
-                           deadline=default_deadline(),
-                           page_id='profile_dash', 
-                           title=_('Profil'))
+    return render_template('home-dashboard-profile.jinja')
+
+
+class ChangePasswordForm(FlaskForm):
+    new_pwd = PasswordField(_l('Nouveau mot de passe'), validators=[DataRequired()])
+    confirm_pwd = PasswordField(_l('Confirmer mot de passe'), validators=[DataRequired()])
+
+@ui.route('/change-password', methods=['GET', 'POST'])
+def change_password():
+    error = None
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        new_pwd = form.new_pwd.data
+        if new_pwd == form.confirm_pwd.data:
+            current_user.set_password(new_pwd)
+            db.session.commit()
+            return redirect(url_for('home.profile'))
+        error = "Mot de passe non confirmé"
+        form = ChangePasswordForm()
+    return render_template('home-change-password.jinja', form=form, error=error)
 
 
 @ui.route('/dashboard')
