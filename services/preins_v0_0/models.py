@@ -109,7 +109,7 @@ class Inscription(db.Model):
     
     @property
     def naissance(self):
-        return f'{self.date_naissance} à {self.lieu_naissance}'
+        return f"{self.date_naissance.strftime('%d/%m/%Y')} à {self.lieu_naissance}"
     
     @property
     def departement_origine(self):
@@ -147,3 +147,19 @@ class Requete(db.Model):
     # Métadonnées
     date_requete = db.Column(db.DateTime, default=datetime.now) 
 
+    @property
+    def filiere_correct(self):
+        query = db.session.query(Filiere)
+        query = query.filter_by(id=self.filiere_correct_id)
+        return query.one_or_none()
+    
+    @property
+    def niveau_correct(self):
+        query = db.session.query(Niveau)
+        query = query.filter_by(id=self.niveau_correct_id)
+        return query.one_or_none()
+    
+    # query = db.session.query(Classe)
+    # query = query.filter_by(id=requete.admission.classe_id)
+    # classe = query.one_or_none()
+    # setattr(requete.admission, 'classe', classe)

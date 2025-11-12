@@ -137,21 +137,5 @@ def rechercher_requete(user_id):
     requetes = query.all()
     if len(requetes) == 0:
         return None
-
-    requete = requetes[0]
-    query = db.session.query(Filiere)
-    query = query.filter_by(id=requete.filiere_correct_id)
-    filiere_correct = query.one_or_none()
-    setattr(requete, 'filiere_correct', filiere_correct)
-    
-    query = db.session.query(Niveau)
-    query = query.filter_by(id=requete.niveau_correct_id)
-    niveau_correct = query.one_or_none()
-    setattr(requete, 'niveau_correct', niveau_correct)
-    
-    query = db.session.query(Classe)
-    query = query.filter_by(id=requete.admission.classe_id)
-    classe = query.one_or_none()
-    setattr(requete.admission, 'classe', classe)
-    return requete
+    return requetes[0]
 

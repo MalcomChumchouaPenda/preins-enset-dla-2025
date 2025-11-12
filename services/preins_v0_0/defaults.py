@@ -14,9 +14,18 @@ from .tasks import upload_communiques, upload_admissions, upload_inscriptions, u
 
 def init_stats(user):
     stats = []
-    if user.has_role('developper'):
+    session = db.session
+    if user.has_role('admin_preins'):
+        q1 = session.query(Inscription)
+        q2 = session.query(Requete)
+        q3 = session.query(Admission)
+        q4 = q3.filter(Admission.matricule == None)
+
         stats.extend([
-            Stat('Inscriptions', 'Nombre', value='142', rank=0),
+            Stat('Inscriptions', "Nombre d'inscriptions", value=q1.count(), rank=0),
+            Stat('Inscriptions', "Nombre de requetes", value=q2.count(), rank=1),
+            Stat('Inscriptions', "Nombre d'admis", value=q3.count(), rank=1),
+            Stat('Inscriptions', "Taux d'inscription (en % d'admis)", value=q4.count(), rank=2),
         ])
     return stats
 
