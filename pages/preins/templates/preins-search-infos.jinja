@@ -45,17 +45,17 @@
                 </thead>
                 <tbody>
                 {% for inscription in records.items %}
-                  <tr {% if inscription.modified %}class="text-decoration-line-through"{% endif %} >
+                  <tr>
                       <td>{{ records.page + loop.index - 1 }}</td>
-                      <td>{{ inscription.admission.id }}</td>
-                      <td>{{ inscription.nom_complet }}</td>
-                      <td>{{ inscription.admission.classe_id }}</td>
-                      <td>{{ inscription.admission.matricule}}</td>
-                      <td>{{ inscription.date_inscription.strftime('%d-%m-%Y')}}</td>
+                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.id }}</td>
+                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.nom_complet }}</td>
+                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.classe_id }}</td>
+                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.matricule}}</td>
+                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.date_inscription.strftime('%d-%m-%Y')}}</td>
                       <td>
-                        <a class="btn btn-secondary btn-sm" role="button" href="{{ url_for('preins.search_info', search_id=inscription.id)}}">Details</a>
                         <a class="btn btn-secondary btn-sm" role="button" href="{{ url_for('preins.debug_info', search_id=inscription.id)}}">Corriger</a>
-                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('preins.clean_info', search_id=inscription.id)}}">Supprimer</a>
+                        <a class="btn btn-secondary btn-sm" role="button" href="{{ url_for('preins.clean_info', search_id=inscription.id)}}">Supprimer</a>
+                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('preins.search_info', search_id=inscription.id)}}">Details</a>
                       </td>
                   </tr>
                 {% endfor %}
@@ -79,4 +79,8 @@
 <script type="text/javascript">
   const table = new basictable('.table');
 </script>
+{% endblock %}
+
+{% block page_authors%} 
+    <a>Malcom Chumchoua Penda </a>
 {% endblock %}

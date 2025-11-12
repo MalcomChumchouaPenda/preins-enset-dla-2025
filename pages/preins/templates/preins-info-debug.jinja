@@ -2,13 +2,14 @@
 {% set page_id = 'preins_info_pg' %}
 {% from 'preins-macros.jinja' import render_info_form, render_messages %}
 
+
 {% block page_header %}
-  <h1>{{ _('Nouvelle Fiche Inscription') }}</h1>
+  <h1>{{ _('Modification Fiche Inscription ') + search_id }}</h1>
   <nav class="pb-3" aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>
-      <li class="breadcrumb-item"><a href="{{ url_for('preins.info') }}">{{ _('Inscription') }}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ _('Creation') }}</li>
+      <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>   
+      <li class="breadcrumb-item"><a href="{{ previous }}">{{ _('Inscriptions') }}</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ search_id }}</li>
     </ol>
   </nav>
 {% endblock %}
@@ -16,30 +17,31 @@
 {% block page_main %}
 <div class="container">
     <section class="section row g-4 pt-0">
-    
+
         <!-- Alertes -->
         {{ render_messages() }}
 
         <form class="col-lg-10 col-12 needs-validation" novalidate 
-              method="POST" action="{{ url_for('preins.new_info') }}">
+              method="POST" action="{{ url_for('preins.debug_info', search_id=search_id, previous=previous) }}">
                     
             {{ form.csrf_token }}
 
             <!-- Actions initiales -->
-            <div class="row mt-3 g-3">
+            <div class="row mb-2 g-3">
                 <div class="text-center">
-                    <a href="{{ url_for('home.dashboard') }}" class="btn btn-secondary btn-lg m-1">Annuler l'inscription</a>
+                    <a href="{{ previous }}" class="btn btn-secondary btn-lg m-1">Annuler la modification</a>
+                    <button type="submit" class="btn btn-primary btn-lg m-1">Valider la modification</button>
                 </div>
             </div>
 
             <!-- fields -->
-            {{ render_info_form(form, mode='new')}}
+            {{ render_info_form(form, mode='debug')}}
 
             <!-- Actions finales -->
             <div class="row mt-3 g-3">
                 <div class="text-center">
-                    <a href="{{ url_for('home.dashboard') }}" class="btn btn-secondary btn-lg m-1">Annuler l'inscription</a>
-                    <button type="submit" class="btn btn-primary btn-lg m-1">Valider l'inscription</button>
+                    <a href="{{ previous }}" class="btn btn-secondary btn-lg m-1">Annuler la modification</a>
+                    <button type="submit" class="btn btn-primary btn-lg m-1">Valider la modification</button>
                 </div>
             </div>
             
@@ -53,10 +55,10 @@
 {% endblock %}
 
 {% block custom_js %}
-    <script src="{{ url_for('preins.static', filename='js/preins-info-new.js') }}"></script>
+    <script src="{{ url_for('preins.static', filename='js/preins-info-edit.js') }}"></script>
 {% endblock %}
 
+
 {% block page_authors%} 
-    <a>Malcom C. Penda - </a>
-    <a>Kapsoh Njipguep A. K.</a>
+    <a>Malcom Chumchoua Penda </a>
 {% endblock %}

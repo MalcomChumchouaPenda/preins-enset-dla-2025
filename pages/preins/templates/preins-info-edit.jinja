@@ -33,7 +33,7 @@
                     <a href="{{ url_for('preins.info') }}" class="btn btn-secondary btn-lg m-1">Annuler la modification</a>
                     <button type="submit" class="btn btn-primary btn-lg m-1">Valider la modification</button>
                 </div>
-            </div><!-- End Actions initiales -->
+            </div>
 
             <!-- fields -->
             {{ render_info_form(form, mode='edit')}}
@@ -44,7 +44,8 @@
                     <a href="{{ url_for('preins.info') }}" class="btn btn-secondary btn-lg m-1">Annuler la modification</a>
                     <button type="submit" class="btn btn-primary btn-lg m-1">Valider la modification</button>
                 </div>
-            </div><!-- End Actions finales -->
+            </div>
+            
         </form>
     </section>
 </div>

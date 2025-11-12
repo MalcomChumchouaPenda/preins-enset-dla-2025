@@ -206,6 +206,7 @@ def search_infos():
     records = db.paginate(query, page=page, per_page=15, error_out=False)
     return render_template('preins-search-infos.jinja', records=records)
 
+
 @ui.route('/admin/inscriptions/<search_id>')
 @ui.roles_accepted('admin_preins')
 def search_info(search_id):
@@ -216,12 +217,46 @@ def search_info(search_id):
     if record.modified:
         flash('Cette fiche a ete modifiee!', 'danger')
     return render_template('preins-search-info.jinja', 
-                           inscription=record, previous=previous)
+                           inscription=record, 
+                           previous=previous)
 
-@ui.route('/admin/inscriptions/<search_id>/debug')
+@ui.route('/admin/inscriptions/<search_id>/debug', methods=['GET', 'POST'])
 @ui.roles_accepted('admin_preins')
 def debug_info(search_id):
-    return 'Debug info' + search_id
+    session = db.session
+    inscription = session.query(Inscription).filter_by(id=search_id).one()
+    form = InfoForm() if request.method == 'POST' else InfoForm(obj=inscription)
+    
+    # parametrage des options
+    form.nationalite_id.choices = choices(tasks.lister_nationalites())
+    form.region_origine_id.choices = choices(tasks.lister_regions())
+    form.departement_origine_id.choices = choices(tasks.lister_departements())
+    
+    # traitement et enregistrement des donnees
+    # print('\n', form.data)
+    previous = request.args.get('previous', url_for('preins.search_infos'))
+    if form.validate_on_submit():
+        data = form.data
+        data['admission_id'] = inscription.admission_id
+        data = _pretraitement_inscription(data)
+        tasks.corriger_inscription(data) 
+        flash('modification effectue avec succes', 'success')
+        return redirect(previous)
+
+    # fixation des valeurs par defaut
+    admission = inscription.admission
+    classe = admission.classe
+    form.matricule.data = admission.matricule
+    departement_origine = inscription.departement_origine
+    form.departement_academique.data = classe.filiere.departement.nom.upper()
+    form.option.data = classe.filiere.nom.upper()
+    form.niveau.data = classe.niveau.nom.upper()
+    form.nationalite_id.data = departement_origine.region.pays.full_id
+    form.region_origine_id.data = departement_origine.region.full_id
+    form.departement_origine_id.data = departement_origine.full_id
+    return render_template('preins-info-debug.jinja', search_id=search_id,  
+                           form=form, previous=previous)
+
 
 @ui.route('/admin/inscriptions/<search_id>/clean')
 @ui.roles_accepted('admin_preins')
@@ -232,6 +267,9 @@ def clean_info(search_id):
     session.delete(record)
     session.commit()
     flash(f'Une fiche {clean_id} a ete supprimee', 'success')
+    previous = request.args.get('previous')
+    if previous:
+        return redirect(previous)
     return redirect(url_for('preins.search_infos'))
 
 

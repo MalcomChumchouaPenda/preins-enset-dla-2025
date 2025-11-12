@@ -1,6 +1,6 @@
 {% extends 'dashboard/layout.jinja' %}
 {% set page_id = 'preins_info_pg' %}
-{% from 'preins-macros.jinja' import render_info_div, render_messages, render_info_actions %}
+{% from 'preins-macros.jinja' import render_info_div, render_messages %}
 
 
 
@@ -22,7 +22,12 @@
         {{ render_messages() }}
 
         <!-- Actions initiales -->
-        {{ render_info_actions(mode="view")}}
+        <div class="row mt-3 d-flex justify-content-center">
+          <div class="col-lg-6 col-12 d-flex justify-content-center">
+            <a href="{{ url_for('preins.edit_info') }}" class="btn btn-secondary btn-lg m-1">Modifier la fiche</a>
+            <a href="{{ url_for('preins.print_info') }}" class="btn btn-primary btn-lg m-1">Imprimer la fiche</a>
+          </div>
+        </div>
 
         <!-- fields -->
         <form class="col-lg-10 col-12">
@@ -30,7 +35,12 @@
         </form>
         
         <!-- Actions finales -->
-        {{ render_info_actions(mode="view")}}
+        <div class="row mt-3 d-flex justify-content-center">
+          <div class="col-lg-6 col-12 d-flex justify-content-center">
+            <a href="{{ url_for('preins.edit_info') }}" class="btn btn-secondary btn-lg m-1">Modifier la fiche</a>
+            <a href="{{ url_for('preins.print_info') }}" class="btn btn-primary btn-lg m-1">Imprimer la fiche</a>
+          </div>
+        </div>
 
     </section>
 </div>
