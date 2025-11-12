@@ -1,5 +1,5 @@
 
-
+import re
 from sqlalchemy.exc import IntegrityError
 from core.auth.tasks import get_user, add_user, add_roles_to_user
 from core.auth.models import User
@@ -8,6 +8,19 @@ from services.regions_v0_0.models import Departement
 from services.regions_v0_0 import tasks as region_tasks
 from services.formations_v0_0 import tasks as format_tasks
 from ..models import db, Inscription, Admission, Requete, CommuniqueAdmission
+
+
+# GESTION DES NOMS
+
+def former_nom(nom, prenom=''):
+    resultat = ' '.join([nom, prenom])
+    return nettoyer_nom(resultat)
+
+def nettoyer_nom(nom):
+    nom = re.sub('\s+', ' ', nom)
+    nom = nom.strip()
+    nom = nom.upper()
+    return nom
 
 
 # GESTION DES ADMISSIONS

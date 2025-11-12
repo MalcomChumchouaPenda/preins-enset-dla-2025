@@ -1,6 +1,7 @@
 
 import os
 import re
+import Levenshtein as lv
 from datetime import datetime
 
 from flask_login import current_user
@@ -92,6 +93,15 @@ def _verification_matricule(admission, data):
             return False, msg
     return True, ''
 
+def _verification_noms(admission, data):
+    nom_complet = tasks.former_nom(data['nom'], data['prenom'])
+    ratio = lv.ratio(nom_complet, admission.nom_complet)
+    if ratio > 0.8:
+        return True, ''
+    msg = f"Ce compte est reserve a l'etudiant <b>{admission.nom_complet}</b> "
+    msg += "(Vous n'etes pas dans votre compte)"
+    return False, msg
+
 
 @ui.route('/new', methods=['GET', 'POST'])
 @ui.roles_accepted('admis')
@@ -113,16 +123,21 @@ def new_info():
     if form.validate_on_submit():
         data = form.data
         valid, msg = _verification_matricule(admission, data)
-        # print('\n', valid, data)
-        if valid:
-            data['admission_id'] = admission.id
-            data = _pretraitement_inscription(data)
-            tasks.ajouter_inscription(current_user, data)
-            flash('inscription effectue avec succes', 'success')
-            return redirect(url_for('preins.info'))
-        else:
+        if not valid:
             flash(msg, 'warning')
             return redirect(url_for('preins.new_info'))
+        
+        valid, msg = _verification_noms(admission, data)
+        if not valid:
+            flash(msg, 'danger')
+            return redirect(url_for('preins.new_info'))
+
+        # print('\n', valid, data)
+        data['admission_id'] = admission.id
+        data = _pretraitement_inscription(data)
+        tasks.ajouter_inscription(current_user, data)
+        flash('inscription effectue avec succes', 'success')
+        return redirect(url_for('preins.info'))
 
     # fixation des valeurs par defaut
     classe = admission.classe
@@ -279,18 +294,6 @@ def coming():
     return render_template('dashboard/coming-soon.jinja',
                            deadline=datetime(2025, 10, 30),
                            page_id="preins_error_pg")
-
-
-
-def former_nom(nom, prenom=''):
-    resultat = ' '.join([nom, prenom])
-    return nettoyer_nom(resultat)
-
-def nettoyer_nom(nom):
-    nom = re.sub('\s+', ' ', nom)
-    nom = nom.strip()
-    nom = nom.upper()
-    return nom
 
 
 @ui.route('/requete')
