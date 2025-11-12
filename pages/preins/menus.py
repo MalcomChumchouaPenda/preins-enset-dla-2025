@@ -18,6 +18,6 @@ adminmenu = sidebar.add('admin_preins_menu',
 
 adminmenu.add('admin_preins_info_pg', 
               _l('Inscriptions'), 
-              endpoint='preins.search_info', 
+              endpoint='preins.search_infos', 
               rank=0, 
               accepted=['admin_preins'])

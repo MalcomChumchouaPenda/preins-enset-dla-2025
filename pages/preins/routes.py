@@ -199,24 +199,40 @@ def print_info():
 
 @ui.route('/admin/inscriptions')
 @ui.roles_accepted('admin_preins')
-def search_info():
+def search_infos():
     page = request.args.get('page', 1, type=int)
     query = db.session.query(Inscription)
     query = query.order_by(Inscription.date_inscription.desc())
     records = db.paginate(query, page=page, per_page=15, error_out=False)
-    return render_template('preins-search-info.jinja', records=records)
+    return render_template('preins-search-infos.jinja', records=records)
 
 @ui.route('/admin/inscriptions/<search_id>')
 @ui.roles_accepted('admin_preins')
-def search_info_details(search_id):
+def search_info(search_id):
     previous = request.referrer
-    if url_for('preins.search_info') not in previous:
-        previous = url_for('preins.search_info')
+    if url_for('preins.search_infos') not in previous:
+        previous = url_for('preins.search_infos')
     record = db.session.query(Inscription).filter_by(id=search_id).one()
     if record.modified:
         flash('Cette fiche a ete modifiee!', 'danger')
-    return render_template('preins-search-info-details.jinja', 
+    return render_template('preins-search-info.jinja', 
                            inscription=record, previous=previous)
+
+@ui.route('/admin/inscriptions/<search_id>/debug')
+@ui.roles_accepted('admin_preins')
+def debug_info(search_id):
+    return 'Debug info' + search_id
+
+@ui.route('/admin/inscriptions/<search_id>/clean')
+@ui.roles_accepted('admin_preins')
+def clean_info(search_id):
+    session = db.session
+    record = session.query(Inscription).filter_by(id=search_id).one()
+    clean_id = record.admission.id
+    session.delete(record)
+    session.commit()
+    flash(f'Une fiche {clean_id} a ete supprimee', 'success')
+    return redirect(url_for('preins.search_infos'))
 
 
 @ui.route('/coming-soon')
