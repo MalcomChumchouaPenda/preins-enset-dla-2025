@@ -14,7 +14,7 @@ dashmenu.add('preins_error_pg', 'Requete', endpoint='preins.error', rank=1)
 adminmenu = sidebar.add('admin_preins_menu', 
                         _l('Gestion inscription'), 
                         rank=0, 
-                        accepted=['admin', 'developper'])
+                        accepted=['admin_preins', 'developper'])
 
 adminmenu.add('admin_preins_info_pg', 
               _l('Inscriptions'), 
