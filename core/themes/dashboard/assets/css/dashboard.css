@@ -703,6 +703,11 @@ label[required]:after {
   background-color: var(--primary-dark-color);
 }
 
+.pagination li.page-item.disabled .page-link {
+  color: var(--secondary-color);
+  background-color: var(--secondary-light-color) !important;
+}
+
 
 /*--------------------------------------------------------------
 # Progress Classes

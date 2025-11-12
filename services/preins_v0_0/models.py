@@ -1,6 +1,8 @@
 
 from datetime import datetime
 from core.config import db
+from services.formations_v0_0.models import Classe, Filiere, Niveau
+from services.regions_v0_0.models import Departement
 
 
 SEXES = {'F':'Feminin', 'M':'Masculin'}
@@ -27,14 +29,25 @@ class Admission(db.Model):
     classe_id = db.Column(db.String(10), nullable=False)
     statut = db.Column(db.String(10), nullable=False) # code type
     matricule = db.Column(db.String(9), nullable=True)
-    communique_id = db.Column(db.String(20), db.ForeignKey('communiques_admissions.id'))
-    communique = db.relationship('CommuniqueAdmission')
-    inscriptions = db.relationship('Inscription', back_populates='admission')
-    requetes = db.relationship('Requete', back_populates='admission')
     max_inscriptions = db.Column(db.Integer, default=3)
     max_requetes = db.Column(db.Integer, default=2)
+    communique_id = db.Column(db.String(20), db.ForeignKey('communiques_admissions.id'))
 
+    communique = db.relationship('CommuniqueAdmission')
+    inscriptions = db.relationship('Inscription', 
+                                   back_populates='admission', 
+                                   order_by='Inscription.date_inscription.desc()')
+    requetes = db.relationship('Requete', 
+                               back_populates='admission',
+                               order_by='Requete.date_requete.desc()')
     
+    @property
+    def classe(self):
+        query = db.session.query(Classe)
+        query = query.filter_by(id=self.classe_id)
+        return query.one_or_none()
+    
+
 class Inscription(db.Model):
     __bind_key__ = 'preins_v0'
     __tablename__ = 'inscriptions'
@@ -97,6 +110,20 @@ class Inscription(db.Model):
     @property
     def naissance(self):
         return f'{self.date_naissance} à {self.lieu_naissance}'
+    
+    @property
+    def departement_origine(self):
+        query = db.session.query(Departement)
+        query = query.filter_by(id=self.departement_origine_id)
+        return query.one_or_none()
+    
+    @property
+    def modified(self):
+        others = self.admission.inscriptions
+        if len(others) > 1:
+            return self != others[0]
+        return False
+
     
 
 class Requete(db.Model):

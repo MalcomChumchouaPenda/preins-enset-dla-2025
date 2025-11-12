@@ -9,6 +9,7 @@ from flask_babel import lazy_gettext as _l
 from flask import render_template, url_for, redirect, send_file, flash
 from flask import request, session, current_app
 
+from core.config import db
 from core.utils import UiBlueprint
 from services.preins_v0_0 import tasks
 from services.preins_v0_0.models import Inscription, Requete
@@ -194,6 +195,29 @@ def print_info():
     chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
     fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
     return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
+
+
+@ui.route('/admin/inscriptions')
+@ui.roles_accepted('admin_preins')
+def search_info():
+    page = request.args.get('page', 1, type=int)
+    query = db.session.query(Inscription)
+    query = query.order_by(Inscription.date_inscription.desc())
+    records = db.paginate(query, page=page, per_page=15, error_out=False)
+    return render_template('preins-search-info.jinja', records=records)
+
+@ui.route('/admin/inscriptions/<search_id>')
+@ui.roles_accepted('admin_preins')
+def search_info_details(search_id):
+    previous = request.referrer
+    if url_for('preins.search_info') not in previous:
+        previous = url_for('preins.search_info')
+    record = db.session.query(Inscription).filter_by(id=search_id).one()
+    if record.modified:
+        flash('Cette fiche a ete modifiee!', 'danger')
+    return render_template('preins-search-info-details.jinja', 
+                           inscription=record, previous=previous)
+
 
 @ui.route('/coming-soon')
 @ui.login_required

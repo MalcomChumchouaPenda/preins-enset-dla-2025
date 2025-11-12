@@ -33,6 +33,8 @@ def init_alerts(user):
 def init_data():
     session = db.session
     add_role(session, 'admis', 'Etudiants admis')
+    add_role(session, 'admin_preins', 'Gestionnaire Inscription')
+    add_roles_to_user(session, 'dev1', 'admin_preins')
     upload_communiques(session, 'communiques_demo.csv', sep=';')
     upload_admissions(session, 'admissions_demo.csv', sep=';')
     upload_inscriptions(session, 'inscriptions_demo.csv', sep=',')
