@@ -40,13 +40,18 @@ def __is_valid_signature(x_hub_signature, data, private_key):
     mac = hmac.new(encoded_key, msg=data, digestmod=algorithm)
     return hmac.compare_digest(mac.hexdigest(), github_signature)
 
+
 @app.route('/update_server', methods=['POST'])
 def webhook():
     if request.method == 'POST':
         w_secret = os.environ.get('GIT_SECRET_KEY')
+        if not w_secret:
+            return "Unauthorized access", 401
+        
         x_hub_signature = request.headers.get('X-Hub-Signature')
         if not __is_valid_signature(x_hub_signature, request.data, w_secret):
             return "Unauthorized access", 401
+        
         repo = git.Repo(ROOT_DIR)
         origin = repo.remotes.origin
         origin.pull()
