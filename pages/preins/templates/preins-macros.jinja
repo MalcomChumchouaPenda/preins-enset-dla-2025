@@ -32,7 +32,7 @@
         </li>
       {% endif %}
 
-      {% for page in records.iter_pages() %}
+      {% for page in records.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
         {% if page %}
           {% if page != records.page %}
             <li class="page-item">
