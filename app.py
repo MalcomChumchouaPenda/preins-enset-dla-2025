@@ -6,7 +6,7 @@ from flask import redirect, url_for, request, session
 from core.utils import read_markdown
 from core.config import create_app
 # from flask_mail import Mail
-
+import git
 
 app = create_app()
 
@@ -25,6 +25,18 @@ def change_lang():
     lang = request.args.get('lang', 'fr')
     session['lang'] = lang
     return redirect(next)
+
+@app.route('/update_server', methods=['POST'])
+def webhook():
+    if request.method == 'POST':
+        repo_path = os.environ.get('GIT_REPO_PATH')
+        if repo_path:
+            repo = git.Repo(repo_path)
+            origin = repo.remotes.origin
+            origin.pull()
+            return "Updated server successfully", 200
+        return "No github repo", 406
+    return "Wrong event type", 404
 
 
 # JINJA FILTERS

@@ -17,6 +17,7 @@ PAGES_DIR = os.path.join(ROOT_DIR, 'pages')
 SERVICES_DIR = os.path.join(ROOT_DIR, 'services')
 TESTS_DIR = os.path.join(ROOT_DIR, 'tests')
 CORE_MANIFEST_PATH = os.path.join(CORE_DIR, 'manifest.json')
+__ENV_PATH = os.path.join(ROOT_DIR, '.env')
 
 # creer les chemins statiques absents
 os.makedirs(STORE_DIR, exist_ok=True)
@@ -27,7 +28,7 @@ SERVICE_NAME_PATTERN = '^([a-z][a-z0-9_]*)_(v[0-9]_+[0-9]+)$'
 
 
 # load variables from .env
-load_dotenv()
+load_dotenv(__ENV_PATH)
 MYSQL_USER = os.getenv('PIGAL_MYSQL_USER')
 MYSQL_PWD = os.getenv('PIGAL_MYSQL_PWD')
 
