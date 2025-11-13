@@ -77,11 +77,9 @@
                     <div class="row mt-4 mb-3">
                         <label class="col-lg-3 form-label col-12 py-lg-2 pt-2 pb-0 text-lg-end text-start">Roles</label>
                         <div class="col-lg-8">
-                            <select class="form-select" multiple disabled aria-label="roles">
-                                {% for role in current_user.roles %}
-                                    <option value="{{ role.id }}"> {{ role.name }} </option>
-                                {% endfor %}
-                            </select>
+                            <textarea class="form-control" disabled rows="{{ current_user.roles | length }}">{{ 
+                                current_user.roles | map(attribute="id")  | list | join('\n') 
+                            }}</textarea>
                         </div>
                     </div>
                 </div>
