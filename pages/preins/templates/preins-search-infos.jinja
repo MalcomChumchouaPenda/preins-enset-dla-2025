@@ -24,50 +24,72 @@
 {% block page_main %}
 <div class="container">
   <section class="section row g-4">
+  
+    <!-- Actions initiales -->
+    <div class="row mt-3 g-3">
+      <div class="text-center">
+        <a class="btn btn-secondary btn-sm m-1" role="button" href="{{ url_for('preins.search_infos')}}">Actualiser</a>
+        <a class="btn btn-primary btn-sm m-1" role="button" href="#">Rechercher</a>
+      </div>
+    </div>
+
     <!-- Table with stripped rows -->
     <div class="col-12">
       <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">{{ title }}</h5>
-          {{ render_messages() }}
-          {% if records.items %}
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Code</th>
-                    <th>Noms</th>
-                    <th>Classe</th>
-                    <th>Matricule</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for inscription in records.items %}
+        <div class="card-body">     
+        
+            <!-- Table header -->
+            <h5 class="card-title">{{ _('Liste des fiches') }}</h5>
+            {{ render_messages() }}
+            <!-- End Table header-->
+
+            <!-- Table body -->
+            {% if records.items %}
+              <table class="table table-striped">
+                  <thead>
                   <tr>
-                      <td>{{ records.first + loop.index - 1 }}</td>
-                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.id }}</td>
-                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.nom_complet }}</td>
-                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.classe_id }}</td>
-                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.matricule}}</td>
-                      <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.date_inscription.strftime('%d-%m-%Y')}}</td>
-                      <td>
-                        <a class="btn btn-secondary btn-sm" role="button" href="{{ url_for('preins.debug_info', search_id=inscription.id)}}">Corriger</a>
-                        <a class="btn btn-secondary btn-sm" role="button" href="{{ url_for('preins.clean_info', search_id=inscription.id)}}">Supprimer</a>
-                        <a class="btn btn-primary btn-sm" role="button" href="{{ url_for('preins.search_info', search_id=inscription.id)}}">Details</a>
-                      </td>
+                      <th>No</th>
+                      <th>Code</th>
+                      <th>Noms</th>
+                      <th>Classe</th>
+                      <th>Matricule</th>
+                      <th>Statut</th>
+                      <th></th>
                   </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {{ render_pagination(records)}}
-          {% else %}
-            <div class="text-warning">
-              <i class="bi bi-exclamation-triangle ms-2 me-1"></i>
-              Aucune inscriptions trouvees
-            </div>
-          {% endif %}
+                  </thead>
+                  <tbody>
+                  {% for inscription in records.items %}
+                    <tr>
+                      <td>{{ records.first + loop.index - 1 }}</td>
+                      <td>{{ inscription.admission.id }}</td>
+                      <td>{{ inscription.nom_complet }}</td>
+                      <td>{{ inscription.admission.classe_id }}</td>
+                      <td>{{ inscription.admission.matricule}}</td>
+                      {% if inscription.modified %}
+                        <td class="text-danger fst-italic">modifiee</td>
+                        <td class="row-actions d-flex justify-content-end">
+                          <a class="btn btn-secondary btn-sm m-1" role="button" href="{{ url_for('preins.search_info', search_id=inscription.id)}}">Details</a>
+                          <a class="btn btn-primary btn-sm m-1" role="button" href="{{ url_for('preins.clean_info', search_id=inscription.id)}}">Supprimer</a>
+                        </td>
+                      {% else %}
+                        <td class="text-secondary fst-italic">encours &hellip;</td>
+                        <td class="row-actions d-flex justify-content-end">
+                          <a class="btn btn-secondary btn-sm m-1" role="button" href="{{ url_for('preins.search_info', search_id=inscription.id)}}">Details</a>
+                          <a class="btn btn-primary btn-sm m-1" role="button" href="{{ url_for('preins.debug_info', search_id=inscription.id)}}">Corriger</a>
+                        </td>
+                      {% endif %}
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+              </table>
+              {{ render_pagination(records)}}
+            {% else %}
+              <div class="text-warning">
+                <i class="bi bi-exclamation-triangle ms-2 me-1"></i>
+                Aucune inscriptions trouvees
+              </div>
+            {% endif %} <!-- End Table body -->
+
         </div>
       </div>
     </div><!-- End Table with stripped rows -->
