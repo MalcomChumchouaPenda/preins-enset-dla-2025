@@ -62,7 +62,7 @@
                     <tr>
                       <td>{{ records.first + loop.index - 1 }}</td>
                       <td>{{ inscription.admission.id }}</td>
-                      <td class="text-truncate">{{ inscription.nom_complet }}</td>
+                      <td>{{ inscription.nom_complet }}</td>
                       <td>{{ inscription.admission.classe_id }}</td>
                       <td>{{ inscription.admission.matricule}}</td>
                       {% if inscription.modified %}
