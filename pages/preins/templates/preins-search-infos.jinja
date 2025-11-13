@@ -46,7 +46,7 @@
                 <tbody>
                 {% for inscription in records.items %}
                   <tr>
-                      <td>{{ records.page + loop.index - 1 }}</td>
+                      <td>{{ records.first + loop.index - 1 }}</td>
                       <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.id }}</td>
                       <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.nom_complet }}</td>
                       <td {% if inscription.modified %}class="text-decoration-line-through"{% endif %}>{{ inscription.admission.classe_id }}</td>
