@@ -13,8 +13,8 @@
 {% endmacro %}
 
 {% macro render_pagination(records) %}
-  <nav class="d-flex flex-row justify-content-between align-items-center">
-    <div class="page-items">
+  <nav class="d-flex flex-row justify-content-lg-between justify-content-center align-items-center">
+    <div class="page-items d-lg-block d-none">
       {{ records.first }} - {{ records.last }} sur {{ records.total }}
     </div>
     <ul class="pagination pagination-sm justify-content-end">
@@ -32,7 +32,7 @@
         </li>
       {% endif %}
 
-      {% for page in records.iter_pages(left_edge=1, left_current=1, right_current=2, right_edge=1) %}
+      {% for page in records.iter_pages(left_edge=1, left_current=2, right_current=2, right_edge=1) %}
         {% if page %}
           {% if page != records.page %}
             <li class="page-item">

@@ -93,7 +93,7 @@ def upload_inscriptions(session, filename, sep=','):
         query = query.filter_by(admission_id=row['admission_id'])
         if not query.first():
             dkey = 'date_naissance'
-            row[dkey] = datetime.strptime(row[dkey], '%Y-%m-%d')
+            row[dkey] = datetime.strptime(row[dkey], '%d/%m/%Y')
             session.merge(Inscription(**row))
             session.commit()
 

@@ -46,6 +46,6 @@ def init_data():
     add_roles_to_user(session, 'dev1', 'admin_preins')
     upload_communiques(session, 'communiques_demo.csv', sep=';')
     upload_admissions(session, 'admissions_demo.csv', sep=';')
-    upload_inscriptions(session, 'inscriptions_demo.csv', sep=',')
+    upload_inscriptions(session, 'inscriptions_demo.csv', sep=';')
     upload_requetes(session, 'requetes_demo.csv', sep=';')
     
