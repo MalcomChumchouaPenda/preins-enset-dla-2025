@@ -95,9 +95,10 @@ def _verification_matricule(admission, data):
 
 def _verification_noms(admission, data):
     nom_complet = tasks.former_nom(data['nom'], data['prenom'])
-    ratio = lv.ratio(nom_complet, admission.nom_complet)
-    if ratio > 0.8:
+    ratio = lv.ratio(nom_complet.upper(), admission.nom_complet.upper())
+    if ratio >= 0.65:
         return True, ''
+    print(ratio, admission.nom_complet, nom_complet)
     msg = f"Ce compte est reserve a l'etudiant <b>{admission.nom_complet}</b> "
     msg += "(Vous n'etes pas dans votre compte)"
     return False, msg
