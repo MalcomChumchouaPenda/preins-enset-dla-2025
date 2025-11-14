@@ -8,11 +8,17 @@ from wtforms.validators import DataRequired, ValidationError
 from services.preins_v0_0.models import SEXES, SITUATIONS, LANGUES
 
 
-def choices(data):
-    if isinstance(data, dict):
-        items = sorted([(k,v.upper()) for k,v in data.items()])
+def choices(data, only_keys=False):
+    if only_keys:
+        if isinstance(data, dict):
+            items = sorted([(k, k) for k in data.keys()])
+        else:
+            items = sorted([(k, k) for k, _ in data])
     else:
-        items = sorted([(k,v.upper()) for k,v in data])
+        if isinstance(data, dict):
+            items = sorted([(k,v.upper()) for k,v in data.items()])
+        else:
+            items = sorted([(k,v.upper()) for k,v in data])
     items.insert(0, ('', 'Choisir...'))
     return items
 
@@ -61,6 +67,19 @@ class InfoForm(FlaskForm):
     profession_mere = StringField(_l('Profession de la mère'))
     telephone_mere = StringField(_l('Téléphone de la mère'))
     residence_mere = StringField(_l('Residence de la mère'))
+
+
+class SearchInfosForm(FlaskForm):
+
+    filter_id = StringField(_l('Identifiant ou matricule'))
+    filter_name = StringField(_l('Noms ou prenoms'))
+
+
+class FilterInfosForm(FlaskForm):
+
+    departement_academique_id = SelectField(_l('Departement'))
+    filiere_id = SelectField(_l('Filiere'))
+    niveau_id = SelectField(_l('Niveau'))
 
 
 class ErrorForm(FlaskForm):

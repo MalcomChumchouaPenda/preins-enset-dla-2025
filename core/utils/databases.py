@@ -85,3 +85,52 @@ class ExtendedSQLAlchemy(SQLAlchemy):
                     bind_keys.append(bind_key)
         return bind_keys
 
+    @classmethod
+    def paginate_list(cls, data_list, page=1, per_page=10):
+        return Pagination(data_list, page=page, per_page=per_page)
+
+
+class Pagination:
+
+    def __init__(self, data_list, page=1, per_page=10):
+        super().__init__()
+        self._data_list = data_list
+        self.page = page
+        self.per_page = per_page
+
+        start = (page - 1) * per_page
+        end = start + per_page
+        paginated_items = data_list[start:end]
+        total_items = len(data_list)
+        total_pages = (total_items + per_page - 1) // per_page
+        self._total_pages = total_pages
+
+        self.items = paginated_items
+        self.first = start + 1 if len(paginated_items) else 0
+        self.last = self.first + len(paginated_items) - 1
+        self.total = total_items
+        self.has_prev = page > 1,
+        self.has_next = page < total_pages,
+        self.prev_num = page - 1 if page > 1 else None,
+        self.next_num = page + 1 if page < total_pages else None,
+    
+
+    def iter_pages(self, left_edge=2, left_current=2, right_current=4, right_edge=2):
+        if self._total_pages == 0:
+            return [None]
+        current = self.page
+        total = self._total_pages
+
+        left1 = [i+1 for i in range(left_edge)]
+        left2 = [i+1 for i in range(max(current-left_current, 0), current)]
+        right1 = [i+1 for i in range(current, min(current + right_current, total))]
+        right2 = [i+1 for i in range(total-right_edge, total)]
+        pages = list(set(left1 + left2 + right1 + right2))
+        prev = pages[0]
+        result = [prev]
+        for next in pages[1:]:
+            if next-prev > 1:
+                result.append(None)
+            result.append(next)
+            prev = next
+        return result

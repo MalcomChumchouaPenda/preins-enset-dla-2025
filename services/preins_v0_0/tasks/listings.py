@@ -11,8 +11,12 @@ def lister_regions():
     items = region_tasks.list_regions(full_id=True)
     return items
 
-def lister_departements():
+def lister_departements_origines():
     items = region_tasks.list_departements(full_id=True)
+    return items
+
+def lister_departements_academiques():
+    items = format_tasks.list_departements()
     return items
 
 def lister_filieres():

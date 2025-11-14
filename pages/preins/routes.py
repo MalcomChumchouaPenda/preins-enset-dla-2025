@@ -9,12 +9,13 @@ from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
 from flask import render_template, url_for, redirect, send_file, flash
 from flask import request, session, current_app
+from sqlalchemy import or_, and_
 
 from core.config import db
 from core.utils import UiBlueprint
 from services.preins_v0_0 import tasks
 from services.preins_v0_0.models import Inscription, Requete
-from .forms import InfoForm, ErrorForm, choices
+from . import forms
 
 
 ui = UiBlueprint(__name__)
@@ -112,10 +113,10 @@ def new_info():
     admission = tasks.chercher_admission(user_id)
         
     # create a edit form
-    form = InfoForm(obj=inscription)
-    form.nationalite_id.choices = choices(tasks.lister_nationalites())
-    form.region_origine_id.choices = choices(tasks.lister_regions())
-    form.departement_origine_id.choices = choices(tasks.lister_departements())
+    form = forms.InfoForm(obj=inscription)
+    form.nationalite_id.choices = forms.choices(tasks.lister_nationalites())
+    form.region_origine_id.choices = forms.choices(tasks.lister_regions())
+    form.departement_origine_id.choices = forms.choices(tasks.lister_departements_origines())
     
     # traitement et enregistrement des donnees
     # print('\ndata', form.data)
@@ -160,7 +161,7 @@ def edit_info():
     # creation du formulaire avce controle des modifications
     admission = inscription.admission
     if request.method == 'POST':
-        form = InfoForm()
+        form = forms.InfoForm()
     else:
         count_max = admission.max_inscriptions
         count = len(admission.inscriptions)
@@ -168,12 +169,12 @@ def edit_info():
             flash(f'Vous ne pouvez modifier cette fiche plus de {count_max} fois', 'danger')
             return redirect(url_for('preins.info'))
         flash(f'Vous pourrez encore modifier cette fiche {count_max-count+1} fois', 'warning')
-        form = InfoForm(obj=inscription)
+        form = forms.InfoForm(obj=inscription)
     
     # parametrage des options
-    form.nationalite_id.choices = choices(tasks.lister_nationalites())
-    form.region_origine_id.choices = choices(tasks.lister_regions())
-    form.departement_origine_id.choices = choices(tasks.lister_departements())
+    form.nationalite_id.choices = form.choices(tasks.lister_nationalites())
+    form.region_origine_id.choices = forms.choices(tasks.lister_regions())
+    form.departement_origine_id.choices = forms.choices(tasks.lister_departements_origines())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -216,6 +217,57 @@ def print_info():
 @ui.route('/admin/inscriptions')
 @ui.roles_accepted('admin_preins')
 def search_infos():
+    # elaboration des formulaires
+    dept_ids = forms.choices(tasks.lister_departements_academiques(), only_keys=True)
+    opt_ids = forms.choices(tasks.lister_filieres(), only_keys=True)
+    niv_ids = forms.choices(tasks.lister_niveaux(), only_keys=True)
+    filter_form = forms.FilterInfosForm()
+    filter_form.departement_academique_id.choices = dept_ids
+    filter_form.filiere_id.choices = opt_ids
+    filter_form.niveau_id.choices = niv_ids
+    search_form = forms.SearchInfosForm()
+
+    # elaboration du filtre de noms ou id
+    id_exp = request.args.get('id_exp')
+    nom_exp = request.args.get('nom_exp')
+    if nom_exp:
+        nom_exp = nom_exp.upper().strip()
+        nom_exp = re.sub('\s+', ' ', nom_exp)
+
+    # elaboration du filtre par classe
+    dept_id = request.args.get('dept_id')
+    opt_id = request.args.get('opt_id')
+    niv_id = request.args.get('niv_id')
+
+    # application des filtres
+    filtered = []
+    query = db.session.query(Inscription)
+    query = query.order_by(Inscription.date_inscription.desc())
+    for item in query.all():
+        if nom_exp and not nom_exp in item.nom_complet:
+            continue
+        admission = item.admission
+        if id_exp and not id_exp in [admission.id, admission.matricule]:
+            continue
+        classe = admission.classe
+        if dept_id and not dept_id == classe.filiere.departement_id:
+            continue
+        if opt_id and not opt_id == classe.filiere_id:
+            continue
+        if niv_id and not niv_id == classe.niveau_id:
+            continue
+        filtered.append(item)
+        
+    # retour des items filtres
+    page = request.args.get('page', 1, type=int)
+    records = db.paginate_list(filtered, page=page, per_page=15)
+    return render_template('preins-search-infos.jinja', records=records,
+                           search_form=search_form, filter_form=filter_form)
+
+
+@ui.route('/admin/inscriptions/filtered', methods=['POST'])
+@ui.roles_accepted('admin_preins')
+def search_infos_with_filters():
     page = request.args.get('page', 1, type=int)
     query = db.session.query(Inscription)
     query = query.order_by(Inscription.date_inscription.desc())
@@ -241,12 +293,12 @@ def search_info(search_id):
 def debug_info(search_id):
     session = db.session
     inscription = session.query(Inscription).filter_by(id=search_id).one()
-    form = InfoForm() if request.method == 'POST' else InfoForm(obj=inscription)
+    form = forms.InfoForm() if request.method == 'POST' else forms.InfoForm(obj=inscription)
     
     # parametrage des options
-    form.nationalite_id.choices = choices(tasks.lister_nationalites())
-    form.region_origine_id.choices = choices(tasks.lister_regions())
-    form.departement_origine_id.choices = choices(tasks.lister_departements())
+    form.nationalite_id.choices = forms.choices(tasks.lister_nationalites())
+    form.region_origine_id.choices = forms.choices(tasks.lister_regions())
+    form.departement_origine_id.choices = forms.choices(tasks.lister_departements_origines())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -318,9 +370,9 @@ def new_error():
         return redirect(url_for('preins.edit_info'))
     
     # create a edit form
-    form = ErrorForm(obj=requete)
-    form.filiere_correct_id.choices = choices(tasks.lister_filieres())
-    form.niveau_correct_id.choices = choices(tasks.lister_niveaux())
+    form = forms.ErrorForm(obj=requete)
+    form.filiere_correct_id.choices = forms.choices(tasks.lister_filieres())
+    form.niveau_correct_id.choices = forms.choices(tasks.lister_niveaux())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -354,7 +406,7 @@ def edit_error():
     # creation du formulaire avce controle des modifications
     admission = requete.admission
     if request.method == 'POST':
-        form = ErrorForm()
+        form = forms.ErrorForm()
     else:
         count_max = admission.max_requetes
         count = len(admission.requetes)
@@ -362,11 +414,11 @@ def edit_error():
             flash(f'Vous ne pouvez modifier cette requete plus de {count_max} fois', 'danger')
             return redirect(url_for('preins.error'))
         flash(f'Vous pourrez encore modifier cette requete {count_max-count+1} fois', 'warning')
-        form = ErrorForm(obj=requete)
+        form = forms.ErrorForm(obj=requete)
     
     # parametrage des options
-    form.filiere_correct_id.choices = choices(tasks.lister_filieres())
-    form.niveau_correct_id.choices = choices(tasks.lister_niveaux())
+    form.filiere_correct_id.choices = forms.choices(tasks.lister_filieres())
+    form.niveau_correct_id.choices = forms.choices(tasks.lister_niveaux())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
