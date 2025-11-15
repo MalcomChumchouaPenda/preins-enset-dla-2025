@@ -30,47 +30,40 @@
       <div class="text-center">
         <button class="btn btn-secondary btn-sm m-1" data-bs-toggle="modal" data-bs-target="#filter-form">Filtrer</button>
         <button class="btn btn-secondary btn-sm m-1" data-bs-toggle="modal" data-bs-target="#search-form">Rechercher</button>
-        <a class="btn btn-primary btn-sm m-1" role="button" href="{{ url_for('preins.search_infos')}}">Actualiser</a>
+        <a class="btn btn-primary btn-sm m-1" role="button" 
+           href="{{ url_for('preins.search_infos', filters=filters, keywords=keywords) }}">
+           Actualiser
+        </a>
       </div>
     </div><!-- End Actions Globales -->
 
     <!-- Filter Modal Form -->
     <div class="modal fade" id="filter-form" tabindex="-1" aria-labelledby="filter-form-label" aria-hidden="true">
       <div class="modal-dialog">
-        <form class="modal-content">
+        <form class="modal-content" novalidate method="POST" action="{{ url_for('preins.search_infos_with_filters') }}">
+            
+          {{ filter_form.csrf_token }}
+
           <div class="modal-header">
             <h5 class="modal-title" id="filter-form-label">Filtrer par:</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+
           <div class="modal-body">
             <div class="row m-1">
-              <label for="inputState" class="col-form-label col-4">Departement</label>
-              <div class="col-8">
-                <select id="inputState" class="form-select">
-                  <option selected>Choose...</option>
-                  <option>...</option>
-                </select>
-              </div>
+              {{ filter_form.departement_academique_id.label(class_="col-form-label col-4")}}
+              <div class="col-8">{{ filter_form.departement_academique_id(class_="form-select") }}</div>
             </div>
             <div class="row m-1">
-              <label for="inputState" class="col-form-label col-4">Filiere</label>
-              <div class="col-8">
-                <select id="inputState" class="form-select">
-                  <option selected>Choose...</option>
-                  <option>...</option>
-                </select>
-              </div>
+              {{ filter_form.filiere_id.label(class_="col-form-label col-4")}}
+              <div class="col-8">{{ filter_form.filiere_id(class_="form-select") }}</div>
             </div>
             <div class="row m-1">
-              <label for="inputState" class="col-form-label col-4">Niveau</label>
-              <div class="col-8">
-                <select id="inputState" class="form-select">
-                  <option selected>Choose...</option>
-                  <option>...</option>
-                </select>
-              </div>
+              {{ filter_form.niveau_id.label(class_="col-form-label col-4")}}
+              <div class="col-8">{{ filter_form.niveau_id(class_="form-select") }}</div>
             </div>
           </div>
+
           <div class="modal-footer d-flex justify-content-lg-end justify-content-center">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
             <button type="submit" class="btn btn-primary">Appliquer</button>
@@ -82,23 +75,28 @@
     <!-- Search Modal Form -->
     <div class="modal fade" id="search-form" tabindex="-1" aria-labelledby="search-form-label" aria-hidden="true">
       <div class="modal-dialog">
-        <form class="modal-content">
+        <form class="modal-content" novalidate method="POST" action="{{ url_for('preins.search_infos') }}">
+
+          {{ search_form.csrf_token }}
+
           <div class="modal-header">
             <h5 class="modal-title" id="search-form-label">Criteres de recherche</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+
           <div class="modal-body">
             <div class="row py-1">
               <div class="col-lg-6 col-10">
-                <label for="inputName5" class="form-label">Matricule ou identifiant</label>
-                <input type="text" class="form-control" id="inputName5">
+                {{ search_form.id.label(class_="form-label")}}
+                {{ search_form.id(class_="form-control") }}
               </div>
-              <div class="col-lg-5 col-10">
-                <label for="inputEmail5" class="form-label">Noms ou prenoms</label>
-                <input type="email" class="form-control" id="inputEmail5">
+              <div class="col-lg-6 col-10">
+                {{ search_form.name.label(class_="form-label")}}
+                {{ search_form.name(class_="form-control") }}
               </div>
             </div>
           </div>
+
           <div class="modal-footer d-flex justify-content-lg-end justify-content-center">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
             <button type="submit" class="btn btn-primary">Rechercher</button>
@@ -113,7 +111,7 @@
         <div class="card-body">     
         
             <!-- Contents Header -->
-            <h5 class="card-title">{{ _('Liste des fiches') }}</h5>
+            <h5 class="card-title">{{ title }}</h5>
             {{ render_messages() }}
             <!-- End Contents Header-->
 
@@ -188,7 +186,7 @@
               </div><!-- End Contents List Small Screen -->
 
               <!-- Contents Pagination -->
-              {{ render_pagination(records)}}
+              {{ render_pagination(records, keywords=keywords, filters=filters)}}
 
             {% else %}
               <!-- No contents -->

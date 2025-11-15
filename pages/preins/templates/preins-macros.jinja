@@ -20,7 +20,7 @@
     <ul class="pagination pagination-sm justify-content-end">
       {% if records.has_prev %}
         <li class="page-item">
-          <a class="page-link" href="{{ url_for('preins.search_infos', page=records.prev_num) }}" aria-label="Previous">
+          <a class="page-link" href="{{ url_for('preins.search_infos', page=records.prev_num, **kwargs) }}" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
           </a>
         </li>
@@ -36,7 +36,7 @@
         {% if page %}
           {% if page != records.page %}
             <li class="page-item">
-              <a class="page-link" href="{{ url_for('preins.search_infos', page=page) }}">
+              <a class="page-link" href="{{ url_for('preins.search_infos', page=page, **kwargs) }}">
                 {{ page }}
               </a>
             </li>
@@ -54,7 +54,7 @@
       
       {% if records.has_next %}
         <li class="page-item">
-          <a class="page-link" href="{{ url_for('preins.search_infos', page=records.next_num) }}" aria-label="Previous">
+          <a class="page-link" href="{{ url_for('preins.search_infos', page=records.next_num, **kwargs) }}" aria-label="Previous">
             <span aria-hidden="true">&raquo;</span>
           </a>
         </li>

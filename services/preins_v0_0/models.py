@@ -1,5 +1,7 @@
 
 from datetime import datetime
+from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import func
 from core.config import db
 from services.formations_v0_0.models import Classe, Filiere, Niveau
 from services.regions_v0_0.models import Departement
@@ -91,9 +93,13 @@ class Inscription(db.Model):
     date_inscription = db.Column(db.DateTime, default=datetime.now) 
 
 
-    @property
+    @hybrid_property
     def nom_complet(self):
         return ' '.join([self.nom, self.prenom])
+    
+    @nom_complet.expression
+    def nom_complet(cls):
+        return func.concat(cls.nom, ' ', cls.prenom)
     
     @property
     def sexe(self):

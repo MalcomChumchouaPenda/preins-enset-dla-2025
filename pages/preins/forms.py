@@ -71,8 +71,8 @@ class InfoForm(FlaskForm):
 
 class SearchInfosForm(FlaskForm):
 
-    filter_id = StringField(_l('Identifiant ou matricule'))
-    filter_name = StringField(_l('Noms ou prenoms'))
+    id = StringField(_l('Identifiant ou matricule'))
+    name = StringField(_l('Noms ou prenoms'))
 
 
 class FilterInfosForm(FlaskForm):

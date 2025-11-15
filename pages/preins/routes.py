@@ -1,6 +1,7 @@
 
 import os
 import re
+import json
 import Levenshtein as lv
 from datetime import datetime
 
@@ -13,8 +14,10 @@ from sqlalchemy import or_, and_
 
 from core.config import db
 from core.utils import UiBlueprint
-from services.preins_v0_0 import tasks
-from services.preins_v0_0.models import Inscription, Requete
+from services.preins_v0_0 import tasks as tsk
+from services.preins_v0_0 import models as mdl
+from services.formations_v0_0 import models as fmdl
+# from services.preins_v0_0.models import Inscription, Requete
 from . import forms
 
 
@@ -59,7 +62,7 @@ def doc():
 @ui.roles_accepted('admis')
 def info():
     user_id = current_user.id
-    inscription = tasks.rechercher_inscription(user_id)
+    inscription = tsk.rechercher_inscription(user_id)
     if inscription is None:
         return redirect(url_for('preins.new_info'))
     return render_template('preins-info.jinja', inscription=inscription)
@@ -95,11 +98,10 @@ def _verification_matricule(admission, data):
     return True, ''
 
 def _verification_noms(admission, data):
-    nom_complet = tasks.former_nom(data['nom'], data['prenom'])
+    nom_complet = tsk.former_nom(data['nom'], data['prenom'])
     ratio = lv.ratio(nom_complet.upper(), admission.nom_complet.upper())
     if ratio >= 0.65:
         return True, ''
-    print(ratio, admission.nom_complet, nom_complet)
     msg = f"Ce compte est reserve a l'etudiant <b>{admission.nom_complet}</b> "
     msg += "(Vous n'etes pas dans votre compte)"
     return False, msg
@@ -109,14 +111,14 @@ def _verification_noms(admission, data):
 @ui.roles_accepted('admis')
 def new_info():
     user_id = current_user.id
-    inscription = Inscription() 
-    admission = tasks.chercher_admission(user_id)
+    inscription = mdl.Inscription() 
+    admission = tsk.chercher_admission(user_id)
         
     # create a edit form
     form = forms.InfoForm(obj=inscription)
-    form.nationalite_id.choices = forms.choices(tasks.lister_nationalites())
-    form.region_origine_id.choices = forms.choices(tasks.lister_regions())
-    form.departement_origine_id.choices = forms.choices(tasks.lister_departements_origines())
+    form.nationalite_id.choices = forms.choices(tsk.lister_nationalites())
+    form.region_origine_id.choices = forms.choices(tsk.lister_regions())
+    form.departement_origine_id.choices = forms.choices(tsk.lister_departements_origines())
     
     # traitement et enregistrement des donnees
     # print('\ndata', form.data)
@@ -137,7 +139,7 @@ def new_info():
         # print('\n', valid, data)
         data['admission_id'] = admission.id
         data = _pretraitement_inscription(data)
-        tasks.ajouter_inscription(current_user, data)
+        tsk.ajouter_inscription(current_user, data)
         flash('inscription effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
 
@@ -154,7 +156,7 @@ def new_info():
 @ui.roles_accepted('admis')
 def edit_info():
     user_id = current_user.id
-    inscription = tasks.rechercher_inscription(user_id)
+    inscription = tsk.rechercher_inscription(user_id)
     if inscription is None:
         return redirect(url_for('preins.new_info'))
     
@@ -172,9 +174,9 @@ def edit_info():
         form = forms.InfoForm(obj=inscription)
     
     # parametrage des options
-    form.nationalite_id.choices = form.choices(tasks.lister_nationalites())
-    form.region_origine_id.choices = forms.choices(tasks.lister_regions())
-    form.departement_origine_id.choices = forms.choices(tasks.lister_departements_origines())
+    form.nationalite_id.choices = form.choices(tsk.lister_nationalites())
+    form.region_origine_id.choices = forms.choices(tsk.lister_regions())
+    form.departement_origine_id.choices = forms.choices(tsk.lister_departements_origines())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -183,7 +185,7 @@ def edit_info():
         data['admission_id'] = admission.id
         data = _pretraitement_inscription(data)
         data.pop('matricule')
-        tasks.modifier_inscription(current_user, data) 
+        tsk.modifier_inscription(current_user, data) 
         flash('modification effectue avec succes', 'success')
         return redirect(url_for('preins.info'))
 
@@ -204,75 +206,137 @@ def edit_info():
 @ui.roles_accepted('admis')
 def print_info():
     user_id = current_user.id
-    inscription = tasks.rechercher_inscription(user_id)
+    inscription = tsk.rechercher_inscription(user_id)
     if inscription is None:
         return redirect(url_for('preins.edit_info'))
     nom_fichier_pdf = f"fiche_inscription_{user_id.lower()}.pdf"
     nom_fichier_pdf = nom_fichier_pdf.replace('-', '_')
     chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
-    fichier_pdf = tasks.generer_fiche_inscription(inscription, chemin_pdf_final)
+    fichier_pdf = tsk.generer_fiche_inscription(inscription, chemin_pdf_final)
     return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
 
 
 @ui.route('/admin/inscriptions')
 @ui.roles_accepted('admin_preins')
 def search_infos():
+    filters = request.args.get('filters', '{}')
+    filters = json.loads(filters)
+    keywords = request.args.get('keywords', '{}')
+    keywords = json.loads(keywords)
+
+    # filtre par classe
+    if len(filters) > 0:
+        title = 'Fiches '
+
+        # identification des classes
+        query = db.session.query(fmdl.Classe)
+        query = query.join(fmdl.Filiere)
+        opt_id = filters.get('filiere_id')
+        dept_id = filters.get('departement_academique_id')
+        if opt_id:
+            title += f"pour option {opt_id} "
+            query = query.filter(fmdl.Filiere.id==opt_id)
+        elif dept_id:
+            title += f'du Departement {dept_id} '
+            query = query.filter(fmdl.Filiere.departement_id==dept_id)
+        niv_id = filters.get('niveau_id')
+        if niv_id:
+            title += f'Niveau {niv_id[-1]}'
+            query = query.filter(fmdl.Classe.niveau_id==niv_id)
+
+        # identification des inscriptions
+        classe_ids = [classe.id for classe in query.all()]
+        if len(classe_ids) == 0:
+            filtered = []
+        else:
+            query = db.session.query(mdl.Inscription)
+            query = query.join(mdl.Admission)
+            query = query.filter(mdl.Admission.classe_id.in_(classe_ids))
+            nom_exp = keywords.get('name')
+            if nom_exp:
+                title += f'"{nom_exp}"'
+                nom_exp = nom_exp.upper().strip()
+                nom_exp = re.sub('\s+', '%', nom_exp)
+                nom_exp = f'%{nom_exp}%'
+                query = query.filter(mdl.Inscription.nom_complet.like(nom_exp))
+            id_exp = keywords.get('id')
+            if id_exp:
+                title += f'{nom_exp}'
+                query = query.filter(or_(mdl.Admission.id==id_exp, 
+                                        mdl.Admission.matricule==id_exp))
+            query = query.order_by(mdl.Inscription.date_inscription.desc())
+            print('\n', query.statement)
+            filtered = query.all()
+
+    # recherche par mots cles
+    elif len(keywords) > 0:
+        title = 'Resultat recherche '
+        query = db.session.query(mdl.Inscription)
+        query = query.join(mdl.Admission)
+        nom_exp = keywords.get('name')
+        if nom_exp:
+            title += f'"{nom_exp}"'
+            nom_exp = nom_exp.upper().strip()
+            nom_exp = re.sub('\s+', '%', nom_exp)
+            nom_exp = f'%{nom_exp}%'
+            query = query.filter(mdl.Inscription.nom_complet.like(nom_exp))
+        id_exp = keywords.get('id')
+        if id_exp:
+            title += f'{nom_exp}'
+            query = query.filter(or_(mdl.Admission.id==id_exp, 
+                                    mdl.Admission.matricule==id_exp))
+        query = query.order_by(mdl.Inscription.date_inscription.desc())
+        print('\n', query.statement)
+        filtered = query.all()
+
+    # recherche recentes
+    else:
+        query = db.session.query(mdl.Inscription)
+        query = query.order_by(mdl.Inscription.date_inscription.desc())
+        query = query.limit(25)
+        title = "Fiches recentes"
+        print('\n', query.statement)
+        filtered = query.all()
+    
     # elaboration des formulaires
-    dept_ids = forms.choices(tasks.lister_departements_academiques(), only_keys=True)
-    opt_ids = forms.choices(tasks.lister_filieres(), only_keys=True)
-    niv_ids = forms.choices(tasks.lister_niveaux(), only_keys=True)
+    dept_ids = forms.choices(tsk.lister_departements_academiques(), only_keys=True)
+    opt_ids = forms.choices(tsk.lister_filieres(), only_keys=True)
+    niv_ids = forms.choices(tsk.lister_niveaux(), only_keys=True)
     filter_form = forms.FilterInfosForm()
     filter_form.departement_academique_id.choices = dept_ids
     filter_form.filiere_id.choices = opt_ids
     filter_form.niveau_id.choices = niv_ids
     search_form = forms.SearchInfosForm()
 
-    # elaboration du filtre de noms ou id
-    id_exp = request.args.get('id_exp')
-    nom_exp = request.args.get('nom_exp')
-    if nom_exp:
-        nom_exp = nom_exp.upper().strip()
-        nom_exp = re.sub('\s+', ' ', nom_exp)
-
-    # elaboration du filtre par classe
-    dept_id = request.args.get('dept_id')
-    opt_id = request.args.get('opt_id')
-    niv_id = request.args.get('niv_id')
-
-    # application des filtres
-    filtered = []
-    query = db.session.query(Inscription)
-    query = query.order_by(Inscription.date_inscription.desc())
-    for item in query.all():
-        if nom_exp and not nom_exp in item.nom_complet:
-            continue
-        admission = item.admission
-        if id_exp and not id_exp in [admission.id, admission.matricule]:
-            continue
-        classe = admission.classe
-        if dept_id and not dept_id == classe.filiere.departement_id:
-            continue
-        if opt_id and not opt_id == classe.filiere_id:
-            continue
-        if niv_id and not niv_id == classe.niveau_id:
-            continue
-        filtered.append(item)
-        
     # retour des items filtres
     page = request.args.get('page', 1, type=int)
     records = db.paginate_list(filtered, page=page, per_page=15)
-    return render_template('preins-search-infos.jinja', records=records,
-                           search_form=search_form, filter_form=filter_form)
+    return render_template('preins-search-infos.jinja', 
+                           records=records,
+                           title=title,
+                           search_form=search_form, 
+                           filter_form=filter_form,
+                           keywords=json.dumps(keywords),
+                           filters=json.dumps(filters))
 
+
+@ui.route('/admin/inscriptions', methods=['POST'])
+@ui.roles_accepted('admin_preins')
+def search_infos_with_keywords():
+    form = forms.SearchInfosForm()
+    data = form.data
+    data.pop('csrf_token')
+    keywords = json.dumps({k:v for k,v in data.items() if v})
+    return redirect(url_for('preins.search_infos', keywords=keywords))
 
 @ui.route('/admin/inscriptions/filtered', methods=['POST'])
 @ui.roles_accepted('admin_preins')
 def search_infos_with_filters():
-    page = request.args.get('page', 1, type=int)
-    query = db.session.query(Inscription)
-    query = query.order_by(Inscription.date_inscription.desc())
-    records = db.paginate(query, page=page, per_page=15, error_out=False)
-    return render_template('preins-search-infos.jinja', records=records)
+    form = forms.FilterInfosForm()
+    data = form.data
+    data.pop('csrf_token')
+    filters = json.dumps({k:v for k,v in data.items() if v})
+    return redirect(url_for('preins.search_infos', filters=filters))
 
 
 @ui.route('/admin/inscriptions/<search_id>')
@@ -281,24 +345,25 @@ def search_info(search_id):
     previous = request.referrer
     if url_for('preins.search_infos') not in previous:
         previous = url_for('preins.search_infos')
-    record = db.session.query(Inscription).filter_by(id=search_id).one()
+    record = db.session.query(mdl.Inscription).filter_by(id=search_id).one()
     if record.modified:
         flash('Cette fiche a ete modifiee!', 'danger')
     return render_template('preins-search-info.jinja', 
                            inscription=record, 
                            previous=previous)
 
+
 @ui.route('/admin/inscriptions/<search_id>/debug', methods=['GET', 'POST'])
 @ui.roles_accepted('admin_preins')
 def debug_info(search_id):
     session = db.session
-    inscription = session.query(Inscription).filter_by(id=search_id).one()
+    inscription = session.query(mdl.Inscription).filter_by(id=search_id).one()
     form = forms.InfoForm() if request.method == 'POST' else forms.InfoForm(obj=inscription)
     
     # parametrage des options
-    form.nationalite_id.choices = forms.choices(tasks.lister_nationalites())
-    form.region_origine_id.choices = forms.choices(tasks.lister_regions())
-    form.departement_origine_id.choices = forms.choices(tasks.lister_departements_origines())
+    form.nationalite_id.choices = forms.choices(tsk.lister_nationalites())
+    form.region_origine_id.choices = forms.choices(tsk.lister_regions())
+    form.departement_origine_id.choices = forms.choices(tsk.lister_departements_origines())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -307,7 +372,7 @@ def debug_info(search_id):
         data = form.data
         data['admission_id'] = inscription.admission_id
         data = _pretraitement_inscription(data)
-        tasks.corriger_inscription(data) 
+        tsk.corriger_inscription(data) 
         flash('modification effectue avec succes', 'success')
         return redirect(previous)
 
@@ -330,7 +395,7 @@ def debug_info(search_id):
 @ui.roles_accepted('admin_preins')
 def clean_info(search_id):
     session = db.session
-    record = session.query(Inscription).filter_by(id=search_id).one()
+    record = session.query(mdl.Inscription).filter_by(id=search_id).one()
     clean_id = record.admission.id
     session.delete(record)
     session.commit()
@@ -353,7 +418,7 @@ def coming():
 @ui.roles_accepted('admis')
 def error():
     user_id = current_user.id
-    requete = tasks.rechercher_requete(user_id)
+    requete = tsk.rechercher_requete(user_id)
     if requete is None:
         return redirect(url_for('preins.new_error'))
     return render_template('preins-error.jinja', requete=requete)
@@ -363,16 +428,16 @@ def error():
 @ui.roles_accepted('admis')
 def new_error():
     user_id = current_user.id
-    requete = Requete() 
-    admission = tasks.chercher_admission(user_id)       
-    if tasks.rechercher_inscription(user_id) is None:
+    requete = mdl.Requete() 
+    admission = tsk.chercher_admission(user_id)       
+    if tsk.rechercher_inscription(user_id) is None:
         flash("Vous devez d'abord vous inscrire", "warning")
         return redirect(url_for('preins.edit_info'))
     
     # create a edit form
     form = forms.ErrorForm(obj=requete)
-    form.filiere_correct_id.choices = forms.choices(tasks.lister_filieres())
-    form.niveau_correct_id.choices = forms.choices(tasks.lister_niveaux())
+    form.filiere_correct_id.choices = forms.choices(tsk.lister_filieres())
+    form.niveau_correct_id.choices = forms.choices(tsk.lister_niveaux())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -383,7 +448,7 @@ def new_error():
                     'niveau_admis', 'csrf_token']
         for name in inutiles:
             data.pop(name)
-        tasks.ajouter_requete(data)
+        tsk.ajouter_requete(data)
         flash('Requete cree avec succes', 'success')
         return redirect(url_for('preins.error'))
 
@@ -399,7 +464,7 @@ def new_error():
 @ui.roles_accepted('admis')
 def edit_error():
     user_id = current_user.id
-    requete = tasks.rechercher_requete(user_id)
+    requete = tsk.rechercher_requete(user_id)
     if requete is None:
         return redirect(url_for('preins.new_error'))
     
@@ -417,8 +482,8 @@ def edit_error():
         form = forms.ErrorForm(obj=requete)
     
     # parametrage des options
-    form.filiere_correct_id.choices = forms.choices(tasks.lister_filieres())
-    form.niveau_correct_id.choices = forms.choices(tasks.lister_niveaux())
+    form.filiere_correct_id.choices = forms.choices(tsk.lister_filieres())
+    form.niveau_correct_id.choices = forms.choices(tsk.lister_niveaux())
     
     # traitement et enregistrement des donnees
     # print('\n', form.data)
@@ -429,7 +494,7 @@ def edit_error():
                     'niveau_admis', 'csrf_token']
         for name in inutiles:
             data.pop(name)
-        tasks.ajouter_requete(data)
+        tsk.ajouter_requete(data)
         flash('Requete modifiee avec succes', 'success')
         return redirect(url_for('preins.error'))
 
@@ -445,14 +510,14 @@ def edit_error():
 @ui.roles_accepted('admis')
 def print_error():
     user_id = current_user.id
-    inscription = tasks.rechercher_inscription(user_id)
-    requete = tasks.rechercher_requete(user_id)
+    inscription = tsk.rechercher_inscription(user_id)
+    requete = tsk.rechercher_requete(user_id)
     if requete is None:
         return redirect(url_for('preins.new_error')) 
 
     nom_fichier_pdf = f"requete_correction_{user_id.lower()}.pdf"
     nom_fichier_pdf = nom_fichier_pdf.replace('-', '_')
     chemin_pdf_final = os.path.join(temp_dir, nom_fichier_pdf)
-    fichier_pdf = tasks.generer_fiche_correction(requete, inscription, chemin_pdf_final)
+    fichier_pdf = tsk.generer_fiche_correction(requete, inscription, chemin_pdf_final)
     return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
 
