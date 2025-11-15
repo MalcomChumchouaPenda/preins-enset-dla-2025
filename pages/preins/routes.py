@@ -275,7 +275,7 @@ def search_infos():
         query = query.join(mdl.Admission)
         id_exp = keywords.get('id')
         if id_exp:
-            title += f'{nom_exp}'
+            title += f'{id_exp}'
             query = query.filter(or_(mdl.Admission.id==id_exp, 
                                     mdl.Admission.matricule==id_exp))
         query = query.order_by(mdl.Inscription.date_inscription.desc())
