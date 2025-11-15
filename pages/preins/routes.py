@@ -273,13 +273,6 @@ def search_infos():
         title = 'Resultat recherche '
         query = db.session.query(mdl.Inscription)
         query = query.join(mdl.Admission)
-        nom_exp = keywords.get('name')
-        if nom_exp:
-            title += f'"{nom_exp}"'
-            nom_exp = nom_exp.upper().strip()
-            nom_exp = re.sub('\s+', '%', nom_exp)
-            nom_exp = f'%{nom_exp}%'
-            query = query.filter(mdl.Inscription.nom_complet.like(nom_exp))
         id_exp = keywords.get('id')
         if id_exp:
             title += f'{nom_exp}'
@@ -287,7 +280,17 @@ def search_infos():
                                     mdl.Admission.matricule==id_exp))
         query = query.order_by(mdl.Inscription.date_inscription.desc())
         print('\n', query.statement)
-        filtered = query.all()
+        nom_exp = keywords.get('name')
+        if nom_exp:
+            title += f'"{nom_exp}"'
+            nom_exp = nom_exp.upper().strip()
+            nom_exp = re.sub('\s+', ' ', nom_exp)
+            filtered = []
+            for record in query.all():
+                if nom_exp in record.nom_complet.upper():
+                    filtered.append(record)
+        else:
+            filtered = query.all()
 
     # recherche recentes
     else:

@@ -93,13 +93,9 @@ class Inscription(db.Model):
     date_inscription = db.Column(db.DateTime, default=datetime.now) 
 
 
-    @hybrid_property
+    @property
     def nom_complet(self):
         return ' '.join([self.nom, self.prenom])
-    
-    @nom_complet.expression
-    def nom_complet(cls):
-        return func.concat(cls.nom, ' ', cls.prenom)
     
     @property
     def sexe(self):
