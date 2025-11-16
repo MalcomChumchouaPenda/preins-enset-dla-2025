@@ -215,7 +215,7 @@
   /**
    * Initiate Pure Counter
    */
-  new PureCounter();
+  // new PureCounter();
 
   /**
    * Init isotope layout and filters
