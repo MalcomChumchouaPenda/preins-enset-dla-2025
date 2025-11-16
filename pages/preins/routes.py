@@ -174,7 +174,7 @@ def edit_info():
         form = forms.InfoForm(obj=inscription)
     
     # parametrage des options
-    form.nationalite_id.choices = form.choices(tsk.lister_nationalites())
+    form.nationalite_id.choices = forms.choices(tsk.lister_nationalites())
     form.region_origine_id.choices = forms.choices(tsk.lister_regions())
     form.departement_origine_id.choices = forms.choices(tsk.lister_departements_origines())
     
