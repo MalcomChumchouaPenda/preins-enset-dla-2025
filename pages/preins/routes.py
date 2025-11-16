@@ -65,7 +65,7 @@ def info():
     inscription = tsk.rechercher_inscription(user_id)
     if inscription is None:
         return redirect(url_for('preins.new_info'))
-    return render_template('preins-info.jinja', inscription=inscription)
+    return render_template('preins-view-info.jinja', inscription=inscription)
 
 
 def _pretraitement_inscription(data):
@@ -149,7 +149,7 @@ def new_info():
     form.departement_academique.data = classe.filiere.departement.nom.upper()
     form.option.data = classe.filiere.nom.upper()
     form.niveau.data = classe.niveau.nom.upper()
-    return render_template('preins-info-new.jinja', form=form)
+    return render_template('preins-add-info.jinja', form=form)
 
 
 @ui.route('/edit', methods=['GET', 'POST'])
@@ -199,7 +199,7 @@ def edit_info():
     form.nationalite_id.data = departement_origine.region.pays.full_id
     form.region_origine_id.data = departement_origine.region.full_id
     form.departement_origine_id.data = departement_origine.full_id
-    return render_template('preins-info-edit.jinja', form=form)
+    return render_template('preins-edit-info.jinja', form=form)
 
 
 @ui.route('/print')
@@ -390,7 +390,7 @@ def debug_info(search_id):
     form.nationalite_id.data = departement_origine.region.pays.full_id
     form.region_origine_id.data = departement_origine.region.full_id
     form.departement_origine_id.data = departement_origine.full_id
-    return render_template('preins-info-debug.jinja', search_id=search_id,  
+    return render_template('preins-debug-info.jinja', search_id=search_id,  
                            form=form, previous=previous)
 
 
@@ -424,7 +424,7 @@ def error():
     requete = tsk.rechercher_requete(user_id)
     if requete is None:
         return redirect(url_for('preins.new_error'))
-    return render_template('preins-error.jinja', requete=requete)
+    return render_template('preins-view-error.jinja', requete=requete)
 
 
 @ui.route('/requete/new', methods=['GET', 'POST'])
@@ -460,7 +460,7 @@ def new_error():
     form.nom_admis.data = admission.nom_complet.upper()
     form.filiere_admis.data = classe.filiere.nom.upper()
     form.niveau_admis.data = classe.niveau.nom.upper()
-    return render_template('preins-error-new.jinja', form=form)
+    return render_template('preins-add-error.jinja', form=form)
 
 
 @ui.route('requete/edit', methods=['GET', 'POST'])
@@ -493,7 +493,7 @@ def edit_error():
     if form.validate_on_submit():
         data = form.data
         data['admission_id'] = admission.id
-        inutiles = ['nom_admis', 'filiere_admis'
+        inutiles = ['nom_admis', 'filiere_admis',
                     'niveau_admis', 'csrf_token']
         for name in inutiles:
             data.pop(name)
@@ -506,7 +506,7 @@ def edit_error():
     form.nom_admis.data = admission.nom_complet.upper()
     form.filiere_admis.data = classe.filiere.nom.upper()
     form.niveau_admis.data = classe.niveau.nom.upper()
-    return render_template('preins-error-edit.jinja', form=form)
+    return render_template('preins-edit-error.jinja', form=form)
 
 
 @ui.route('/requete/print')
