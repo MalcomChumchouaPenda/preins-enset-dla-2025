@@ -4,12 +4,12 @@
 
 
 {% block page_header %}
-  <h1>{{ _('Modification Fiche Inscription ') + search_id }}</h1>
+  <h1>{{ _('Modification Inscription ') + form.admission_id.data }}</h1>
   <nav class="pb-3" aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="{{ url_for('home.dashboard') }}">{{ _('Accueil') }}</a></li>   
       <li class="breadcrumb-item"><a href="{{ previous }}">{{ _('Inscriptions') }}</a></li>
-      <li class="breadcrumb-item active" aria-current="page">{{ search_id }}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{ form.admission_id.data }}</li>
     </ol>
   </nav>
 {% endblock %}

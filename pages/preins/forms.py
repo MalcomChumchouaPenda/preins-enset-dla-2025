@@ -29,6 +29,7 @@ def validators1():
 class InfoForm(FlaskForm):
 
     # Informations personnelles de base
+    admission_id = StringField(_l("No d'ordre"))
     matricule = StringField(_l('Matricule'))
     prenom = StringField(_l('Prenoms'))
     nom = StringField(_l('Noms'), validators=validators1())
