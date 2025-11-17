@@ -80,10 +80,11 @@ def download_quitus():
     output_path = os.path.join(temp_dir, output_name)
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f, delimiter=';')
-        writer.writerow(['Matricule', 'Nom', 'Prenom', 'Date Naiss.', 
-                         'Lieu Naiss.', 'Sexe', 'Stuation Matri.', 'Pays',
-                         'Region', 'Departement', 'Etape', 'Formation', 
-                         'Niveau', 'Langue', 'Année Acad.', 'Date inscr.'])
+        writer.writerow(['matricule', 'nom', 'prenom', 'date_naiss', 
+                         'lieu_naiss', 'sexe', 'situation_mat', 'pays',
+                         'region', 'dept_orig', 'dept_acad', 'filiere',
+                         'etape_inscr', 'etape_paiement', 'formation', 
+                         'niveau', 'langue', 'annee_acad', 'date_inscr'])
         for inscr in inscriptions:
             if inscr.modified:
                 continue
@@ -97,12 +98,17 @@ def download_quitus():
             writer.writerow([admission.matricule, 
                              inscr.nom.upper(), 
                              inscr.prenom.upper() if inscr.prenom else " ",
-                             inscr.date_inscription.strftime('="%Y-%m-%d"'),
-                             inscr.lieu_naissance.upper(), inscr.sexe_id, 'c',
+                             inscr.date_naissance.strftime('="%Y-%m-%d"'),
+                             inscr.lieu_naissance.upper(), 
+                             inscr.sexe_id, 
+                             'c',
                              departement.region.pays.code_udo,
                              departement.region.code_udo,
                              departement.code_udo,
-                             classe.filiere.code_udo + classe.niveau_id[-1],
+                             classe.filiere.departement_id,
+                             classe.filiere.code_udo,
+                             classe.id,
+                             admission.classe_paiement,
                              classe.filiere.formation.code_systhag,
                              classe.niveau.code_cycle,
                              inscr.langue_id.lower(),

@@ -49,6 +49,16 @@ class Admission(db.Model):
         query = query.filter_by(id=self.classe_id)
         return query.one_or_none()
     
+    @property
+    def classe_paiement(self):
+        classe = self.classe
+        if classe is not None:
+            code_filiere = classe.filiere.code_udo
+            code_niveau = classe.niveau_id[-1]
+            if self.statut[0] == 'A':
+                return f'{code_filiere}_AL{code_niveau}'
+            return f'{code_filiere}{code_niveau}'
+                
 
 class Inscription(db.Model):
     __bind_key__ = 'preins_v0'
