@@ -71,13 +71,13 @@ def _verification_noms(admission, inscription):
     return ratio >= 0.65
 
 
-@ui.route('/download-quitus')
+@ui.route('/download-quitus/new')
 @ui.roles_accepted('admin_quitus')
-def download_quitus():
+def download_new_quitus():
     num_inscr = 0
     session = db.session
     inscriptions = session.query(pmdl.Inscription).all()
-    output_name = 'etudiants.csv'
+    output_name = 'nouveaux_etudiants.csv'
     output_path = os.path.join(temp_dir, output_name)
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f, delimiter=';')
@@ -90,6 +90,11 @@ def download_quitus():
             if inscr.modified:
                 continue
             admission = inscr.admission
+            matricule = admission.matricule
+            if matricule is None:
+                continue
+            if not matricule[:2] == admission.communique.annee_academique[2:4]:
+                continue
             if not _verification_matricule(admission, inscr):
                 continue
             if not _verification_noms(admission, inscr):
@@ -116,8 +121,52 @@ def download_quitus():
                              admission.communique.annee_academique,
                              inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
             num_inscr += 1
-    flash(f'{num_inscr} quitus telecharge et a generer', 'success')
+    flash(f'{num_inscr} quitus nouveaux etudiants a generer', 'success')
     return send_file(output_path,
                      mimetype='text/csv',
                      as_attachment=True,
-                     download_name='quitus_a_generer.csv')
+                     download_name='quitus_nouveaux_a_generer.csv')
+
+
+@ui.route('/download-quitus/old')
+@ui.roles_accepted('admin_quitus')
+def download_old_quitus():
+    num_inscr = 0
+    session = db.session
+    inscriptions = session.query(pmdl.Inscription).all()
+    output_name = 'anciens_etudiants.csv'
+    output_path = os.path.join(temp_dir, output_name)
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(['matricule', 'dept_acad', 'filiere',
+                         'etape_inscr', 'etape_paiement', 'formation', 
+                         'niveau', 'annee_acad', 'date_inscr'])
+        for inscr in inscriptions:
+            if inscr.modified:
+                continue
+            admission = inscr.admission
+            matricule = admission.matricule
+            if matricule is None:
+                continue
+            if matricule[:2] == admission.communique.annee_academique[2:4]:
+                continue
+            if not _verification_matricule(admission, inscr):
+                continue
+            if not _verification_noms(admission, inscr):
+                continue
+            classe = admission.classe
+            writer.writerow([admission.matricule,
+                             classe.filiere.departement_id,
+                             classe.filiere.code_udo,
+                             classe.id,
+                             admission.classe_paiement,
+                             classe.filiere.formation.code_systhag,
+                             classe.niveau.code_cycle,
+                             admission.communique.annee_academique,
+                             inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
+            num_inscr += 1
+    flash(f'{num_inscr} quitus anciens etudiants a generer', 'success')
+    return send_file(output_path,
+                     mimetype='text/csv',
+                     as_attachment=True,
+                     download_name='quitus_anciens_a_generer.csv')

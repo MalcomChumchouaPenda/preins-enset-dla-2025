@@ -135,7 +135,6 @@ class Inscription(db.Model):
         if len(others) > 1:
             return self != others[0]
         return False
-
     
 
 class Requete(db.Model):
