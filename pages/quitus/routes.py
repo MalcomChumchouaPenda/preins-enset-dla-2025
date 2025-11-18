@@ -72,6 +72,7 @@ def _verification_noms(admission, inscription):
 
 
 @ui.route('/download-quitus')
+@ui.roles_accepted('admin_quitus')
 def download_quitus():
     num_inscr = 0
     session = db.session
