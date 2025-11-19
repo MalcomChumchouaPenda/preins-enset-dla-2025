@@ -1,3 +1,3 @@
-matricule;dept_acad;filiere;etape_inscr;etape_paiement;formation;niveau;annee_acad;date_inscr
-24NDOT001;DEMO;DEMO;DEMO1;DEMO_AL1;1;L1;2025/2026;"=""2025-11-18 13:08:34"""
-19NDOT004;DEMO;DEMO;DEMO4;DEMO_AL4;1;M1;2025/2026;"=""2025-11-18 13:08:34"""
+matricule;dept_acad;filiere;etape;formation;niveau;statut;annee_acad;date_inscr
+24NDOT001;DEMO;DEMO;DEMO1;1;L1;AA;2025/2026;"=""2025-11-18 17:12:44"""
+19NDOT004;DEMO;DEMO;DEMO4;1;M1;AA;2025/2026;"=""2025-11-18 17:12:44"""

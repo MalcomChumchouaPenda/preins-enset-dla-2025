@@ -84,8 +84,8 @@ def download_new_quitus():
         writer.writerow(['matricule', 'nom', 'prenom', 'date_naiss', 
                          'lieu_naiss', 'sexe', 'situation_mat', 'pays',
                          'region', 'dept_orig', 'dept_acad', 'filiere',
-                         'etape_inscr', 'etape_paiement', 'formation', 
-                         'niveau', 'langue', 'annee_acad', 'date_inscr'])
+                         'etape', 'formation', 'niveau', 'statut',
+                         'langue', 'annee_acad', 'date_inscr'])
         for inscr in inscriptions:
             if inscr.modified:
                 continue
@@ -114,9 +114,9 @@ def download_new_quitus():
                              classe.filiere.departement_id,
                              classe.filiere.code_udo,
                              classe.id,
-                             admission.classe_paiement,
                              classe.filiere.formation.code_systhag,
                              classe.niveau.code_cycle,
+                             admission.statut,
                              inscr.langue_id.lower(),
                              admission.communique.annee_academique,
                              inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
@@ -139,8 +139,8 @@ def download_old_quitus():
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f, delimiter=';')
         writer.writerow(['matricule', 'dept_acad', 'filiere',
-                         'etape_inscr', 'etape_paiement', 'formation', 
-                         'niveau', 'annee_acad', 'date_inscr'])
+                         'etape', 'formation', 'niveau', 'statut',
+                         'annee_acad', 'date_inscr'])
         for inscr in inscriptions:
             if inscr.modified:
                 continue
@@ -159,9 +159,9 @@ def download_old_quitus():
                              classe.filiere.departement_id,
                              classe.filiere.code_udo,
                              classe.id,
-                             admission.classe_paiement,
                              classe.filiere.formation.code_systhag,
                              classe.niveau.code_cycle,
+                             admission.statut,
                              admission.communique.annee_academique,
                              inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
             num_inscr += 1
