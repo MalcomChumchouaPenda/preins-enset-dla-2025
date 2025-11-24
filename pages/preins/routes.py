@@ -579,3 +579,51 @@ def config_admissions():
         i += 1
     return jsonify({'message': f'{i} admission analysees, {j} admission crees'}), 200
     
+
+@ui.route('/config/filieres', methods=['POST'])
+@ui.roles_accepted('admin_preins')
+def config_filieres():
+    if not request.is_json:
+        return jsonify({'error':'le contenu doit etre json'}), 400
+    
+    i = j = 0
+    data = request.get_json()
+    session = db.session
+    for row in data:
+        filiere = fmdl.Filiere(
+            id  = row['code_filiere'],
+            prefix= row['prefix'],
+            code_udo = row['code_sco'],
+            code_enset = row['code_filiere'],
+            nom = row['nom'],
+            departement_id = row['code_dept'],
+            formation_id = row['code_formation']
+        )
+        session.merge(filiere)
+        j += 1
+        i += 1
+    session.commit()
+    return jsonify({'message': f'{i} filieres analysees, {j} filieres crees'}), 200
+
+
+@ui.route('/config/classes', methods=['POST'])
+@ui.roles_accepted('admin_preins')
+def config_classes():
+    if not request.is_json:
+        return jsonify({'error':'le contenu doit etre json'}), 400
+    
+    i = j = 0
+    data = request.get_json()
+    session = db.session
+    for row in data:
+        classe = fmdl.Classe(
+            id  = row['code_filiere'] + row['code_niveau'][-1],
+            filiere_id = row['code_filiere'],
+            niveau_id = row['code_niveau']
+        )
+        session.merge(classe)
+        j += 1
+        i += 1
+    session.commit()
+    return jsonify({'message': f'{i} classes analysees, {j} classes crees'}), 200
+
