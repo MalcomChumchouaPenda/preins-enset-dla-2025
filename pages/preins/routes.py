@@ -88,7 +88,11 @@ def _pretraitement_inscription(data):
 def _verification_matricule(admission, data):
     matricule = data['matricule']
     if matricule:
-        if admission.classe_id[-1] != '4':
+        if admission.classe_id[:2] == 'CP':
+            msg = f"Le matricule '{matricule}' est invalide "
+            msg += '(Vous êtes un nouveau étudiant CPS)'
+            return False, msg
+        elif admission.classe_id[-1] != '4':
             msg = f"Le matricule '{matricule}' est invalide "
             msg += '(Vous êtes un nouveau étudiant)'
             return False, msg
