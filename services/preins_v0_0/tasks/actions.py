@@ -40,15 +40,19 @@ def format_matricule(admission):
     classe = admission.classe
     prefix = classe.filiere.prefix
     niveau = classe.niveau.id[-1]
-    if niveau == '4':
+    if statut == 'C':
         num_size = 2
-        filtre = f'{annee}N{prefix}L%{statut}'
-    elif niveau == '3':
-        num_size = 2
-        filtre = f'{annee}N{prefix}B%{statut}'
+        filtre = f'{annee}N{prefix}{niveau}%'
     else:
-        num_size = 3
-        filtre = f'{annee}N{prefix}%{statut}'
+        if niveau == '4':
+            num_size = 2
+            filtre = f'{annee}N{prefix}L%{statut}'
+        elif niveau == '3':
+            num_size = 2
+            filtre = f'{annee}N{prefix}B%{statut}'
+        else:
+            num_size = 3
+            filtre = f'{annee}N{prefix}%{statut}'
     return filtre, num_size
 
 def enregistrer_matricule(session, matricule, inscription, admission):
