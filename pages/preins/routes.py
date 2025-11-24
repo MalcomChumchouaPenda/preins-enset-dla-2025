@@ -8,12 +8,13 @@ from datetime import datetime
 from flask_login import current_user
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
-from flask import render_template, url_for, redirect, send_file, flash
+from flask import render_template, url_for, redirect, send_file, flash, jsonify
 from flask import request, session, current_app
 from sqlalchemy import or_, and_
 
 from core.config import db
 from core.utils import UiBlueprint
+from core.auth import tasks as atsk
 from services.preins_v0_0 import tasks as tsk
 from services.preins_v0_0 import models as mdl
 from services.formations_v0_0 import models as fmdl
@@ -524,3 +525,57 @@ def print_error():
     fichier_pdf = tsk.generer_fiche_correction(requete, inscription, chemin_pdf_final)
     return send_file(fichier_pdf, as_attachment=True, download_name=nom_fichier_pdf)
 
+
+@ui.route('/config/communiques', methods=['POST'])
+@ui.roles_accepted('admin_preins')
+def config_communiques():
+    if not request.is_json:
+        return jsonify({'error':'le contenu doit etre json'}), 400
+    
+    i = j = 0
+    data = request.get_json()
+    session = db.session
+    for row in data:
+        query = session.query(mdl.CommuniqueAdmission)
+        query = query.filter_by(id=row['id'])
+        print(row)
+        if not query.first():
+            communique = mdl.CommuniqueAdmission(**row)
+            session.add(communique)
+            session.commit()
+            j += 1
+        i += 1
+    return jsonify({'message': f'{i} communiques analysees, {j} communiques crees'}), 200
+    
+
+@ui.route('/config/admissions', methods=['POST'])
+@ui.roles_accepted('admin_preins')
+def config_admissions():
+    if not request.is_json:
+        return jsonify({'error':'le contenu doit etre json'}), 400
+    
+    i = j = 0
+    data = request.get_json()
+    session = db.session
+    for row in data:
+        id = row['id']
+        query = session.query(mdl.Admission)
+        query = query.filter_by(id=id)
+        if not query.first():
+            nom = row.pop('nom')
+            pwd = row.pop('pwd')
+            atsk.add_user(session, id, nom, pwd)
+            atsk.add_roles_to_user(session, id, 'admis')
+            if id.startswith('dev'):
+                atsk.add_roles_to_user(session, id, 'developper')
+            matricule = row.get('matricule')
+            if matricule:
+                atsk.add_user(session, matricule, nom, pwd)
+                atsk.add_roles_to_user(session, matricule, 'student')
+            row['nom_complet'] = nom
+            session.add(mdl.Admission(**row))
+            session.commit()
+            j += 1
+        i += 1
+    return jsonify({'message': f'{i} admission analysees, {j} admission crees'}), 200
+    
