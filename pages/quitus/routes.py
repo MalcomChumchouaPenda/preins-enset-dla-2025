@@ -170,3 +170,37 @@ def download_old_quitus():
                      mimetype='text/csv',
                      as_attachment=True,
                      download_name='quitus_anciens_a_generer.csv')
+
+
+
+@ui.route('/download-requetes')
+@ui.roles_accepted('admin_quitus')
+def download_requetes():
+    session = db.session
+    requetes = session.query(pmdl.Requete).all()
+    output_name = 'requetes.csv'
+    output_path = os.path.join(temp_dir, output_name)
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(['identifiant', 'nom_communique', 'nom_correcte',
+                         'filiere_communique', 'filiere_correcte', 
+                         'niveau_communique', 'niveau_communique',
+                         'annee_acad', 'date_requete'])
+        for req in requetes:
+            # if inscr.modified:
+            #     continue
+            admission = req.admission
+            classe = admission.classe
+            writer.writerow([admission.id,
+                             admission.nom_complet,
+                             req.nom_correct,
+                             classe.filiere.code_udo,
+                             req.filiere_correct.code_udo,
+                             classe.niveau.code_cycle,
+                             req.niveau_correct.code_cycle,
+                             admission.communique.annee_academique,
+                             req.date_requete.strftime('="%Y-%m-%d %H:%M:%S"')])
+    return send_file(output_path,
+                     mimetype='text/csv',
+                     as_attachment=True,
+                     download_name='requetes.csv')

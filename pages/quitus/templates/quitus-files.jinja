@@ -38,11 +38,14 @@
         <div class="tab-content pt-2" id="borderedTabContent">
          <div aria-labelledby="downloads-tab" class="tab-pane fade show active" id="bordered-downloads" role="tabpanel">
           <div class="row">
-            <div class="col-lg-6 col-12 d-flex flex-columns align-items-start">
+            <div class="col-lg-4 col-12 d-flex flex-columns align-items-start">
               <a href="{{ url_for('quitus.download_new_quitus') }}" class="btn btn-secondary btn-lg m-1">Quitus nouveaux etudiants a mettre en ligne</a>
             </div>
-            <div class="col-lg-6 col-12 d-flex flex-columns align-items-start">
+            <div class="col-lg-4 col-12 d-flex flex-columns align-items-start">
               <a href="{{ url_for('quitus.download_old_quitus') }}" class="btn btn-secondary btn-lg m-1">Quitus anciens etudiants a mettre en ligne</a>
+            </div>
+            <div class="col-lg-4 col-12 d-flex flex-columns align-items-start">
+              <a href="{{ url_for('quitus.download_requetes') }}" class="btn btn-secondary btn-lg m-1">Requetes nouveaux etudiants</a>
             </div>
           </div>
          </div>

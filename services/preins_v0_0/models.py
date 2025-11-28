@@ -170,7 +170,9 @@ class Requete(db.Model):
         query = query.filter_by(id=self.niveau_correct_id)
         return query.one_or_none()
     
-    # query = db.session.query(Classe)
-    # query = query.filter_by(id=requete.admission.classe_id)
-    # classe = query.one_or_none()
-    # setattr(requete.admission, 'classe', classe)
+    @property
+    def modified(self):
+        others = self.admission.requetes
+        if len(others) > 1:
+            return self != others[0]
+        return False
