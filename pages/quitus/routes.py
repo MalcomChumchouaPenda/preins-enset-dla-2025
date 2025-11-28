@@ -172,7 +172,6 @@ def download_old_quitus():
                      download_name='quitus_anciens_a_generer.csv')
 
 
-
 @ui.route('/download-requetes')
 @ui.roles_accepted('admin_quitus')
 def download_requetes():
@@ -186,8 +185,6 @@ def download_requetes():
                          'correction_nom', 'correction_filiere', 'correction_niveau',
                          'annee_acad', 'date_requete'])
         for req in requetes:
-            # if inscr.modified:
-            #     continue
             admission = req.admission
             classe = admission.classe
             id_ = req.admission_id
@@ -205,3 +202,28 @@ def download_requetes():
                      mimetype='text/csv',
                      as_attachment=True,
                      download_name='requetes.csv')
+
+
+@ui.route('/download-anomalies')
+@ui.roles_accepted('admin_quitus')
+def download_anomalies():
+    session = db.session
+    inscriptions = session.query(pmdl.Inscription).all()
+    output_name = 'anomalies.csv'
+    output_path = os.path.join(temp_dir, output_name)
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(['identifiant', 'nom_communique', 'nom_inscription', 
+                         'matricule', 'annee_acad', 'date_inscription'])
+        for inscr in inscriptions:
+            admission = inscr.admission
+            if _verification_noms(admission, inscr):
+                continue
+            writer.writerow([admission.id, admission.nom_complet.upper(),
+                             inscr.nom_complet.upper(), admission.matricule,
+                             admission.communique.annee_academique,
+                             inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
+    return send_file(output_path,
+                     mimetype='text/csv',
+                     as_attachment=True,
+                     download_name='anomalies.csv')
