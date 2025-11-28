@@ -217,6 +217,8 @@ def download_anomalies():
                          'matricule', 'annee_acad', 'date_inscription'])
         for inscr in inscriptions:
             admission = inscr.admission
+            if inscr.modified:
+                continue
             if _verification_noms(admission, inscr):
                 continue
             writer.writerow([admission.id, admission.nom_complet.upper(),
