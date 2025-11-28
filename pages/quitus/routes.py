@@ -214,7 +214,8 @@ def download_anomalies():
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f, delimiter=';')
         writer.writerow(['identifiant', 'nom_communique', 'nom_inscription', 
-                         'matricule', 'annee_acad', 'date_inscription'])
+                         'matricule', 'telephone', 'annee_acad', 
+                         'date_inscription'])
         for inscr in inscriptions:
             admission = inscr.admission
             if inscr.modified:
@@ -223,7 +224,7 @@ def download_anomalies():
                 continue
             writer.writerow([admission.id, admission.nom_complet.upper(),
                              inscr.nom_complet.upper(), admission.matricule,
-                             admission.communique.annee_academique,
+                             inscr.telephone, admission.communique.annee_academique,
                              inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
     return send_file(output_path,
                      mimetype='text/csv',
