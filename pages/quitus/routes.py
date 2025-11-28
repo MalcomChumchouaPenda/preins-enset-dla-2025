@@ -182,22 +182,23 @@ def download_requetes():
     output_path = os.path.join(temp_dir, output_name)
     with open(output_path, 'w', newline='') as f:
         writer = csv.writer(f, delimiter=';')
-        writer.writerow(['identifiant', 'nom_communique', 'nom_correcte',
-                         'filiere_communique', 'filiere_correcte', 
-                         'niveau_communique', 'niveau_communique',
+        writer.writerow(['identifiant', 'nom_communique', 'filiere_communique', 'niveau_communique', 
+                         'correction_nom', 'correction_filiere', 'correction_niveau',
                          'annee_acad', 'date_requete'])
         for req in requetes:
             # if inscr.modified:
             #     continue
             admission = req.admission
             classe = admission.classe
-            writer.writerow([admission.id,
-                             admission.nom_complet,
-                             req.nom_correct,
-                             classe.filiere.code_udo,
-                             req.filiere_correct.code_udo,
-                             classe.niveau.code_cycle,
-                             req.niveau_correct.code_cycle,
+            id_ = req.admission_id
+            nom_communique = admission.nom_complet
+            filiere_communique = classe.filiere.code_udo
+            niveau_communique = classe.niveau.code_cycle
+            nom_correct = req.nom_correct if req.nom_correct else ""
+            filiere_correct = req.filiere_correct.code_udo if req.filiere_correct_id else ""
+            niveau_correct = req.niveau_correct.code_cycle if req.niveau_correct_id else ""
+            writer.writerow([id_, nom_communique, filiere_communique, niveau_communique, 
+                             nom_correct, filiere_correct, niveau_correct,
                              admission.communique.annee_academique,
                              req.date_requete.strftime('="%Y-%m-%d %H:%M:%S"')])
     return send_file(output_path,
