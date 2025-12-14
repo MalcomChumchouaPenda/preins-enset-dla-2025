@@ -10,7 +10,7 @@ import Levenshtein as lv
 from flask_login import current_user
 from flask_babel import gettext as _
 from flask_babel import lazy_gettext as _l
-from flask import render_template, url_for, redirect, send_file, flash
+from flask import render_template, url_for, redirect, send_file, flash, jsonify
 from flask import request, session, current_app
 from sqlalchemy import or_, and_
 
@@ -18,6 +18,7 @@ from core.config import db
 from core.utils import UiBlueprint
 from services.preins_v0_0 import models as pmdl
 from services.formations_v0_0 import models as fmdl
+from services.quitus_v0_0 import models as qmdl
 # from services.preins_v0_0.models import Inscription, Requete
 
 
@@ -70,6 +71,13 @@ def _verification_noms(admission, inscription):
     print('\t', ratio, nom1, nom2)
     return ratio >= 0.65
 
+def _verification_quitus_existants(admission, inscription):
+    matricule = admission.matricule
+    annee = admission.communique.annee_academique
+    query = qmdl.Quitus.query.filter_by(annee_academique=annee)
+    query = query.filter_by(matricule=matricule)
+    return query.count() > 0
+
 
 @ui.route('/download-quitus/new')
 @ui.roles_accepted('admin_quitus')
@@ -98,6 +106,8 @@ def download_new_quitus():
             if not _verification_matricule(admission, inscr):
                 continue
             if not _verification_noms(admission, inscr):
+                continue
+            if _verification_quitus_existants(admission, inscr):
                 continue
             classe = admission.classe 
             departement = inscr.departement_origine
@@ -153,6 +163,8 @@ def download_old_quitus():
             if not _verification_matricule(admission, inscr):
                 continue
             if not _verification_noms(admission, inscr):
+                continue
+            if _verification_quitus_existants(admission, inscr):
                 continue
             classe = admission.classe
             writer.writerow([admission.matricule,
@@ -230,3 +242,26 @@ def download_anomalies():
                      mimetype='text/csv',
                      as_attachment=True,
                      download_name='anomalies.csv')
+
+
+@ui.route('/upload-quitus', methods=['POST'])
+@ui.roles_accepted('admin_quitus')
+def update_quitus():
+    if not request.is_json:
+        return jsonify({'error':'le contenu doit etre json'}), 400
+    
+    i = 0
+    data = request.get_json()
+    session = db.session
+    for row in data:
+        quitus = qmdl.Quitus(
+            id = row['num_quitus'],
+            matricule = row['matricule'],
+            code_etape = row['code_etape'],
+            annee_academique = row['annee_academique'],
+            tranche = row['code_tranche']
+        )
+        session.merge(quitus)
+        i += 1
+    session.commit()
+    return jsonify({'message': f'{i} quitus traites'}), 200
