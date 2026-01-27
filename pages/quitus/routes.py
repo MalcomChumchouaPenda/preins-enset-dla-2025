@@ -79,6 +79,65 @@ def _verification_quitus_existants(admission, inscription):
     return query.count() > 0
 
 
+@ui.route('/download-students/new')
+@ui.roles_accepted('admin_quitus')
+def download_new_students():
+    num_inscr = 0
+    session = db.session
+    inscriptions = session.query(pmdl.Inscription).all()
+    output_name = 'nouveaux_etudiants_a_inscrire.csv'
+    output_path = os.path.join(temp_dir, output_name)
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=';')
+        writer.writerow(['matricule', 'nom', 'prenom', 'date_naiss', 
+                         'lieu_naiss', 'sexe', 'situation_mat', 'pays',
+                         'region', 'dept_orig', 'dept_acad', 'filiere',
+                         'etape', 'formation', 'niveau', 'statut',
+                         'langue', 'annee_acad', 'date_inscr'])
+        for inscr in inscriptions:
+            if inscr.modified:
+                continue
+            admission = inscr.admission
+            matricule = admission.matricule
+            if matricule is None:
+                continue
+            if not matricule[:2] == admission.communique.annee_academique[2:4]:
+                continue
+            if not _verification_matricule(admission, inscr):
+                continue
+            if not _verification_noms(admission, inscr):
+                continue
+            if not _verification_quitus_existants(admission, inscr):
+                continue
+            classe = admission.classe 
+            departement = inscr.departement_origine
+            writer.writerow([admission.matricule, 
+                             inscr.nom.upper(), 
+                             inscr.prenom.upper() if inscr.prenom else " ",
+                             inscr.date_naissance.strftime('="%Y-%m-%d"'),
+                             inscr.lieu_naissance.upper(), 
+                             inscr.sexe_id, 
+                             'c',
+                             departement.region.pays.code_udo,
+                             departement.region.code_udo,
+                             departement.code_udo,
+                             classe.filiere.departement_id,
+                             classe.filiere.code_udo,
+                             classe.id,
+                             classe.filiere.formation.code_systhag,
+                             classe.niveau.code_cycle,
+                             admission.statut,
+                             inscr.langue_id.lower(),
+                             admission.communique.annee_academique,
+                             inscr.date_inscription.strftime('="%Y-%m-%d %H:%M:%S"')])
+            num_inscr += 1
+    flash(f'{num_inscr} quitus nouveaux etudiants a generer', 'success')
+    return send_file(output_path,
+                     mimetype='text/csv',
+                     as_attachment=True,
+                     download_name=output_name)
+
+
 @ui.route('/download-quitus/new')
 @ui.roles_accepted('admin_quitus')
 def download_new_quitus():
