@@ -96,6 +96,10 @@ def _verification_matricule(admission, data):
             msg = f"Le matricule '{matricule}' est invalide "
             msg += '(Vous êtes un nouveau étudiant)'
             return False, msg
+        elif admission.statut == 'FP':
+            msg = f"Le matricule '{matricule}' n'est pas valide "
+            msg += '(Vous êtes un nouveau étudiant, admis par concours)'
+            return False, msg
         elif 'dipet' not in data['diplome'].lower():
             msg = f"Le matricule '{matricule}' est invalide "
             msg += '(Vous êtes un nouveau étudiant)'
