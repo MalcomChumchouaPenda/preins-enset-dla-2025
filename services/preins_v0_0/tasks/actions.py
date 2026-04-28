@@ -44,6 +44,9 @@ def format_matricule(admission):
         num_size = 2
         filtre = f'{annee}N{prefix}{niveau}%'
     else:
+        # Correction pour les fonctionnaires F -> I
+        if statut == 'F':
+            statut = 'I'
         if niveau == '4':
             num_size = 2
             filtre = f'{annee}N{prefix}L%{statut}'
