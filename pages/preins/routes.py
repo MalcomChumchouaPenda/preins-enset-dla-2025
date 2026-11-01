@@ -21,7 +21,7 @@ from services.formations_v0_0 import models as fmdl
 # from services.preins_v0_0.models import Inscription, Requete
 from . import forms
 
-
+# test
 ui = UiBlueprint(__name__)
 static_dir = os.path.join(os.path.dirname(__file__), 'static')
 temp_dir = os.path.join(static_dir, 'temp')
