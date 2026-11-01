@@ -58,6 +58,28 @@ def format_matricule(admission):
             filtre = f'{annee}N{prefix}%{statut}'
     return filtre, num_size
 
+# def correct_matricule_suffix(session, bad_suffix, good_suffix):
+#     count = 0
+#     for admis in Admission.query.all():
+#         if admis.matricule in ['', None]:
+#             continue
+#         if admis.matricule[-1] == bad_suffix:
+#             admis.matricule = admis.matricule[:-1] + good_suffix
+#             count += 1
+#     session.commit()
+#     return count
+
+# def correct_matricule_suffix(session, bad_suffix, good_suffix):
+#     count = 0
+#     for user in User.query.all():
+#         if user.id in ['', None]:
+#             continue
+#         if user.id[-1] == bad_suffix:
+#             user.id = user.id[:-1] + good_suffix
+#             count += 1
+#     session.commit()
+#     return count
+
 def enregistrer_matricule(session, matricule, inscription, admission):
     add_user(session, matricule, inscription.nom, '0000', first_name=inscription.prenom)
     add_roles_to_user(session, matricule, 'student')
